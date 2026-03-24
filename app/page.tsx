@@ -15,10 +15,12 @@ export default function Home() {
         />
 
         <br />
-
-        <button className="start-btn">
-          GET STARTED
-        </button>
+        <a
+        href="/login_signup"
+        className="start-btn"
+      >
+        GET STARTED
+      </a>
 
       </div>
 
