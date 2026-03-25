@@ -1,79 +1,159 @@
-/* RESET */
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* BODY */
 body {
   font-family: Arial, sans-serif;
-  background: #e5e5e5;
+  background: #f2f2f2;
+  color: #333;
 }
 
-/* PRODUCTS ROW */
-.products {
+/* =========================
+   LINKS
+========================= */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+header {
+  background: #f8a5c2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+}
+
+nav a {
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: #ff1493;
+}
+
+/* =========================
+   SEARCH + CART
+========================= */
+input[type="text"] {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  border-color: #ff1493;
+}
+
+span {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* =========================
+   PRODUCTS SECTION
+========================= */
+section {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  flex-wrap: wrap;
+  gap: 30px;
   padding: 60px 20px;
 }
 
-/* CARD */
-.card {
-  background: #f3c1da;
-  padding: 15px;
+/* PRODUCT CARD */
+section div {
+  background: #f9c5d1;
   border-radius: 20px;
+  padding: 20px;
+  width: 240px;
   text-align: center;
-  width: 180px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+section div:hover {
+  transform: translateY(-5px);
 }
 
 /* PRODUCT TEXT */
-.card h3 {
-  font-size: 14px;
+section h2 {
   margin-top: 10px;
+  font-size: 16px;
 }
 
-.price {
+section p {
   color: #ff1493;
   font-weight: bold;
-  margin: 5px 0;
+  margin-top: 5px;
 }
 
 /* BUTTON */
-.btn {
-  margin-top: 8px;
-  padding: 8px 15px;
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
   border: none;
   border-radius: 20px;
   background: #ff1493;
   color: white;
-  font-size: 12px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
-/* FOOTER */
-.footer {
-  background: #e7a6c7;
+button:hover {
+  background: #e0127f;
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer {
+  background: #f8a5c2;
+  padding: 30px 40px;
   display: flex;
   justify-content: space-between;
-  padding: 30px;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-/* FOOTER PARTS */
-.footer-left h2 {
+footer h2 {
   font-size: 16px;
 }
 
-.footer-middle ul {
-  margin-top: 5px;
+footer h3 {
+  font-size: 14px;
 }
 
-.footer-middle li {
-  font-size: 13px;
+footer p,
+footer li {
+  font-size: 14px;
 }
 
-.footer-right p {
-  font-size: 13px;
+/* =========================
+   IMAGES
+========================= */
+img {
+  max-width: 100%;
+  height: auto;
 }
