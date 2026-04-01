@@ -5,14 +5,10 @@ export const metadata = {
   description: "Shop Page",
 };
 
-export default function RootLayout({
+export default function ShopNowLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+  return <>{children}</>;
 }

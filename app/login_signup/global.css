@@ -29,7 +29,8 @@ body {
 
 /* LOGO TOP (PADAKO NA) */
 .logo {
-  width: 550px;   /* 🔥 gikan 380 → 550 */
+  width: 100%;
+  max-width: 400px;
   height: auto;
   margin-bottom: 15px;
 }
