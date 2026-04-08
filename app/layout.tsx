@@ -1,8 +1,8 @@
-import "./globals.css";
+import "./global.css";
 
 export const metadata = {
   title: "Mae Little Loops Studio",
-  description: "Crochet Studio",
+  description: "Mae Little Loops Studio",
 };
 
 export default function RootLayout({

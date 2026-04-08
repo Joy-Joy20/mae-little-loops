@@ -1,3 +1,6 @@
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,50 +13,20 @@ body {
   color: #333;
 }
 
+/* =========================
+   LINKS
+========================= */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-.category-bar {
-  position: sticky;
-  top: 64px;
-  z-index: 99;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  padding: 15px;
-  background: #fce4ec;
-}
-
-.category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
-  font-size: 13px;
-  font-weight: bold;
-  gap: 5px;
-  transition: 0.3s;
-}
-
-.category-item span {
-  font-size: 28px;
-}
-
-.category-item:hover {
-  color: #ff1493;
-  transform: scale(1.1);
-}
-
+/* =========================
+   NAVBAR
+========================= */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   background: #f8a5c2;
   display: flex;
-  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
@@ -79,17 +52,18 @@ nav a:hover {
   color: #ff1493;
 }
 
-.active-link {
-  text-decoration: underline;
-  color: #ff1493;
-}
-
-.search-input {
+/* =========================
+   SEARCH + CART
+========================= */
+input[type="text"] {
   padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
-  height: 32px;
+}
+
+input[type="text"]:focus {
+  border-color: #ff1493;
 }
 
 span {
@@ -97,12 +71,25 @@ span {
   font-size: 18px;
 }
 
-.login-icon {
-  font-size: 20px;
-  cursor: pointer;
-  text-decoration: none;
+
+/* DESCRIPTION BANNER */
+.description-banner {
+  background: white;
+  padding: 20px;
+  text-align: center;
 }
 
+.description-banner p {
+  color: #666;
+  font-size: 14px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: normal;
+}
+
+/* =========================
+   PRODUCTS SECTION
+========================= */
 section {
   display: flex;
   justify-content: center;
@@ -111,6 +98,7 @@ section {
   padding: 60px 20px;
 }
 
+/* PRODUCT CARD */
 section div {
   background: #f9c5d1;
   border-radius: 20px;
@@ -125,6 +113,7 @@ section div:hover {
   transform: translateY(-5px);
 }
 
+/* PRODUCT TEXT */
 section h2 {
   margin-top: 10px;
   font-size: 16px;
@@ -136,6 +125,7 @@ section p {
   margin-top: 5px;
 }
 
+/* BUTTON */
 button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -151,6 +141,9 @@ button:hover {
   background: #e0127f;
 }
 
+/* =========================
+   FOOTER
+========================= */
 footer {
   background: #f8a5c2;
   padding: 30px 40px;
@@ -173,7 +166,55 @@ footer li {
   font-size: 14px;
 }
 
+/* =========================
+   IMAGES
+========================= */
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* HOME PAGE */
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8a5c2;
+}
+
+.card {
+  text-align: center;
+}
+
+.home-desc {
+  color: white;
+  font-size: 14px;
+  margin: 15px auto 20px;
+  max-width: 500px;
+  text-align: center;
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.start-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 15px 50px;
+  border-radius: 40px;
+  background: linear-gradient(90deg, #ff00aa, #ff0077);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
 }

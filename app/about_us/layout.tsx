@@ -1,6 +1,6 @@
 import "./global.css";
 
-export default function ShopNowLayout({
+export default function AboutUsLayout({
   children,
 }: {
   children: React.ReactNode;

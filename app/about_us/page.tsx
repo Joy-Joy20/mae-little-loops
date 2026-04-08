@@ -2,25 +2,18 @@
 
 import Image from "next/image";
 
-export default function ShopNow() {
-  const products = [
-    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-  ];
-
+export default function AboutUs() {
   return (
-    <main className="min-h-screen bg-gray-200">
+    <main className="about-page">
 
       {/* NAVBAR */}
       <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
         <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
 
         <nav className="flex gap-6 font-medium">
-          <a href="/shop_now" className="active-link">Home</a>
+          <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
-          <a href="/about_us">About Us</a>
+          <a href="/about_us" className="active-link">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
 
@@ -48,18 +41,26 @@ export default function ShopNow() {
         <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
       </div>
 
-      {/* PRODUCTS */}
-      <section className="flex justify-center gap-8 flex-wrap py-16">
-        {products.map((item, index) => (
-          <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            <Image src={item.img} alt={item.name} width={120} height={120} className="mx-auto" />
-            <h2 className="mt-4 font-semibold">{item.name}</h2>
-            <p className="text-pink-600 font-bold mt-1">{item.price}</p>
-            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full">
-              SHOP NOW
-            </button>
-          </div>
-        ))}
+      {/* ABOUT CONTENT */}
+      <section className="about-content">
+
+        <div className="about-card">
+          <h2>About Us 🌸</h2>
+          <p>
+            Mae Little Loops Studio is a small handmade business that specializes in beautiful crochet bouquets and adorable keychains.
+            Every piece is crafted with love, care, and attention to detail — perfect as gifts or personal keepsakes.
+            We believe that handmade items carry a special warmth that no store-bought product can replace.
+          </p>
+        </div>
+
+        <div className="about-card">
+          <h2>Meet the Owner 👩‍🎨</h2>
+          <p><strong>Mae Masarque</strong></p>
+          <p>The heart and hands behind Mae Little Loops Studio. Passionate about crochet and bringing smiles through handmade creations.</p>
+        </div>
+
+
+
       </section>
 
       {/* FOOTER */}

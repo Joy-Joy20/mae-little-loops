@@ -1,6 +1,6 @@
-import "./global.css";
+import "../shop_now/global.css";
 
-export default function ShopNowLayout({
+export default function SearchLayout({
   children,
 }: {
   children: React.ReactNode;

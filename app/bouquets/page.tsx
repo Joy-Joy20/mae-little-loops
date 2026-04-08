@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function Bouquets() {
@@ -21,15 +23,35 @@ export default function Bouquets() {
 
         <nav className="flex gap-6 font-medium">
           <a href="/shop_now">Home</a>
-          <a href="/bouquets">Bouquets</a>
-          <a href="/keychain">Keychain</a>
+          <a href="/bouquets" className="active-link">Products</a>
+          <a href="/about_us">About Us</a>
+          <a href="/contact_us">Contact Us</a>
         </nav>
 
-        <div className="flex gap-4 items-center">
-          <input type="text" placeholder="Search..." className="px-3 py-1 rounded-md border" />
+        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+          <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
+          <a href="/login" className="login-icon" title="Login">👤</a>
           <span>🛒</span>
         </div>
       </header>
+
+      
+      {/* CATEGORY ICONS */}
+      <div className="category-bar">
+        <a href="/bouquets" className="category-item">
+          <span>💐</span>
+          <p>Bouquets</p>
+        </a>
+        <a href="/keychain" className="category-item">
+          <span>🔑</span>
+          <p>Keychain</p>
+        </a>
+      </div>
+
+      {/* DESCRIPTION */}
+      <div className="description-banner">
+        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
+      </div>
 
       {/* BOUQUETS */}
       <section className="flex justify-center gap-8 flex-wrap py-16">
