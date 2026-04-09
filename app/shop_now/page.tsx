@@ -55,7 +55,7 @@ export default function ShopNow() {
             <Image src={item.img} alt={item.name} width={120} height={120} className="mx-auto" />
             <h2 className="mt-4 font-semibold">{item.name}</h2>
             <p className="text-pink-600 font-bold mt-1">{item.price}</p>
-            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full">
+            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full" onClick={() => window.location.href='/bouquets'}>
               SHOP NOW
             </button>
           </div>
