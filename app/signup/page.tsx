@@ -1,25 +1,70 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 export default function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeat, setRepeat] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignup() {
+    setError("");
+    setSuccess("");
+    if (password !== repeat) {
+      setError("Passwords do not match.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      setError(error.message);
+    } else {
+      setSuccess("Account created! Please check your email to confirm.");
+    }
+    setLoading(false);
+  }
+
   return (
     <main className="login-page">
       <div className="overlay">
         <div className="content">
 
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={180}
-            height={180}
-            className="logo"
-          />
+          <Image src="/logo.png" alt="Logo" width={180} height={180} className="logo" />
 
           <div className="form-box">
-            <input type="text" placeholder="USERNAME" className="input-field" />
-            <input type="email" placeholder="EMAIL" className="input-field" />
-            <input type="password" placeholder="PASSWORD" className="input-field" />
-            <input type="password" placeholder="REPEAT PASSWORD" className="input-field" />
-            <button className="login-btn">SIGNUP</button>
+            <input
+              type="email"
+              placeholder="EMAIL"
+              className="input-field"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="PASSWORD"
+              className="input-field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="REPEAT PASSWORD"
+              className="input-field"
+              value={repeat}
+              onChange={(e) => setRepeat(e.target.value)}
+            />
+
+            {error && <p className="error-msg">{error}</p>}
+            {success && <p className="success-msg">{success}</p>}
+
+            <button className="login-btn" onClick={handleSignup} disabled={loading}>
+              {loading ? "SIGNING UP..." : "SIGNUP"}
+            </button>
 
             <p className="signup-link">
               Already have an account? <a href="/login">Log in</a>

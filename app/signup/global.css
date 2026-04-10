@@ -91,3 +91,33 @@
   font-weight: bold;
   text-decoration: underline;
 }
+
+.error-msg {
+  color: #fff;
+  background: rgba(255,0,0,0.4);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.success-msg {
+  color: #fff;
+  background: rgba(0,200,0,0.4);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.signup-link {
+  color: white;
+  font-size: 13px;
+  text-align: center;
+}
+
+.signup-link a {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
