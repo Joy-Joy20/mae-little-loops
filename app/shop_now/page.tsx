@@ -1,6 +1,23 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
+
+export default function ShopNow() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user?.email ?? null);
+    });
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setUserEmail(null);
+    window.location.href = "/login";
+  }
 
 export default function ShopNow() {
   const products = [
@@ -26,7 +43,14 @@ export default function ShopNow() {
 
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
-          <a href="/login" className="login-icon" title="Login">👤</a>
+          {userEmail ? (
+            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+              <button onClick={handleLogout} style={{fontSize:'12px', padding:'4px 10px', borderRadius:'20px', border:'none', background:'#ff1493', color:'white', cursor:'pointer'}}>Logout</button>
+            </div>
+          ) : (
+            <a href="/login" className="login-icon" title="Login">👤</a>
+          )}
           <span>🛒</span>
         </div>
       </header>
