@@ -20,6 +20,10 @@ export default function Signup() {
             <input type="password" placeholder="PASSWORD" className="input-field" />
             <input type="password" placeholder="REPEAT PASSWORD" className="input-field" />
             <button className="login-btn">SIGNUP</button>
+
+            <p className="signup-link">
+              Already have an account? <a href="/login">Log in</a>
+            </p>
           </div>
 
         </div>
