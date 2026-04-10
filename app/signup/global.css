@@ -7,7 +7,7 @@
 .login-page {
   height: 100vh;
   width: 100%;
-  background: #d89bbf;
+  background: #f8a5c2;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +16,7 @@
 .overlay {
   width: 100%;
   height: 100%;
-  background: rgba(216, 155, 191, 0.9);
+  background: rgba(248, 165, 194, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
