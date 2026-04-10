@@ -79,3 +79,15 @@
 .login-btn:hover {
   transform: scale(1.05);
 }
+
+.signup-link {
+  color: white;
+  font-size: 13px;
+  text-align: center;
+}
+
+.signup-link a {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
