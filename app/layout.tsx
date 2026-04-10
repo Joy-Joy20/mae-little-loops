@@ -1,4 +1,5 @@
 import "./global.css";
+import { CartProvider } from "../context/CartContext";
 
 export const metadata = {
   title: "Mae Little Loops Studio",
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <CartProvider>{children}</CartProvider>
+      </body>
     </html>
   );
 }
