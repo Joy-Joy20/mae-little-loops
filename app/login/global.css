@@ -54,6 +54,8 @@
   background: linear-gradient(90deg, #ff00aa, #ff4dc4);
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .input-field::placeholder {
