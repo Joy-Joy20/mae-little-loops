@@ -29,7 +29,7 @@ export default function Bouquets() {
     { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
     { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
     { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+    { name: "Mini White Pastel Flower", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
     { name: "Pink Star Lily Bloom", price: "₱200.00", img: null },
     { name: "Pastel Twin Tulips", price: "₱250.00", img: null },
     { name: "Pure White Rosebud", price: "₱300.00", img: null },

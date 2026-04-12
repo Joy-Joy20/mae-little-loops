@@ -20,11 +20,14 @@ export default function Signup() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
+    } else if (data.user) {
+      setSuccess("Account created! You can now log in.");
+      setTimeout(() => window.location.href = "/login", 2000);
     } else {
-      setSuccess("Account created! Please check your email to confirm.");
+      setError("Something went wrong. Please try again.");
     }
     setLoading(false);
   }
