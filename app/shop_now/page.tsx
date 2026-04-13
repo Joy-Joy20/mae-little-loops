@@ -7,6 +7,13 @@ import { supabase } from "../../lib/supabase";
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  const products = [
+    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+  ];
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
@@ -18,14 +25,6 @@ export default function ShopNow() {
     setUserEmail(null);
     window.location.href = "/login";
   }
-
-export default function ShopNow() {
-  const products = [
-    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-  ];
 
   return (
     <main className="min-h-screen bg-gray-200">
