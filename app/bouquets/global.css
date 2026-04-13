@@ -202,3 +202,18 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+    padding: 10px 15px;
+    gap: 8px;
+  }
+  header h1 { font-size: 13px; }
+  nav { gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  nav a { font-size: 12px; }
+  .search-input { width: 100px; }
+  .category-bar { gap: 20px; top: auto; }
+  section div { width: 45%; padding: 12px; }
+  footer { flex-direction: column; align-items: center; text-align: center; padding: 20px; }
+}
