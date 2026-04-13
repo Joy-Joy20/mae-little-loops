@@ -24,13 +24,13 @@ export default function Keychain() {
   }
 
   const keychains = [
-    { name: "Bunny Love Keychain", price: "₱80.00" },
-    { name: "Star Charm Keychain", price: "₱90.00" },
-    { name: "Mini Bear Keychain", price: "₱100.00" },
-    { name: "Heart Bloom Keychain", price: "₱85.00" },
-    { name: "Pastel Cloud Keychain", price: "₱95.00" },
-    { name: "Rainbow Drop Keychain", price: "₱110.00" },
-    { name: "Flower Petal Keychain", price: "₱75.00" },
+    { name: "Graduation Penguin", price: "₱80.00" },
+    { name: "Frog-Hat", price: "₱90.00" },
+    { name: "Strawberry-Hat", price: "₱100.00" },
+    { name: "Strawberry", price: "₱85.00" },
+    { name: "Purple Bow", price: "₱95.00" },
+    { name: "Monkey D. Luffy", price: "₱110.00" },
+    { name: "Teddy Bear", price: "₱75.00" },
     { name: "Sweet Bow Keychain", price: "₱88.00" },
   ];
 
