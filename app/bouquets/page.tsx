@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
+  const router = useRouter();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -17,19 +19,18 @@ export default function Bouquets() {
 
   function handleAddToCart(name: string, price: string) {
     if (!userEmail) {
-      window.location.href = "/login";
+      router.push("/login");
       return;
     }
     addToCart({ name, price });
     alert(`${name} added to cart!`);
   }
 
-export default function Bouquets() {
   const bouquets = [
     { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
     { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
     { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
     { name: "Pink Star Lily Bloom", price: "₱200.00", img: null },
     { name: "Pastel Twin Tulips", price: "₱250.00", img: null },
     { name: "Pure White Rosebud", price: "₱300.00", img: null },
@@ -53,9 +54,7 @@ export default function Bouquets() {
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
-            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
-            </div>
+            <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
@@ -63,7 +62,6 @@ export default function Bouquets() {
         </div>
       </header>
 
-      
       {/* CATEGORY ICONS */}
       <div className="category-bar">
         <a href="/bouquets" className="category-item">
@@ -107,7 +105,7 @@ export default function Bouquets() {
         </div>
         <div>
           <h3 className="font-bold mb-2">🌸 Special Bouquets</h3>
-          <ul className="list-disc ml-5">
+          <ul className="list-none">
             <li>Cute keychains</li>
             <li>Special Gift Gifts</li>
           </ul>
