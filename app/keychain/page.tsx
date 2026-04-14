@@ -24,7 +24,7 @@ export default function Keychain() {
   }
 
   const keychains = [
-    { name: "Graduation Penguin", price: "₱80.00" },
+    { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
     { name: "Frog-Hat", price: "₱90.00" },
     { name: "Strawberry-Hat", price: "₱100.00" },
     { name: "Strawberry", price: "₱85.00" },
