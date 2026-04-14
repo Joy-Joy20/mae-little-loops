@@ -24,15 +24,15 @@ export default function Keychain() {
   }
 
   const keychains = [
-    { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-    { name: "Frog-Hat", price: "₱90.00" },
-    { name: "Strawberry-Hat", price: "₱100.00" },
-    { name: "Strawberry", price: "₱85.00" },
-    { name: "Purple Bow", price: "₱95.00" },
-    { name: "Monkey D. Luffy", price: "₱110.00" },
-    { name: "Teddy Bear", price: "₱75.00" },
-    { name: "Sweet Bow Keychain", price: "₱88.00" },
-  ];
+  { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+  { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+  { name: "Strawberry-Hat", price: "₱100.00", img: "/Strawberry-Hat.png" },
+  { name: "Strawberry", price: "₱85.00", img: "/Strawberry.png" },
+  { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
+  { name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
+  { name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
+  { name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+];
 
   return (
     <main className="min-h-screen bg-gray-200">
