@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 export default function Keychain() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
+  const router = useRouter();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -16,7 +19,7 @@ export default function Keychain() {
 
   function handleAddToCart(name: string, price: string) {
     if (!userEmail) {
-      window.location.href = "/login";
+      router.push("/login");
       return;
     }
     addToCart({ name, price });
@@ -24,15 +27,15 @@ export default function Keychain() {
   }
 
   const keychains = [
-  { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-  { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
-  { name: "Strawberry-Hat", price: "₱100.00", img: "/Strawberry-Hat.png" },
-  { name: "Strawberry", price: "₱85.00", img: "/Strawberry.png" },
-  { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
-  { name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
-  { name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
-  { name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
-];
+    { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+    { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+    { name: "Strawberry-Hat", price: "₱100.00", img: "/Strawberry-Hat.png" },
+    { name: "Strawberry", price: "₱85.00", img: "/Strawberry.png" },
+    { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
+    { name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
+    { name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
+    { name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+  ];
 
   return (
     <main className="min-h-screen bg-gray-200">
@@ -40,22 +43,32 @@ export default function Keychain() {
       {/* NAVBAR */}
       <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
         <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
-
         <nav className="flex gap-6 font-medium">
           <a href="/shop_now">Home</a>
           <a href="/bouquets" className="active-link">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-
-        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-          <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input
+            name="q"
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') router.push(`/search?q=${(e.target as HTMLInputElement).value}`);
+            }}
+          />
           {userEmail ? (
-            <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+            <span style={{ fontSize: '13px', fontWeight: 'bold' }}>👤 {userEmail}</span>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span>🛒 {cart.length > 0 && (
+            <sup style={{ background: '#ff1493', color: 'white', borderRadius: '50%', padding: '1px 5px', fontSize: '11px' }}>
+              {cart.length}
+            </sup>
+          )}</span>
         </div>
       </header>
 
@@ -80,10 +93,20 @@ export default function Keychain() {
       <section className="flex justify-center gap-8 flex-wrap py-16">
         {keychains.map((item, index) => (
           <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            <div className="mx-auto w-[120px] h-[120px] bg-pink-300 rounded-xl flex items-center justify-center text-4xl">🔑</div>
+            <div className="mx-auto w-[120px] h-[120px] bg-pink-300 rounded-xl overflow-hidden flex items-center justify-center relative">
+              <Image
+                src={item.img}
+                alt={item.name}
+                fill
+                className="object-cover"
+              />
+            </div>
             <h2 className="mt-4 font-semibold">{item.name}</h2>
             <p className="text-pink-600 font-bold">{item.price}</p>
-            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full" onClick={() => handleAddToCart(item.name, item.price)}>
+            <button
+              className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full"
+              onClick={() => handleAddToCart(item.name, item.price)}
+            >
               ADD TO CART
             </button>
           </div>
