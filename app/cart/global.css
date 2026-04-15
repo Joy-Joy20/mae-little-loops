@@ -103,7 +103,6 @@ span {
 .cart-items {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   margin-bottom: 24px;
 }
 
@@ -113,21 +112,6 @@ span {
   gap: 16px;
   padding: 10px 0;
   border-bottom: 1px solid #f9c5d1;
-}
-
-.cart-item-img {
-  border-radius: 0;
-  object-fit: cover;
-}
-
-.cart-item-placeholder {
-  width: 70px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
 }
 
 .cart-item-name {
