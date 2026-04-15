@@ -1,3 +1,6 @@
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,32 +13,43 @@ body {
   color: #333;
 }
 
+/* =========================
+   LINKS
+========================= */
 a {
   text-decoration: none;
   color: inherit;
 }
 
+/* =========================
+   HEADER (CENTERED LIKE HOME)
+========================= */
 header {
   position: sticky;
   top: 0;
   z-index: 100;
   background: #f8a5c2;
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 15px 40px;
+  padding: 15px 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* TITLE */
 header h1 {
   font-size: 18px;
   font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
+/* NAV CENTER */
 nav {
   display: flex;
   gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 nav a {
@@ -47,9 +61,15 @@ nav a:hover {
   color: #ff1493;
 }
 
-.active-link {
-  text-decoration: underline;
-  color: #ff1493;
+/* =========================
+   RIGHT ACTIONS (SEARCH + USER + CART)
+========================= */
+.right-nav {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
 }
 
 .search-input {
@@ -57,20 +77,59 @@ nav a:hover {
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
-  height: 32px;
 }
 
-span {
-  cursor: pointer;
-  font-size: 18px;
+.search-input:focus {
+  border-color: #ff1493;
 }
 
-.login-icon {
+/* USER */
+.user {
+  font-size: 14px;
+}
+
+/* CART CLICKABLE */
+.cart {
+  position: relative;
   font-size: 20px;
   cursor: pointer;
-  text-decoration: none;
+  transition: 0.2s;
 }
 
+.cart:hover {
+  transform: scale(1.1);
+}
+
+.cart sup {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #ff1493;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* =========================
+   CATEGORY
+========================= */
+.category-bar {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 15px;
+  background: #ffe4ef;
+}
+
+.category-bar a.active {
+  color: #ff1493;
+  font-weight: bold;
+}
+
+/* =========================
+   DESCRIPTION
+========================= */
 .description-banner {
   background: white;
   padding: 20px;
@@ -81,11 +140,13 @@ span {
   color: #666;
   font-size: 14px;
   max-width: 600px;
-  margin: 0 auto;
-  font-weight: normal;
+  margin: auto;
 }
 
-section {
+/* =========================
+   CENTER PRODUCTS (IMPORTANT FIX)
+========================= */
+.products-container {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -93,7 +154,8 @@ section {
   padding: 60px 20px;
 }
 
-section div {
+/* PRODUCT CARD */
+.product-card {
   background: #f9c5d1;
   border-radius: 20px;
   padding: 20px;
@@ -103,74 +165,54 @@ section div {
   transition: 0.3s;
 }
 
-section div:hover {
+.product-card:hover {
   transform: translateY(-5px);
 }
 
-section h2 {
-  margin-top: 10px;
+.product-card h2 {
   font-size: 16px;
+  margin-top: 10px;
 }
 
-section p {
+.product-card p {
   color: #ff1493;
   font-weight: bold;
   margin-top: 5px;
 }
 
-button {
+/* IMAGE */
+.img-box {
+  display: flex;
+  justify-content: center;
+}
+
+.product-img {
+  width: 120px;
+  height: auto;
+}
+
+/* BUTTONS */
+.btn-group button {
   margin-top: 10px;
-  padding: 10px 20px;
+  padding: 10px 18px;
   border: none;
   border-radius: 20px;
   background: #ff1493;
   color: white;
   cursor: pointer;
-  transition: 0.3s;
+  margin: 5px;
 }
 
-button:hover {
+.btn-group button:hover {
   background: #e0127f;
 }
 
+/* =========================
+   FOOTER
+========================= */
 footer {
   background: #f8a5c2;
-  padding: 30px 40px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-footer h2 {
-  font-size: 16px;
-}
-
-footer h3 {
-  font-size: 14px;
-}
-
-footer p,
-footer li {
-  font-size: 14px;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-@media (max-width: 768px) {
-  header {
-    flex-wrap: wrap;
-    padding: 10px 15px;
-    gap: 8px;
-  }
-  header h1 { font-size: 13px; }
-  nav { gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; }
-  nav a { font-size: 12px; }
-  .search-input { width: 100px; }
-  .category-bar { gap: 20px; top: auto; }
-  section div { width: 45%; padding: 12px; }
-  footer { flex-direction: column; align-items: center; text-align: center; padding: 20px; }
+  padding: 30px;
+  text-align: center;
+  margin-top: 30px;
 }
