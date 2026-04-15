@@ -49,11 +49,9 @@ export default function Cart() {
                   ) : (
                     <div className="cart-item-placeholder">🌸</div>
                   )}
-                  <div className="cart-item-info">
-                    <p className="cart-item-name">{item.name}</p>
-                    <p className="cart-item-price">{item.price}</p>
-                    <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
-                  </div>
+                  <p className="cart-item-name">{item.name}</p>
+                  <p className="cart-item-price">{item.price}</p>
+                  <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
               ))}
