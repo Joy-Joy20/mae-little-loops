@@ -54,7 +54,10 @@ export default function Bouquets() {
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
-            <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+              <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }} style={{fontSize:'12px', padding:'4px 10px', borderRadius:'20px', border:'none', background:'#ff1493', color:'white', cursor:'pointer'}}>Logout</button>
+            </div>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}

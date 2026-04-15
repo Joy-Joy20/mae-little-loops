@@ -67,7 +67,10 @@ export default function Keychain() {
             }}
           />
           {userEmail ? (
-            <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+              <button onClick={async () => { await supabase.auth.signOut(); router.push('/login'); }} style={{fontSize:'12px', padding:'4px 10px', borderRadius:'20px', border:'none', background:'#ff1493', color:'white', cursor:'pointer'}}>Logout</button>
+            </div>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
