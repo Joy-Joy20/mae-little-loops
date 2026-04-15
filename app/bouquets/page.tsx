@@ -17,12 +17,12 @@ export default function Bouquets() {
     });
   }, []);
 
-  function handleAddToCart(name: string, price: string) {
+  function handleAddToCart(name: string, price: string, img: string | null) {
     if (!userEmail) {
       router.push("/login");
       return;
     }
-    addToCart({ name, price });
+    addToCart({ name, price, img });
     alert(`${name} added to cart!`);
   }
 
@@ -93,7 +93,7 @@ export default function Bouquets() {
             )}
             <h2 className="mt-4 font-semibold">{item.name}</h2>
             <p className="text-pink-600 font-bold">{item.price}</p>
-            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full" onClick={() => handleAddToCart(item.name, item.price)}>
+            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>
               ADD TO CART
             </button>
           </div>

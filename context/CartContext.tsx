@@ -6,6 +6,7 @@ type CartItem = {
   name: string;
   price: string;
   quantity?: number;
+  img?: string | null;
 };
 
 type CartContextType = {

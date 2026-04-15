@@ -17,14 +17,14 @@ export default function Keychain() {
     });
   }, []);
 
-  function handleAddToCart(name: string, price: string) {
+  function handleAddToCart(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price });
+    addToCart({ name, price, img });
   }
 
-  function handleBuyNow(name: string, price: string) {
+  function handleBuyNow(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price });
+    addToCart({ name, price, img });
     router.push("/cart");
   }
 
@@ -113,11 +113,11 @@ export default function Keychain() {
             <h2>{item.name}</h2>
             <p>{item.price}</p>
 
-            <button onClick={() => handleAddToCart(item.name, item.price)}>
+            <button onClick={() => handleAddToCart(item.name, item.price, item.img)}>
                 ADD TO CART
               </button>
 
-              <button onClick={() => handleBuyNow(item.name, item.price)}>
+              <button onClick={() => handleBuyNow(item.name, item.price, item.img)}>
                 BUY NOW
               </button>
 

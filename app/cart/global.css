@@ -109,10 +109,27 @@ span {
 
 .cart-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 10px 0;
   border-bottom: 1px solid #f9c5d1;
+}
+
+.cart-item-img {
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.cart-item-placeholder {
+  width: 70px;
+  height: 70px;
+  background: #f9c5d1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
 }
 
 .cart-item-name {
@@ -125,6 +142,16 @@ span {
   color: #ff1493;
   font-weight: bold;
   margin-top: 4px;
+}
+
+.cart-item-qty {
+  color: #666;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.cart-item-info {
+  flex: 1;
 }
 
 .remove-btn {

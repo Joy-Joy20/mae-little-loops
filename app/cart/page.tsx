@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "../../context/CartContext";
 
@@ -43,9 +44,15 @@ export default function Cart() {
             <div className="cart-items">
               {cart.map((item, index) => (
                 <div key={index} className="cart-item">
+                  {item.img ? (
+                    <Image src={item.img} alt={item.name} width={70} height={70} className="cart-item-img" />
+                  ) : (
+                    <div className="cart-item-placeholder">🌸</div>
+                  )}
                   <div className="cart-item-info">
                     <p className="cart-item-name">{item.name}</p>
                     <p className="cart-item-price">{item.price}</p>
+                    <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
                   </div>
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
