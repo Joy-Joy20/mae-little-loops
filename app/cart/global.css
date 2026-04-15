@@ -111,10 +111,8 @@ span {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9c5d1;
-  border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 10px 0;
+  border-bottom: 1px solid #f9c5d1;
 }
 
 .cart-item-name {
