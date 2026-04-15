@@ -3,9 +3,11 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { useCart } from "../../context/CartContext";
 
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { cart } = useCart();
 
   const products = [
     { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
@@ -50,7 +52,7 @@ export default function ShopNow() {
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒</span>
+          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
         </div>
       </header>
 
