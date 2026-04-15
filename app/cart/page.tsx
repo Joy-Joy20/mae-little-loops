@@ -9,7 +9,7 @@ export default function Cart() {
 
   const total = cart.reduce((sum, item) => {
     const price = parseFloat(item.price.replace("₱", "").replace(",", ""));
-    return sum + price * item.quantity;
+    return sum + price * (item.quantity ?? 1);
   }, 0);
 
   return (

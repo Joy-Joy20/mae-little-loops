@@ -61,7 +61,7 @@ export default function Bouquets() {
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
         </div>
       </header>
 
