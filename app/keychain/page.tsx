@@ -91,7 +91,7 @@ export default function Keychain() {
 
       {/* DESCRIPTION */}
       <div className="description-banner">
-        <p>Handmade with love 🔑 — Explore our collection of cute keychains, perfect as gifts, accessories, or daily charms for your style.</p>
+        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
       </div>
 
       {/* PRODUCTS */}
