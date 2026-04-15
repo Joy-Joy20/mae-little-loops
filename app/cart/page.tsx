@@ -45,9 +45,9 @@ export default function Cart() {
               {cart.map((item, index) => (
                 <div key={index} className="cart-item">
                   {item.img ? (
-                    <Image src={item.img} alt={item.name} width={70} height={70} className="cart-item-img" />
+                    <Image src={item.img} alt={item.name} width={70} height={70} />
                   ) : (
-                    <div className="cart-item-placeholder">🌸</div>
+                    <span style={{fontSize:'28px'}}>🌸</span>
                   )}
                   <p className="cart-item-name">{item.name}</p>
                   <p className="cart-item-price">{item.price}</p>
