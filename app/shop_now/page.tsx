@@ -30,17 +30,17 @@ export default function ShopNow() {
     <main className="min-h-screen bg-gray-200">
 
       {/* NAVBAR */}
-      <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
-        <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
+      <header>
+        <h1>Mae Little Loops Studio</h1>
 
-        <nav className="flex gap-6 font-medium">
+        <nav>
           <a href="/shop_now" className="active-link">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
 
-        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
