@@ -117,6 +117,7 @@ export default function Keychain() {
         ))}
       </section>
 
+      {/* FOOTER */}
       <footer className="footer">
         <h2>Mae Little Loops Studio</h2>
         <p>📧 maelittleloops@gmail.com</p>
