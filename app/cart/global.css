@@ -116,15 +116,13 @@ span {
 }
 
 .cart-item-img {
-  border-radius: 12px;
+  border-radius: 0;
   object-fit: cover;
 }
 
 .cart-item-placeholder {
   width: 70px;
   height: 70px;
-  background: #f9c5d1;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
