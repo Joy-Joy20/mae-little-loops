@@ -11,6 +11,7 @@ body {
   font-family: Arial, sans-serif;
   background: #f2f2f2;
   color: #333;
+  padding-top: 70px;
 }
 
 /* =========================
@@ -25,6 +26,11 @@ a {
    NAVBAR
 ========================= */
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: #f8a5c2;
   display: flex;
   justify-content: space-between;
