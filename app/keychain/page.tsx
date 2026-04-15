@@ -73,8 +73,10 @@ export default function Keychain() {
             <a href="/login">👤</a>
           )}
 
-          <span className="cart">
-            🛒{cart.length > 0 && <sup>{cart.length}</sup>}
+          {/* ✅ CLICKABLE CART */}
+          <span className="cart" onClick={() => router.push("/cart")}>
+            🛒
+            {cart.length > 0 && <sup>{cart.length}</sup>}
           </span>
         </div>
       </header>
@@ -83,6 +85,14 @@ export default function Keychain() {
       <div className="category-bar">
         <a href="/bouquets">💐 Bouquets</a>
         <a href="/keychain" className="active">🔑 Keychain</a>
+      </div>
+
+      {/* DESCRIPTION (NEW) */}
+      <div className="description-banner">
+        <p>
+          Handmade with love 🔑 — Explore our collection of cute keychains,
+          perfect as gifts, accessories, or daily charms for your style.
+        </p>
       </div>
 
       {/* PRODUCTS */}
