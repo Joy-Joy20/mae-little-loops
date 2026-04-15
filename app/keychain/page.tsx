@@ -111,15 +111,13 @@ export default function Keychain() {
             <h2>{item.name}</h2>
             <p>{item.price}</p>
 
-            <div className="btn-group">
-              <button onClick={() => handleAddToCart(item.name, item.price)}>
+            <button onClick={() => handleAddToCart(item.name, item.price)}>
                 ADD TO CART
               </button>
 
               <button onClick={() => handleBuyNow(item.name, item.price)}>
                 BUY NOW
               </button>
-            </div>
 
           </div>
         ))}
