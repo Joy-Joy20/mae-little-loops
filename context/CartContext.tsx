@@ -5,6 +5,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 type CartItem = {
   name: string;
   price: string;
+  quantity: number;
 };
 
 type CartContextType = {
@@ -25,7 +26,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   function addToCart(item: CartItem) {
-    setCart((prev) => [...prev, item]);
+    setCart((prev) => {
+      const existing = prev.findIndex((i) => i.name === item.name);
+      if (existing >= 0) {
+        return prev.map((i, idx) => idx === existing ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
   }
 
   function removeFromCart(index: number) {

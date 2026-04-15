@@ -50,7 +50,7 @@ export default function ShopNow() {
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span>🛒</span>
+          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒</span>
         </div>
       </header>
 
