@@ -18,19 +18,13 @@ export default function Keychain() {
   }, []);
 
   function handleAddToCart(name: string, price: string) {
-    if (!userEmail) {
-      router.push("/login");
-      return;
-    }
+    if (!userEmail) return router.push("/login");
     addToCart({ name, price });
     alert(`${name} added to cart!`);
   }
 
   function handleBuyNow(name: string, price: string) {
-    if (!userEmail) {
-      router.push("/login");
-      return;
-    }
+    if (!userEmail) return router.push("/login");
     addToCart({ name, price });
     router.push("/cart");
   }
@@ -49,82 +43,85 @@ export default function Keychain() {
   ];
 
   return (
-    <main className="min-h-screen bg-gray-200">
+    <main className="min-h-screen bg-gray-100">
 
       {/* NAVBAR */}
-      <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
-        <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
-        <nav className="flex gap-6 font-medium">
+      <header className="header">
+        <h1>Mae Little Loops Studio</h1>
+
+        <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets" className="active-link">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+
+        <div className="right-nav">
           <input
-            name="q"
             type="text"
             placeholder="Search..."
             className="search-input"
             onKeyDown={(e) => {
-              if (e.key === 'Enter') router.push(`/search?q=${(e.target as HTMLInputElement).value}`);
+              if (e.key === "Enter")
+                router.push(`/search?q=${(e.target as HTMLInputElement).value}`);
             }}
           />
+
           {userEmail ? (
-            <span style={{ fontSize: '13px', fontWeight: 'bold' }}>👤 {userEmail}</span>
+            <span className="user">👤 {userEmail}</span>
           ) : (
-            <a href="/login" className="login-icon" title="Login">👤</a>
+            <a href="/login">👤</a>
           )}
-          <span>🛒 {cart.length > 0 && (
-            <sup style={{ background: '#ff1493', color: 'white', borderRadius: '50%', padding: '1px 5px', fontSize: '11px' }}>
-              {cart.length}
-            </sup>
-          )}</span>
+
+          <span className="cart">
+            🛒
+            {cart.length > 0 && <sup>{cart.length}</sup>}
+          </span>
         </div>
       </header>
 
-      {/* CATEGORY ICONS */}
+      {/* CATEGORY */}
       <div className="category-bar">
-        <a href="/bouquets" className="category-item">
-          <span>💐</span>
-          <p>Bouquets</p>
-        </a>
-        <a href="/keychain" className="category-item">
-          <span>🔑</span>
-          <p>Keychain</p>
-        </a>
+        <a href="/bouquets" className="category-item">💐 Bouquets</a>
+        <a href="/keychain" className="category-item active">🔑 Keychain</a>
       </div>
 
       {/* DESCRIPTION */}
-      <div className="description-banner">
-        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
+      <div className="description">
+        Handmade with love 🌸 — Explore our collection of cute keychains!
       </div>
 
-      {/* KEYCHAINS */}
-      <section className="flex justify-center gap-8 flex-wrap py-16">
+      {/* PRODUCTS */}
+      <section className="products-container">
         {keychains.map((item, index) => (
-          <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            <div className="mx-auto w-[150px] h-[150px] bg-white rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
-              {item.img ? (
-                <Image src={item.img} alt={item.name} width={150} height={150} className="object-cover w-full h-full" />
-              ) : (
-                <span className="text-4xl">🔑</span>
-              )}
+          <div key={index} className="product-card">
+
+            <div className="product-img-wrapper">
+              <Image
+                src={item.img}
+                alt={item.name}
+                width={150}
+                height={150}
+                className="product-img"
+              />
             </div>
-            <h2 className="mt-4 font-semibold">{item.name}</h2>
-            <p className="text-pink-600 font-bold">{item.price}</p>
-            <div className="flex flex-col gap-2 mt-4">
+
+            <h2>{item.name}</h2>
+            <p>{item.price}</p>
+
+            <div className="btn-group">
               <button
-                className="bg-pink-500 text-white px-5 py-2 rounded-full"
+                className="btn-cart"
                 onClick={() => handleAddToCart(item.name, item.price)}
               >
-                ADD TO CART
+                Add
               </button>
+
               <button
-                className="bg-white text-pink-500 border border-pink-500 px-5 py-2 rounded-full"
+                className="btn-buy"
                 onClick={() => handleBuyNow(item.name, item.price)}
               >
-                BUY NOW
+                Buy
               </button>
             </div>
           </div>
@@ -132,21 +129,9 @@ export default function Keychain() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-pink-300 py-10 px-10 flex justify-between flex-wrap">
-        <div>
-          <h2 className="font-bold mt-2">Mae Little Loops Studio</h2>
-        </div>
-        <div>
-          <h3 className="font-bold mb-2">🌸 Special Bouquets</h3>
-          <ul className="list-none">
-            <li>Cute keychains</li>
-            <li>Special Gift Gifts</li>
-          </ul>
-        </div>
-        <div>
-          <p>📧 Email: maelittleloops@gmail.com</p>
-          <p>📱 Call / Text: 09XXXXXXXXX</p>
-        </div>
+      <footer className="footer">
+        <h2>Mae Little Loops Studio</h2>
+        <p>📧 maelittleloops@gmail.com</p>
       </footer>
 
     </main>
