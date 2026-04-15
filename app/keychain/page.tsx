@@ -27,8 +27,8 @@ export default function Keychain() {
   }
 
   const keychains = [
-    { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-    { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+    { name: "Graduation Penguin", price: "₱80.00", img: "" },
+    { name: "Frog-Hat", price: "₱90.00", img: "" },
     { name: "Strawberry-Hat", price: "₱100.00", img: "/Strawberry-Hat.png" },
     { name: "Strawberry", price: "₱85.00", img: "/Strawberry.png" },
     { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
@@ -93,14 +93,11 @@ export default function Keychain() {
       <section className="flex justify-center gap-8 flex-wrap py-16">
         {keychains.map((item, index) => (
           <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            <div className="mx-auto w-[120px] h-[120px] bg-pink-300 rounded-xl overflow-hidden flex items-center justify-center relative">
-              <Image
-                src={item.img}
-                alt={item.name}
-                fill
-                className="object-cover"
-              />
-            </div>
+            {item.img ? (
+              <Image src={item.img} alt={item.name} width={120} height={120} className="mx-auto" />
+            ) : (
+              <div className="mx-auto w-[120px] h-[120px] bg-pink-300 rounded-xl flex items-center justify-center text-4xl">🔑</div>
+            )}
             <h2 className="mt-4 font-semibold">{item.name}</h2>
             <p className="text-pink-600 font-bold">{item.price}</p>
             <button
