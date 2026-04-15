@@ -100,15 +100,13 @@ export default function Keychain() {
         {keychains.map((item, index) => (
           <div key={index} className="product-card">
 
-            <div className="img-box">
-              <Image
+            <Image
                 src={item.img}
                 alt={item.name}
                 width={120}
                 height={120}
                 className="product-img"
               />
-            </div>
 
             <h2>{item.name}</h2>
             <p>{item.price}</p>
