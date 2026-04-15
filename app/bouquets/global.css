@@ -1,3 +1,6 @@
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -10,83 +13,20 @@ body {
   color: #333;
 }
 
+/* =========================
+   LINKS
+========================= */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-.active-link {
-  text-decoration: underline;
-  color: #ff1493;
-}
-
-.search-input {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  outline: none;
-  height: 32px;
-}
-
-.login-icon {
-  font-size: 20px;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.category-bar {
-  position: sticky;
-  top: 64px;
-  z-index: 99;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  padding: 15px;
-  background: #fce4ec;
-}
-
-.category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
-  font-size: 13px;
-  font-weight: bold;
-  gap: 5px;
-  transition: 0.3s;
-}
-
-.category-item span {
-  font-size: 28px;
-}
-
-.category-item:hover {
-  color: #ff1493;
-  transform: scale(1.1);
-}
-
-.description-banner {
-  background: white;
-  padding: 20px;
-  text-align: center;
-}
-
-.description-banner p {
-  color: #666;
-  font-size: 14px;
-  max-width: 600px;
-  margin: 0 auto;
-  font-weight: normal;
-}
-
+/* =========================
+   NAVBAR
+========================= */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   background: #f8a5c2;
   display: flex;
-  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
@@ -112,6 +52,9 @@ nav a:hover {
   color: #ff1493;
 }
 
+/* =========================
+   SEARCH + CART
+========================= */
 input[type="text"] {
   padding: 6px 12px;
   border-radius: 8px;
@@ -128,6 +71,21 @@ span {
   font-size: 18px;
 }
 
+
+/* DESCRIPTION BANNER */
+.description-banner {
+  background: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.description-banner p {
+  color: #666;
+  font-size: 14px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: normal;
+}
 section {
   display: flex;
   justify-content: center;
