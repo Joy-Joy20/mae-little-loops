@@ -45,17 +45,17 @@ export default function Keychain() {
     <main className="page">
 
       {/* NAVBAR */}
-      <header className="header">
-        <h1>Mae Little Loops Studio</h1>
+      <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
+        <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
 
-        <nav>
+        <nav className="flex gap-6 font-medium">
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
 
-        <div className="right-nav">
+        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input
             type="text"
             placeholder="Search..."
@@ -66,33 +66,32 @@ export default function Keychain() {
               }
             }}
           />
-
           {userEmail ? (
-            <span className="user">👤 {userEmail}</span>
+            <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
           ) : (
-            <a href="/login">👤</a>
+            <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-
-          {/* ✅ CLICKABLE CART */}
-          <span className="cart" onClick={() => router.push("/cart")}>
-            🛒
-            {cart.length > 0 && <sup>{cart.length}</sup>}
+          <span onClick={() => router.push("/cart")} style={{cursor:'pointer'}}>
+            🛒{cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
           </span>
         </div>
       </header>
 
-      {/* CATEGORY */}
+      {/* CATEGORY ICONS */}
       <div className="category-bar">
-        <a href="/bouquets">💐 Bouquets</a>
-        <a href="/keychain" className="active">🔑 Keychain</a>
+        <a href="/bouquets" className="category-item">
+          <span>💐</span>
+          <p>Bouquets</p>
+        </a>
+        <a href="/keychain" className="category-item active-link">
+          <span>🔑</span>
+          <p>Keychain</p>
+        </a>
       </div>
 
-      {/* DESCRIPTION (NEW) */}
+      {/* DESCRIPTION */}
       <div className="description-banner">
-        <p>
-          Handmade with love 🔑 — Explore our collection of cute keychains,
-          perfect as gifts, accessories, or daily charms for your style.
-        </p>
+        <p>Handmade with love 🔑 — Explore our collection of cute keychains, perfect as gifts, accessories, or daily charms for your style.</p>
       </div>
 
       {/* PRODUCTS */}
