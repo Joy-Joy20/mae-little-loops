@@ -26,15 +26,26 @@ export default function Keychain() {
     alert(`${name} added to cart!`);
   }
 
+  function handleBuyNow(name: string, price: string) {
+    if (!userEmail) {
+      router.push("/login");
+      return;
+    }
+    addToCart({ name, price });
+    router.push("/cart");
+  }
+
   const keychains = [
     { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-    { name: "Frog-Hat", price: "₱90.00", img: "" },
-    { name: "Strawberry-Hat", price: "₱100.00", img: "/Strawberry-Hat.png" },
-    { name: "Strawberry", price: "₱85.00", img: "/Strawberry.png" },
+    { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+    { name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png" },
     { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
     { name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
     { name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
     { name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+    { name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png" },
+    { name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png" },
+    { name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png" },
   ];
 
   return (
@@ -93,19 +104,29 @@ export default function Keychain() {
       <section className="flex justify-center gap-8 flex-wrap py-16">
         {keychains.map((item, index) => (
           <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            {item.img ? (
-              <Image src={item.img} alt={item.name} width={120} height={120} className="mx-auto" />
-            ) : (
-              <div className="mx-auto w-[120px] h-[120px] bg-pink-300 rounded-xl flex items-center justify-center text-4xl">🔑</div>
-            )}
+            <div className="mx-auto w-[150px] h-[150px] bg-white rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+              {item.img ? (
+                <Image src={item.img} alt={item.name} width={150} height={150} className="object-cover w-full h-full" />
+              ) : (
+                <span className="text-4xl">🔑</span>
+              )}
+            </div>
             <h2 className="mt-4 font-semibold">{item.name}</h2>
             <p className="text-pink-600 font-bold">{item.price}</p>
-            <button
-              className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full"
-              onClick={() => handleAddToCart(item.name, item.price)}
-            >
-              ADD TO CART
-            </button>
+            <div className="flex flex-col gap-2 mt-4">
+              <button
+                className="bg-pink-500 text-white px-5 py-2 rounded-full"
+                onClick={() => handleAddToCart(item.name, item.price)}
+              >
+                ADD TO CART
+              </button>
+              <button
+                className="bg-white text-pink-500 border border-pink-500 px-5 py-2 rounded-full"
+                onClick={() => handleBuyNow(item.name, item.price)}
+              >
+                BUY NOW
+              </button>
+            </div>
           </div>
         ))}
       </section>
