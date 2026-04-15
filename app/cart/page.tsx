@@ -41,7 +41,6 @@ export default function Cart() {
           </div>
         ) : (
           <>
-            <div className="cart-items">
               {cart.map((item, index) => (
                 <div key={index} className="cart-item">
                   {item.img ? (
@@ -55,7 +54,6 @@ export default function Cart() {
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
               ))}
-            </div>
 
             <div className="cart-total">
               <p>Total: <strong>₱{total.toFixed(2)}</strong></p>
