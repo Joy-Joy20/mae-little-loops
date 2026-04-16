@@ -29,34 +29,32 @@ export default function ShopNow() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-200">
+    <main className="shop-page">
 
       {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
-
         <nav>
           <a href="/shop_now" className="active-link">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
               <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
-              <button onClick={handleLogout} style={{fontSize:'12px', padding:'4px 10px', borderRadius:'20px', border:'none', background:'#ff1493', color:'white', cursor:'pointer'}}>Logout</button>
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
             </div>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
         </div>
       </header>
 
-      {/* CATEGORY ICONS */}
+      {/* CATEGORY BAR */}
       <div className="category-bar">
         <a href="/bouquets" className="category-item">
           <span>💐</span>
@@ -68,41 +66,51 @@ export default function ShopNow() {
         </a>
       </div>
 
-      {/* DESCRIPTION */}
-      <div className="description-banner">
-        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
+      {/* HERO BANNER */}
+      <div className="hero-banner">
+        <div className="hero-text">
+          <h2>Handmade with Love 🌸</h2>
+          <p>Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.</p>
+          <a href="/bouquets" className="hero-btn">Shop Now</a>
+        </div>
       </div>
 
-      {/* PRODUCTS */}
-      <section className="flex justify-center gap-8 flex-wrap py-16">
-        {products.map((item, index) => (
-          <div key={index} className="bg-pink-200 rounded-2xl p-6 w-64 text-center shadow-md">
-            <Image src={item.img} alt={item.name} width={120} height={120} className="mx-auto" />
-            <h2 className="mt-4 font-semibold">{item.name}</h2>
-            <p className="text-pink-600 font-bold mt-1">{item.price}</p>
-            <button className="mt-4 bg-pink-500 text-white px-5 py-2 rounded-full" onClick={() => window.location.href='/bouquets'}>
-              SHOP NOW
-            </button>
-          </div>
-        ))}
+      {/* FEATURED PRODUCTS */}
+      <section className="products-section">
+        <h2 className="section-title">Featured Products</h2>
+        <div className="products-grid">
+          {products.map((item, index) => (
+            <div key={index} className="product-card">
+              <div className="product-img-wrapper">
+                <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
+              </div>
+              <div className="product-info">
+                <h3>{item.name}</h3>
+                <p className="product-price">{item.price}</p>
+                <button className="shop-btn" onClick={() => window.location.href='/bouquets'}>Shop Now</button>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-pink-300 py-10 px-10 flex justify-around items-start flex-wrap gap-8">
-        <div>
-          <Image src="/logo.png" alt="logo" width={80} height={80} />
-          <h2 className="font-bold mt-2">Mae Little Loops Studio</h2>
+      <footer>
+        <div className="footer-col">
+          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <h3>Mae Little Loops Studio</h3>
+          <p>Handmade with love 🌸</p>
         </div>
-        <div className="text-center">
-          <h3 className="font-bold mb-2">🌸 Special Bouquets</h3>
-          <ul className="list-none">
-            <li>Cute keychains</li>
-            <li>Special Gift Gifts</li>
-          </ul>
+        <div className="footer-col">
+          <h3>Categories</h3>
+          <a href="/bouquets">Bouquets</a>
+          <a href="/keychain">Keychains</a>
         </div>
-        <div>
-          <p>📧 Email: maelittleloops@gmail.com</p>
-          <p>📱 Call / Text: 09XXXXXXXXX</p>
+        <div className="footer-col">
+          <h3>Contact</h3>
+          <p>📧 maelittleloops@gmail.com</p>
+          <p>📱 09XXXXXXXXX</p>
+          <p>📍 Cebu City, Philippines</p>
         </div>
       </footer>
 
