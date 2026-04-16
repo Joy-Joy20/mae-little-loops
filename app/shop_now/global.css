@@ -178,9 +178,9 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .products-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 240px);
   justify-content: center;
-  flex-wrap: wrap;
   gap: 24px;
 }
 
