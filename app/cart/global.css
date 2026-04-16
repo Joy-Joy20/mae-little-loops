@@ -85,6 +85,7 @@ span {
   font-weight: bold;
   margin-bottom: 24px;
   color: #ff1493;
+  text-align: center;
 }
 
 .cart-empty {
