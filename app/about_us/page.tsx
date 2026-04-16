@@ -19,20 +19,19 @@ export default function AboutUs() {
     await supabase.auth.signOut();
     window.location.href = "/login";
   }
+
   return (
     <main className="about-page">
 
       {/* NAVBAR */}
       <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
         <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
-
         <nav className="flex gap-6 font-medium">
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us" className="active-link">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
@@ -77,12 +76,13 @@ export default function AboutUs() {
         </div>
 
         <div className="about-card">
-          <h2>Meet the Owner 👩‍🎨</h2>
+          <h2>Meet the Owner 👩🎨</h2>
+          <div className="owner-img-wrapper">
+            <Image src="/owner.jpg" alt="Mae Masarque" width={150} height={150} className="owner-img" />
+          </div>
           <p><strong>Mae Masarque</strong></p>
           <p>The heart and hands behind Mae Little Loops Studio. Passionate about crochet and bringing smiles through handmade creations.</p>
         </div>
-
-
 
       </section>
 

@@ -153,6 +153,18 @@ span {
   color: #ff1493;
 }
 
+.owner-img-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.owner-img {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ff1493;
+}
+
 .about-card p {
   font-size: 14px;
   line-height: 1.7;

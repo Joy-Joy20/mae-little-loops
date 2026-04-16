@@ -24,40 +24,57 @@ export default function Login() {
 
   return (
     <main className="login-page">
-      <div className="overlay">
-        <div className="content">
 
-          <Image src="/logo.png" alt="Logo" width={180} height={180} className="logo" />
+      {/* LEFT PANEL */}
+      <div className="login-left">
+        <Image src="/logo.png" alt="Mae Little Loops Studio" width={220} height={220} className="login-logo" />
+        <h1>Mae Little Loops Studio</h1>
+        <p>Handmade with love 🌸</p>
+      </div>
 
-          <div className="form-box">
-            <input
-              type="email"
-              placeholder="EMAIL"
-              className="input-field"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="PASSWORD"
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+      {/* RIGHT PANEL */}
+      <div className="login-right">
+        <div className="login-card">
+          <h2>Welcome Back</h2>
+          <p className="login-sub">Sign in to your account</p>
 
-            {error && <p className="error-msg">{error}</p>}
+          <div className="login-form">
+            <div className="input-group">
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="input-group">
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => { if(e.key === 'Enter') handleLogin(); }}
+              />
+            </div>
+
+            {error && <p className="error-msg">⚠️ {error}</p>}
 
             <button className="login-btn" onClick={handleLogin} disabled={loading}>
-              {loading ? "LOGGING IN..." : "LOGIN"}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
 
+            <div className="divider"><span>or</span></div>
+
             <p className="signup-link">
-              Don&apos;t have an account? <a href="/signup">Sign up</a>
+              Don&apos;t have an account? <a href="/signup">Create one</a>
             </p>
           </div>
-
         </div>
       </div>
+
     </main>
   );
 }
