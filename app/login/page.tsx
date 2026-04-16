@@ -36,7 +36,7 @@ export default function Login() {
       <div className="login-right">
         <div className="login-card">
           <h2>Welcome Back</h2>
-          <p className="login-sub">Sign in to your account</p>
+          <p className="login-sub">Log in to your account</p>
 
           <div className="login-form">
             <div className="input-group">
@@ -63,7 +63,7 @@ export default function Login() {
             {error && <p className="error-msg">⚠️ {error}</p>}
 
             <button className="login-btn" onClick={handleLogin} disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in..." : "Log In"}
             </button>
 
             <div className="divider"><span>or</span></div>
