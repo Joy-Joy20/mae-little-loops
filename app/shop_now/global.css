@@ -173,8 +173,9 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 24px;
 }
 
@@ -182,9 +183,11 @@ span { cursor: pointer; font-size: 18px; }
   background: white;
   border-radius: 20px;
   overflow: hidden;
+  width: 240px;
   box-shadow: 0 4px 16px rgba(255,182,193,0.15);
   border: 1px solid #fce4ec;
   transition: 0.3s;
+  flex-shrink: 0;
 }
 
 .product-card:hover {
