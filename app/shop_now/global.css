@@ -121,7 +121,7 @@ span { cursor: pointer; font-size: 18px; }
 
 .products-section {
   padding: 60px 40px;
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -135,7 +135,7 @@ span { cursor: pointer; font-size: 18px; }
 
 .products-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
 }
 
