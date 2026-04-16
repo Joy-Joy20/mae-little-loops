@@ -27,7 +27,9 @@ export default function Cart() {
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <input type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') router.push(`/search?q=${(e.target as HTMLInputElement).value}`); }} />
           <a href="/login" className="login-icon">👤</a>
-          <span>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => router.push("/cart")} style={{cursor:'pointer'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
+          </span>
         </div>
       </header>
 
@@ -41,13 +43,15 @@ export default function Cart() {
           </div>
         ) : (
           <>
+            {/* ITEMS */}
+            <div className="cart-items-col">
               {cart.map((item, index) => (
                 <div key={index} className="cart-item">
                   <div className="cart-item-left">
                     {item.img ? (
-                      <Image src={item.img} alt={item.name} width={70} height={70} style={{borderRadius:'8px', objectFit:'cover'}} />
+                      <Image src={item.img} alt={item.name} width={80} height={80} style={{borderRadius:'12px', objectFit:'cover'}} />
                     ) : (
-                      <span style={{fontSize:'28px'}}>🌸</span>
+                      <div style={{width:'80px', height:'80px', background:'#fce4ec', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'32px'}}>🌸</div>
                     )}
                     <div>
                       <p className="cart-item-name">{item.name}</p>
@@ -58,14 +62,23 @@ export default function Cart() {
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
               ))}
-
-            <div className="cart-total">
-              <p>Total: <strong>₱{total.toFixed(2)}</strong></p>
             </div>
 
-            <div className="cart-actions">
-              <button className="clear-btn" onClick={clearCart}>CLEAR CART</button>
+            {/* SUMMARY */}
+            <div className="cart-summary">
+              <h3>Order Summary</h3>
+              {cart.map((item, index) => (
+                <div key={index} className="summary-row">
+                  <span>{item.name} x{item.quantity ?? 1}</span>
+                  <span>{item.price}</span>
+                </div>
+              ))}
+              <div className="summary-total">
+                <span>Total</span>
+                <span>₱{total.toFixed(2)}</span>
+              </div>
               <button className="checkout-btn" onClick={() => router.push('/checkout')}>CHECKOUT</button>
+              <button className="clear-btn" onClick={clearCart}>CLEAR CART</button>
             </div>
           </>
         )}
