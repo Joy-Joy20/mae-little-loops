@@ -172,6 +172,11 @@ span { cursor: pointer; font-size: 18px; }
   text-align: center;
 }
 
+.shop-page {
+  min-height: 100vh;
+  background: #fff9fb;
+}
+
 .products-grid {
   display: flex;
   justify-content: center;
@@ -188,6 +193,8 @@ span { cursor: pointer; font-size: 18px; }
   border: 1px solid #fce4ec;
   transition: 0.3s;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -199,30 +206,37 @@ span { cursor: pointer; font-size: 18px; }
   background: #fff9fb;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 24px;
+  height: 200px;
 }
 
 .product-img {
-  object-fit: contain;
+  object-fit: contain !important;
+  width: 160px !important;
+  height: 160px !important;
 }
 
 .product-info {
   padding: 16px 20px 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 }
 
 .product-info h3 {
   font-size: 15px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 6px;
 }
 
 .product-price {
   font-size: 16px;
   font-weight: bold;
-  color: #f06292;
-  margin-bottom: 14px;
+  color: #f06292 !important;
 }
 
 .shop-btn {
@@ -235,6 +249,7 @@ span { cursor: pointer; font-size: 18px; }
   font-size: 13px;
   cursor: pointer;
   transition: 0.3s;
+  margin-top: auto;
 }
 
 .shop-btn:hover { transform: scale(1.05); }
