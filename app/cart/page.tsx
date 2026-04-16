@@ -43,14 +43,18 @@ export default function Cart() {
           <>
               {cart.map((item, index) => (
                 <div key={index} className="cart-item">
-                  {item.img ? (
-                    <Image src={item.img} alt={item.name} width={70} height={70} />
-                  ) : (
-                    <span style={{fontSize:'28px'}}>🌸</span>
-                  )}
-                  <p className="cart-item-name">{item.name}</p>
-                  <p className="cart-item-price">{item.price}</p>
-                  <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
+                  <div className="cart-item-left">
+                    {item.img ? (
+                      <Image src={item.img} alt={item.name} width={70} height={70} style={{borderRadius:'8px', objectFit:'cover'}} />
+                    ) : (
+                      <span style={{fontSize:'28px'}}>🌸</span>
+                    )}
+                    <div>
+                      <p className="cart-item-name">{item.name}</p>
+                      <p className="cart-item-price">{item.price}</p>
+                      <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
+                    </div>
+                  </div>
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
               ))}
