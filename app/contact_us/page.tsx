@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
@@ -29,29 +30,29 @@ export default function ContactUs() {
     <main className="contact-page">
 
       {/* NAVBAR */}
-      <header className="flex items-center justify-between px-10 py-4 bg-pink-300 shadow-md">
-        <h1 className="font-bold text-lg">Mae Little Loops Studio</h1>
-        <nav className="flex gap-6 font-medium">
+      <header>
+        <h1>Mae Little Loops Studio</h1>
+        <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us" className="active-link">Contact Us</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
               <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
-              <button onClick={handleLogout} style={{fontSize:'12px', padding:'4px 10px', borderRadius:'20px', border:'none', background:'#ff1493', color:'white', cursor:'pointer'}}>Logout</button>
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
             </div>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#ff1493', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
         </div>
       </header>
 
-      {/* CATEGORY ICONS */}
+      {/* CATEGORY BAR */}
       <div className="category-bar">
         <a href="/bouquets" className="category-item">
           <span>💐</span>
@@ -63,38 +64,62 @@ export default function ContactUs() {
         </a>
       </div>
 
-      {/* CONTACT FORM */}
+      {/* DESCRIPTION */}
+      <div className="description-banner">
+        <p>We&apos;d love to hear from you! Reach out for orders, inquiries, or just to say hi 🌸</p>
+      </div>
+
+      {/* CONTACT CONTENT */}
       <section className="contact-content">
-        <div className="contact-card">
-          <h2>Get in Touch 🌸</h2>
-          <p>📧 Email: maelittleloops@gmail.com</p>
-          <p>📱 Call / Text: 09XXXXXXXXX</p>
-          <p>📍 Address: Cebu City, Philippines</p>
-          <p>⏰ Business Hours: Mon - Sat, 8:00 AM - 6:00 PM</p>
-          <p>🚚 Delivery: Available within Cebu City</p>
-          <p>💳 Payment: Cash on Delivery / GCash</p>
-          <p>📦 Orders: Custom orders are welcome!</p>
-          <p>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1877F2" style={{display:'inline', marginRight:'6px', verticalAlign:'middle'}}>
-              <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
-            </svg>
-            Facebook: <a href="https://www.facebook.com/mae.09706383306" target="_blank">Mae Orayan Masarque</a>
-          </p>
+
+        {/* GET IN TOUCH */}
+        <div className="contact-info-card">
+          <h2>Get in Touch</h2>
+          <div className="info-item"><span className="info-icon">📧</span><div><p className="info-label">Email</p><p>maelittleloops@gmail.com</p></div></div>
+          <div className="info-item"><span className="info-icon">📱</span><div><p className="info-label">Call / Text</p><p>09XXXXXXXXX</p></div></div>
+          <div className="info-item"><span className="info-icon">📍</span><div><p className="info-label">Address</p><p>Cebu City, Philippines</p></div></div>
+          <div className="info-item"><span className="info-icon">⏰</span><div><p className="info-label">Business Hours</p><p>Mon - Sat, 8:00 AM - 6:00 PM</p></div></div>
+          <div className="info-item"><span className="info-icon">🚚</span><div><p className="info-label">Delivery</p><p>Available within Cebu City</p></div></div>
+          <div className="info-item"><span className="info-icon">💳</span><div><p className="info-label">Payment</p><p>Cash on Delivery / GCash</p></div></div>
+          <div className="info-item">
+            <span className="info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+              </svg>
+            </span>
+            <div><p className="info-label">Facebook</p><a href="https://www.facebook.com/mae.09706383306" target="_blank">Mae Orayan Masarque</a></div>
+          </div>
         </div>
 
-        <div className="contact-card">
-          <h2>Contact Us 📬</h2>
+        {/* CONTACT FORM */}
+        <div className="contact-form-card">
+          <h2>Send a Message</h2>
           <p className="contact-sub">May tanong o mensahe? Mag-message lang!</p>
 
           {sent ? (
-            <div className="success-msg">✅ Message sent! We will get back to you soon.</div>
+            <div className="success-msg">
+              <p>✅ Message sent!</p>
+              <p>We will get back to you soon 🌸</p>
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="contact-form">
-              <input type="text" placeholder="Your Name" required />
-              <input type="email" placeholder="Your Email" required />
-              <input type="text" placeholder="Subject" required />
-              <textarea placeholder="Your Message" rows={5} required />
-              <button type="submit">SEND MESSAGE</button>
+              <div className="form-group">
+                <label>Your Name</label>
+                <input type="text" placeholder="Enter your name" required />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="Enter your email" required />
+              </div>
+              <div className="form-group">
+                <label>Subject</label>
+                <input type="text" placeholder="What is this about?" required />
+              </div>
+              <div className="form-group">
+                <label>Message</label>
+                <textarea placeholder="Write your message here..." rows={5} required />
+              </div>
+              <button type="submit">Send Message</button>
             </form>
           )}
         </div>
@@ -102,20 +127,22 @@ export default function ContactUs() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-pink-300 py-10 px-10 flex justify-around items-start flex-wrap gap-8">
-        <div>
-          <h2 className="font-bold mt-2">Mae Little Loops Studio</h2>
+      <footer>
+        <div className="footer-col">
+          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <h3>Mae Little Loops Studio</h3>
+          <p>Handmade with love 🌸</p>
         </div>
-        <div className="text-center">
-          <h3 className="font-bold mb-2">🌸 Special Bouquets</h3>
-          <ul className="list-none">
-            <li>Cute keychains</li>
-            <li>Special Gift Gifts</li>
-          </ul>
+        <div className="footer-col">
+          <h3>Categories</h3>
+          <a href="/bouquets">Bouquets</a>
+          <a href="/keychain">Keychains</a>
         </div>
-        <div>
-          <p>📧 Email: maelittleloops@gmail.com</p>
-          <p>📱 Call / Text: 09XXXXXXXXX</p>
+        <div className="footer-col">
+          <h3>Contact</h3>
+          <p>📧 maelittleloops@gmail.com</p>
+          <p>📱 09XXXXXXXXX</p>
+          <p>📍 Cebu City, Philippines</p>
         </div>
       </footer>
 
