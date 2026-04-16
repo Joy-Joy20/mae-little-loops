@@ -129,8 +129,8 @@ span { cursor: pointer; font-size: 18px; }
   font-weight: bold;
   color: #c2185b;
   margin-bottom: 32px;
-  text-align: left;
-  padding-left: 4px;
+  text-align: center;
+  width: 100%;
 }
 
 .products-grid {
