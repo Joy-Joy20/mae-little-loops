@@ -186,11 +186,11 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .product-card {
-  background: white;
+  background: #fce4ec;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(255,182,193,0.15);
-  border: 1px solid #fce4ec;
+  border: 1px solid #f8bbd0;
   transition: 0.3s;
   display: flex;
   flex-direction: column;
@@ -202,7 +202,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .product-img-wrapper {
-  background: #fff9fb;
+  background: #fce4ec;
   display: flex;
   justify-content: center;
   align-items: center;
