@@ -207,29 +207,30 @@ span { cursor: pointer; font-size: 18px; }
   justify-content: center;
   align-items: center;
   padding: 24px;
-  height: 200px;
+  height: 220px;
 }
 
 .product-img {
   object-fit: contain !important;
-  width: 160px !important;
-  height: 160px !important;
+  width: 180px !important;
+  height: 180px !important;
 }
 
 .product-info {
-  padding: 16px 20px 20px;
+  padding: 20px 24px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
 }
 
 .product-info h3 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
   color: #333;
+  line-height: 1.4;
 }
 
 .product-price {
