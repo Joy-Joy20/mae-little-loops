@@ -85,11 +85,110 @@ span { cursor: pointer; font-size: 18px; }
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
-.checkout-card label {
+.checkout-card label.radio-label {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
+}
+
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.step {
+  padding: 6px 14px;
+  border-radius: 50px;
+  background: #f9c5d1;
+  font-size: 13px;
+  font-weight: bold;
+  color: #999;
+}
+
+.step.active {
+  background: #ff1493;
+  color: white;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: #f9c5d1;
+  max-width: 40px;
+}
+
+.gcash-steps {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.gcash-steps h4 {
+  color: #ff1493;
+  margin-bottom: 10px;
+}
+
+.gcash-steps ol {
+  padding-left: 20px;
+  line-height: 2;
+}
+
+.gcash-steps input {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 50px;
+  background: #f2f2f2;
+  font-size: 14px;
+  outline: none;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.next-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #ff00aa, #ff4dc4);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.next-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.back-btn {
+  padding: 12px 24px;
+  border: 2px solid #ff1493;
+  border-radius: 50px;
+  background: white;
+  color: #ff1493;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 
 .checkout-item {
