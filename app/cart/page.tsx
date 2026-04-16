@@ -65,7 +65,7 @@ export default function Cart() {
 
             <div className="cart-actions">
               <button className="clear-btn" onClick={clearCart}>CLEAR CART</button>
-              <button className="checkout-btn" onClick={() => alert("Checkout coming soon!")}>CHECKOUT</button>
+              <button className="checkout-btn" onClick={() => router.push('/checkout')}>CHECKOUT</button>
             </div>
           </>
         )}
