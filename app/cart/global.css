@@ -111,8 +111,11 @@ span {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #f9c5d1;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #f9c5d1;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .cart-item-left {
