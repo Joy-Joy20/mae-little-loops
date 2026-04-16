@@ -120,8 +120,9 @@ span { cursor: pointer; font-size: 18px; }
 .shop-page { min-height: 100vh; background: #fff9fb; }
 
 .products-section {
-  padding: 60px 40px;
+  padding: 60px 40px 60px 40px;
   width: 100%;
+  max-width: 1200px;
 }
 
 .section-title {
