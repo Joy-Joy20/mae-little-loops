@@ -43,9 +43,7 @@ export default function Cart() {
           </div>
         ) : (
           <>
-            {/* ITEMS */}
-            <div className="cart-items-col">
-              {cart.map((item, index) => (
+            {cart.map((item, index) => (
                 <div key={index} className="cart-item">
                   <div className="cart-item-left">
                     {item.img ? (
@@ -61,8 +59,7 @@ export default function Cart() {
                   </div>
                   <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
                 </div>
-              ))}
-            </div>
+            ))}
 
             {/* SUMMARY */}
             <div className="cart-summary">
