@@ -126,11 +126,18 @@ span { cursor: pointer; font-size: 18px; }
 
 .info-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
 }
 
-.info-icon { font-size: 20px; min-width: 28px; margin-top: 2px; }
+.info-icon {
+  font-size: 20px;
+  min-width: 28px;
+  color: #f06292;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .info-item p { font-size: 14px; color: #555; }
 .info-item a { font-size: 14px; color: #f06292; font-weight: bold; }
