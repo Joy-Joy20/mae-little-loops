@@ -124,7 +124,6 @@ export default function ShopNow() {
 
       {/* FEATURED PRODUCTS */}
       <section className="products-section">
-        <h2 className="section-title">Featured Products</h2>
         <div className="products-grid">
           {products.map((item, index) => (
             <div key={index} className="product-card">
