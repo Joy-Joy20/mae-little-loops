@@ -1,55 +1,87 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    products: 12,
-    orders: 8,
-    users: 5,
-  });
+  const [active, setActive] = useState("Dashboard");
+
+  const stats = [
+    { label: "Total Products", value: "18", icon: "🛍️", color: "#f48fb1" },
+    { label: "Total Orders", value: "8", icon: "📦", color: "#81d4fa" },
+    { label: "Total Users", value: "5", icon: "👥", color: "#a5d6a7" },
+    { label: "Revenue", value: "₱2,450", icon: "💰", color: "#ffcc80" },
+  ];
+
+  const orders = [
+    { id: "#001", customer: "Joy", product: "Flower Bouquet", price: "₱250", status: "Completed" },
+    { id: "#002", customer: "Ana", product: "Keychain", price: "₱150", status: "Pending" },
+    { id: "#003", customer: "Mae", product: "Pastel Blossom Bouquet", price: "₱250", status: "Completed" },
+    { id: "#004", customer: "Lyn", product: "Rainbow Tulip Charm", price: "₱200", status: "Pending" },
+  ];
+
+  const navItems = ["Dashboard", "Products", "Orders", "Users", "Settings"];
 
   return (
     <div className="admin-container">
 
       {/* SIDEBAR */}
       <aside className="admin-sidebar">
-        <h2>Admin Panel</h2>
-        <nav>
-          <a className="active">Dashboard</a>
-          <a>Products</a>
-          <a>Orders</a>
-          <a>Users</a>
-          <a>Logout</a>
+        <div className="sidebar-logo">
+          <span className="logo-icon">🌸</span>
+          <span className="logo-text">Mae Admin</span>
+        </div>
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <button key={item} className={`nav-item ${active === item ? "active" : ""}`} onClick={() => setActive(item)}>
+              <span className="nav-icon">
+                {item === "Dashboard" ? "📊" : item === "Products" ? "🛍️" : item === "Orders" ? "📦" : item === "Users" ? "👥" : "⚙️"}
+              </span>
+              {item}
+            </button>
+          ))}
         </nav>
+        <button className="logout-item">
+          <span>🚪</span> Logout
+        </button>
       </aside>
 
       {/* MAIN */}
       <main className="admin-main">
-        <h1>Dashboard Overview</h1>
 
-        {/* STATS */}
-        <div className="admin-stats">
-          <div className="card">
-            <h3>Total Products</h3>
-            <p>{stats.products}</p>
+        {/* TOP BAR */}
+        <div className="admin-topbar">
+          <div>
+            <h1>Dashboard Overview</h1>
+            <p className="topbar-sub">Welcome back, Admin 👋</p>
           </div>
-          <div className="card">
-            <h3>Total Orders</h3>
-            <p>{stats.orders}</p>
-          </div>
-          <div className="card">
-            <h3>Users</h3>
-            <p>{stats.users}</p>
+          <div className="topbar-right">
+            <span className="admin-avatar">👤 Admin</span>
           </div>
         </div>
 
-        {/* TABLE */}
-        <div className="admin-table">
-          <h2>Recent Orders</h2>
-          <table>
+        {/* STATS */}
+        <div className="admin-stats">
+          {stats.map((s, i) => (
+            <div key={i} className="stat-card">
+              <div className="stat-icon" style={{background: s.color + '22', color: s.color}}>{s.icon}</div>
+              <div>
+                <p className="stat-label">{s.label}</p>
+                <p className="stat-value">{s.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* RECENT ORDERS */}
+        <div className="admin-table-card">
+          <div className="table-header">
+            <h2>Recent Orders</h2>
+            <span className="table-badge">{orders.length} orders</span>
+          </div>
+          <table className="admin-table">
             <thead>
               <tr>
+                <th>Order ID</th>
                 <th>Customer</th>
                 <th>Product</th>
                 <th>Price</th>
@@ -57,23 +89,24 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Joy</td>
-                <td>Flower Bouquet</td>
-                <td>₱250</td>
-                <td className="status done">Completed</td>
-              </tr>
-              <tr>
-                <td>Ana</td>
-                <td>Keychain</td>
-                <td>₱150</td>
-                <td className="status pending">Pending</td>
-              </tr>
+              {orders.map((o, i) => (
+                <tr key={i}>
+                  <td className="order-id">{o.id}</td>
+                  <td>{o.customer}</td>
+                  <td>{o.product}</td>
+                  <td className="order-price">{o.price}</td>
+                  <td>
+                    <span className={`status-badge ${o.status === "Completed" ? "done" : "pending"}`}>
+                      {o.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      </main>
 
+      </main>
     </div>
   );
 }
