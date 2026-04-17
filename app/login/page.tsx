@@ -13,11 +13,16 @@ export default function Login() {
   async function handleLogin() {
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setError(error.message);
     } else {
-      window.location.href = "/shop_now";
+      const userEmail = data.user?.email ?? "";
+      if (userEmail === "admin@maelittleloops.com") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/shop_now";
+      }
     }
     setLoading(false);
   }

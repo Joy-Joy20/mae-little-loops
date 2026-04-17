@@ -1,9 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("Dashboard");
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const email = data.session?.user?.email;
+      if (email !== "admin@maelittleloops.com") {
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    });
+  }, [router]);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
+
+  if (loading) return <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'100vh'}}>Loading...</div>;
 
   const stats = [
     { label: "Total Products", value: "18", icon: "🛍️", color: "#f48fb1" },
@@ -40,7 +62,7 @@ export default function AdminDashboard() {
             </button>
           ))}
         </nav>
-        <button className="logout-item">
+        <button className="logout-item" onClick={handleLogout}>
           <span>🚪</span> Logout
         </button>
       </aside>
