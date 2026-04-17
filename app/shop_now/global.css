@@ -166,7 +166,7 @@ span { cursor: pointer; font-size: 18px; }
 .shop-page { min-height: 100vh; background: #fff9fb; }
 
 .products-section {
-  padding: 40px;
+  padding: 60px 40px;
   width: 100%;
   margin: 0;
 }
@@ -177,13 +177,13 @@ span { cursor: pointer; font-size: 18px; }
   color: #c2185b;
   margin-bottom: 32px;
   text-align: center;
+  width: 100%;
 }
 
 .products-grid {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  flex-wrap: nowrap;
 }
 
 .product-card {
