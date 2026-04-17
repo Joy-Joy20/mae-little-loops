@@ -103,7 +103,7 @@ span { cursor: pointer; font-size: 18px; }
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  min-height: 320px;
+  min-height: 200px;
 }
 
 .hero-text h2 { font-size: 32px; font-weight: bold; color: #c2185b; margin-bottom: 12px; }
