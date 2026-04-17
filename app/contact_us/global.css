@@ -108,10 +108,11 @@ span { cursor: pointer; font-size: 18px; }
 /* LEFT - GET IN TOUCH */
 .contact-info-card {
   flex: 1;
-  background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  background: white;
   border-radius: 24px;
   padding: 36px;
-  box-shadow: 0 4px 20px rgba(255,182,193,0.2);
+  box-shadow: 0 4px 20px rgba(255,182,193,0.15);
+  border: 1px solid #fce4ec;
   display: flex;
   flex-direction: column;
   gap: 20px;
