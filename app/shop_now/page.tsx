@@ -128,7 +128,7 @@ export default function ShopNow() {
           {products.map((item, index) => (
             <div key={index} className="product-card">
               <div className="product-img-wrapper">
-                <Image src={item.img} alt={item.name} width={200} height={200} className="product-img" />
+                <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
               </div>
               <div className="product-info">
                 <h3>{item.name}</h3>
