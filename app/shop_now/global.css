@@ -238,12 +238,14 @@ span { cursor: pointer; font-size: 18px; }
   justify-content: center;
   align-items: center;
   padding: 16px;
+  overflow: hidden;
 }
 
 .product-img {
   object-fit: contain !important;
   width: 180px !important;
   height: 180px !important;
+  display: block;
 }
 
 .product-info {
