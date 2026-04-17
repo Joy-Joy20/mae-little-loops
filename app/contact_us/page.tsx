@@ -75,19 +75,19 @@ export default function ContactUs() {
         {/* GET IN TOUCH */}
         <div className="contact-info-card">
           <h2>Get in Touch</h2>
-          <div className="info-item"><span className="info-icon">📧</span><div><p className="info-label">Email</p><p>maelittleloops@gmail.com</p></div></div>
-          <div className="info-item"><span className="info-icon">📱</span><div><p className="info-label">Call / Text</p><p>09XXXXXXXXX</p></div></div>
-          <div className="info-item"><span className="info-icon">📍</span><div><p className="info-label">Address</p><p>Cebu City, Philippines</p></div></div>
-          <div className="info-item"><span className="info-icon">⏰</span><div><p className="info-label">Business Hours</p><p>Mon - Sat, 8:00 AM - 6:00 PM</p></div></div>
-          <div className="info-item"><span className="info-icon">🚚</span><div><p className="info-label">Delivery</p><p>Available within Cebu City</p></div></div>
-          <div className="info-item"><span className="info-icon">💳</span><div><p className="info-label">Payment</p><p>Cash on Delivery / GCash</p></div></div>
+          <div className="info-item"><span className="info-icon">📧</span><p>maelittleloops@gmail.com</p></div>
+          <div className="info-item"><span className="info-icon">📱</span><p>09XXXXXXXXX</p></div>
+          <div className="info-item"><span className="info-icon">📍</span><p>Cebu City, Philippines</p></div>
+          <div className="info-item"><span className="info-icon">⏰</span><p>Mon - Sat, 8:00 AM - 6:00 PM</p></div>
+          <div className="info-item"><span className="info-icon">🚚</span><p>Available within Cebu City</p></div>
+          <div className="info-item"><span className="info-icon">💳</span><p>Cash on Delivery / GCash</p></div>
           <div className="info-item">
             <span className="info-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
                 <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
               </svg>
             </span>
-            <div><p className="info-label">Facebook</p><a href="https://www.facebook.com/mae.09706383306" target="_blank">Mae Orayan Masarque</a></div>
+            <a href="https://www.facebook.com/mae.09706383306" target="_blank">Mae Orayan Masarque</a>
           </div>
         </div>
 
