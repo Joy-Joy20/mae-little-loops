@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
@@ -9,12 +10,21 @@ export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart } = useCart();
   const [current, setCurrent] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const slides = [
     { img: "/Rainbow Tulip Charm.png", alt: "Rainbow Tulip Charm" },
     { img: "/Pastel Blossom Bouquet.png", alt: "Pastel Blossom Bouquet" },
     { img: "/Lavender Bell Flowers.png", alt: "Lavender Bell Flowers" },
     { img: "/Mini White Pastel Flower Bouquet.png", alt: "Mini White Pastel Flower Bouquet" },
+  ];
+
+  const products = [
+    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
   ];
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
@@ -25,13 +35,6 @@ export default function ShopNow() {
     return () => clearInterval(timer);
   }, [next]);
 
-  const products = [
-    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-  ];
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
@@ -41,7 +44,14 @@ export default function ShopNow() {
   async function handleLogout() {
     await supabase.auth.signOut();
     setUserEmail(null);
-    window.location.href = "/login";
+    router.push("/login");
+  }
+
+  function handleSearch(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      const sanitized = searchQuery.trim().replace(/[<>"']/g, "");
+      if (sanitized) router.push(`/search?q=${encodeURIComponent(sanitized)}`);
+    }
   }
 
   return (
@@ -57,7 +67,14 @@ export default function ShopNow() {
           <a href="/contact_us">Contact Us</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
-          <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearch}
+          />
           {userEmail ? (
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
               <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
@@ -66,7 +83,9 @@ export default function ShopNow() {
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
+          </span>
         </div>
       </header>
 
@@ -92,7 +111,7 @@ export default function ShopNow() {
 
         {/* CAROUSEL */}
         <div className="carousel">
-          <Image src={slides[current].img} alt={slides[current].alt} width={280} height={280} className="carousel-img" />
+          <Image src={slides[current].img} alt={slides[current].alt} width={220} height={220} className="carousel-img" />
           <button className="carousel-btn prev" onClick={prev}>&#8249;</button>
           <button className="carousel-btn next" onClick={next}>&#8250;</button>
           <div className="carousel-dots">
@@ -115,7 +134,7 @@ export default function ShopNow() {
               <div className="product-info">
                 <h3>{item.name}</h3>
                 <p className="product-price">{item.price}</p>
-                <button className="shop-btn" onClick={() => window.location.href='/bouquets'}>Shop Now</button>
+                <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
               </div>
             </div>
           ))}
