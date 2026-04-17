@@ -1,13 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart } = useCart();
+  const [current, setCurrent] = useState(0);
+
+  const slides = [
+    { title: "Handmade with Love 🌸", desc: "Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.", img: "/Rainbow Tulip Charm.png" },
+    { title: "Beautiful Bouquets 💐", desc: "Each bouquet is carefully crafted with love and attention to detail. A perfect gift for any occasion.", img: "/Pastel Blossom Bouquet.png" },
+    { title: "Cute Keychains 🔑", desc: "Adorable handmade keychains that make the perfect accessory or gift for your loved ones.", img: "/Lavender Bell Flowers.png" },
+  ];
+
+  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
+  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
+
+  useEffect(() => {
+    const timer = setInterval(next, 4000);
+    return () => clearInterval(timer);
+  }, [next]);
 
   const products = [
     { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
@@ -66,12 +81,22 @@ export default function ShopNow() {
         </a>
       </div>
 
-      {/* HERO BANNER */}
+      {/* HERO CAROUSEL */}
       <div className="hero-banner">
         <div className="hero-text">
-          <h2>Handmade with Love 🌸</h2>
-          <p>Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.</p>
+          <h2>{slides[current].title}</h2>
+          <p>{slides[current].desc}</p>
           <a href="/bouquets" className="hero-btn">Shop Now</a>
+        </div>
+        <div className="hero-img">
+          <Image src={slides[current].img} alt={slides[current].title} width={300} height={300} style={{borderRadius:'20px', objectFit:'contain'}} />
+        </div>
+        <button className="carousel-btn prev" onClick={prev}>&#8249;</button>
+        <button className="carousel-btn next" onClick={next}>&#8250;</button>
+        <div className="carousel-dots">
+          {slides.map((_, i) => (
+            <button key={i} className={`dot ${i === current ? 'active' : ''}`} onClick={() => setCurrent(i)} />
+          ))}
         </div>
       </div>
 
