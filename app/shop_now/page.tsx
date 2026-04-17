@@ -11,9 +11,10 @@ export default function ShopNow() {
   const [current, setCurrent] = useState(0);
 
   const slides = [
-    { title: "Handmade with Love 🌸", desc: "Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.", img: "/Rainbow Tulip Charm.png" },
-    { title: "Beautiful Bouquets 💐", desc: "Each bouquet is carefully crafted with love and attention to detail. A perfect gift for any occasion.", img: "/Pastel Blossom Bouquet.png" },
-    { title: "Cute Keychains 🔑", desc: "Adorable handmade keychains that make the perfect accessory or gift for your loved ones.", img: "/Lavender Bell Flowers.png" },
+    { img: "/Rainbow Tulip Charm.png", alt: "Rainbow Tulip Charm" },
+    { img: "/Pastel Blossom Bouquet.png", alt: "Pastel Blossom Bouquet" },
+    { img: "/Lavender Bell Flowers.png", alt: "Lavender Bell Flowers" },
+    { img: "/Mini White Pastel Flower Bouquet.png", alt: "Mini White Pastel Flower Bouquet" },
   ];
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
@@ -81,22 +82,24 @@ export default function ShopNow() {
         </a>
       </div>
 
-      {/* HERO CAROUSEL */}
+      {/* HERO BANNER */}
       <div className="hero-banner">
         <div className="hero-text">
-          <h2>{slides[current].title}</h2>
-          <p>{slides[current].desc}</p>
+          <h2>Handmade with Love 🌸</h2>
+          <p>Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.</p>
           <a href="/bouquets" className="hero-btn">Shop Now</a>
         </div>
-        <div className="hero-img">
-          <Image src={slides[current].img} alt={slides[current].title} width={300} height={300} style={{borderRadius:'20px', objectFit:'contain'}} />
-        </div>
-        <button className="carousel-btn prev" onClick={prev}>&#8249;</button>
-        <button className="carousel-btn next" onClick={next}>&#8250;</button>
-        <div className="carousel-dots">
-          {slides.map((_, i) => (
-            <button key={i} className={`dot ${i === current ? 'active' : ''}`} onClick={() => setCurrent(i)} />
-          ))}
+
+        {/* CAROUSEL */}
+        <div className="carousel">
+          <Image src={slides[current].img} alt={slides[current].alt} width={280} height={280} className="carousel-img" />
+          <button className="carousel-btn prev" onClick={prev}>&#8249;</button>
+          <button className="carousel-btn next" onClick={next}>&#8250;</button>
+          <div className="carousel-dots">
+            {slides.map((_, i) => (
+              <button key={i} className={`dot ${i === current ? 'active' : ''}`} onClick={() => setCurrent(i)} />
+            ))}
+          </div>
         </div>
       </div>
 

@@ -127,6 +127,22 @@ span { cursor: pointer; font-size: 18px; }
   animation: fadeIn 0.5s ease;
 }
 
+.carousel {
+  position: relative;
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-img {
+  border-radius: 20px;
+  object-fit: contain;
+  animation: fadeIn 0.5s ease;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateX(20px); }
   to { opacity: 1; transform: translateX(0); }
@@ -139,9 +155,9 @@ span { cursor: pointer; font-size: 18px; }
   background: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
   color: #f06292;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -152,12 +168,12 @@ span { cursor: pointer; font-size: 18px; }
   z-index: 10;
 }
 .carousel-btn:hover { background: #f06292; color: white; }
-.carousel-btn.prev { left: 16px; }
-.carousel-btn.next { right: 16px; }
+.carousel-btn.prev { left: -18px; }
+.carousel-btn.next { right: -18px; }
 
 .carousel-dots {
   position: absolute;
-  bottom: 16px;
+  bottom: -24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
