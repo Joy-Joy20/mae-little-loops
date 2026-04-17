@@ -13,6 +13,7 @@ type CartContextType = {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (index: number) => void;
+  updateQuantity: (index: number, qty: number) => void;
   clearCart: () => void;
 };
 
@@ -20,6 +21,7 @@ const CartContext = createContext<CartContextType>({
   cart: [],
   addToCart: () => {},
   removeFromCart: () => {},
+  updateQuantity: () => {},
   clearCart: () => {},
 });
 
@@ -54,13 +56,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function updateQuantity(index: number, qty: number) {
+    if (qty < 1) return;
+    setCart((prev) => {
+      const updated = prev.map((item, i) => i === index ? { ...item, quantity: qty } : item);
+      localStorage.setItem('cart', JSON.stringify(updated));
+      return updated;
+    });
+  }
+
   function clearCart() {
     setCart([]);
     localStorage.removeItem('cart');
   }
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );

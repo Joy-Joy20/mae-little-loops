@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "../../context/CartContext";
 
 export default function Cart() {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const router = useRouter();
 
   const total = cart.reduce((sum, item) => {
@@ -34,18 +34,16 @@ export default function Cart() {
       </header>
 
       <div className="cart-layout">
+        <h2 className="cart-title">Your Cart</h2>
 
-        {/* LEFT - CART ITEMS */}
-        <div className="cart-items-col">
-          <h2 className="cart-title">Your Cart</h2>
-
-          {cart.length === 0 ? (
-            <div className="cart-empty">
-              <p>🛒 Your cart is empty</p>
-              <button onClick={() => router.push("/bouquets")}>Start Shopping</button>
-            </div>
-          ) : (
-            cart.map((item, index) => (
+        {cart.length === 0 ? (
+          <div className="cart-empty">
+            <p>🛒 Your cart is empty</p>
+            <button onClick={() => router.push("/bouquets")}>Start Shopping</button>
+          </div>
+        ) : (
+          <>
+            {cart.map((item, index) => (
               <div key={index} className="cart-item">
                 <div className="cart-item-left">
                   {item.img ? (
@@ -56,34 +54,30 @@ export default function Cart() {
                   <div>
                     <p className="cart-item-name">{item.name}</p>
                     <p className="cart-item-price">{item.price}</p>
-                    <p className="cart-item-qty">Qty: {item.quantity ?? 1}</p>
+                    <div className="qty-control">
+                      <button className="qty-btn" onClick={() => updateQuantity(index, (item.quantity ?? 1) - 1)}>−</button>
+                      <span className="qty-num">{item.quantity ?? 1}</span>
+                      <button className="qty-btn" onClick={() => updateQuantity(index, (item.quantity ?? 1) + 1)}>+</button>
+                    </div>
                   </div>
                 </div>
-                <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* RIGHT - ORDER SUMMARY */}
-        {cart.length > 0 && (
-          <div className="cart-summary">
-            <h3>Order Summary</h3>
-            {cart.map((item, index) => (
-              <div key={index} className="summary-row">
-                <span>{item.name} x{item.quantity ?? 1}</span>
-                <span>{item.price}</span>
+                <div className="cart-item-right">
+                  <p className="cart-item-subtotal">₱{(parseFloat(item.price.replace('₱','').replace(',','')) * (item.quantity ?? 1)).toFixed(2)}</p>
+                  <button className="remove-btn" onClick={() => removeFromCart(index)}>✕</button>
+                </div>
               </div>
             ))}
-            <div className="summary-total">
-              <span>Total</span>
-              <span>₱{total.toFixed(2)}</span>
-            </div>
-            <button className="checkout-btn" onClick={() => router.push('/checkout')}>Checkout</button>
-            <button className="clear-btn" onClick={clearCart}>Clear Cart</button>
-          </div>
-        )}
 
+            <div className="cart-footer-row">
+              <button className="clear-btn" onClick={clearCart}>Clear Cart</button>
+              <div className="cart-total-row">
+                <span>Total:</span>
+                <strong>₱{total.toFixed(2)}</strong>
+              </div>
+              <button className="checkout-btn" onClick={() => router.push('/checkout')}>Checkout</button>
+            </div>
+          </>
+        )}
       </div>
 
       <footer>

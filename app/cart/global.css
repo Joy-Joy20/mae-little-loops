@@ -45,17 +45,9 @@ span { cursor: pointer; font-size: 18px; }
 .cart-page { min-height: 100vh; background: #fff9fb; }
 
 .cart-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 30px;
-  padding: 50px 40px;
-  max-width: 1100px;
+  max-width: 800px;
   margin: 0 auto;
-  align-items: start;
-}
-
-/* ITEMS COLUMN */
-.cart-items-col {
+  padding: 50px 40px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -73,7 +65,7 @@ span { cursor: pointer; font-size: 18px; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 16px 20px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(255,182,193,0.1);
@@ -87,67 +79,91 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .cart-item-name { font-weight: bold; font-size: 15px; color: #222; }
-.cart-item-price { color: #f06292; font-weight: bold; font-size: 15px; margin-top: 4px; }
-.cart-item-qty { color: #aaa; font-size: 13px; margin-top: 2px; }
+.cart-item-price { color: #aaa; font-size: 13px; margin-top: 4px; }
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #fce4ec;
+  background: white;
+  color: #f06292;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  padding: 0;
+}
+.qty-btn:hover { background: #f06292; color: white; border-color: #f06292; }
+
+.qty-num {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  min-width: 20px;
+  text-align: center;
+}
+
+.cart-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.cart-item-subtotal {
+  font-size: 16px;
+  font-weight: bold;
+  color: #f06292;
+}
 
 .remove-btn {
   background: #fff9fb;
   border: 1px solid #fce4ec;
   color: #f06292;
   font-size: 14px;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: 0.2s;
-  flex-shrink: 0;
 }
 .remove-btn:hover { background: #f06292; color: white; }
 
-/* SUMMARY */
-.cart-summary {
-  background: white;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 4px 20px rgba(255,182,193,0.15);
-  border: 1px solid #fce4ec;
+.cart-footer-row {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 90px;
-}
-
-.cart-summary h3 {
-  font-size: 18px;
-  font-weight: bold;
-  color: #c2185b;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #fce4ec;
-}
-
-.summary-row {
-  display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 13px;
-  color: #666;
-}
-
-.summary-total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 17px;
-  font-weight: bold;
-  color: #222;
-  padding-top: 12px;
+  padding: 20px 0 0;
   border-top: 2px solid #fce4ec;
+  margin-top: 8px;
 }
+
+.cart-total-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  color: #333;
+}
+
+.cart-total-row strong { color: #c2185b; font-size: 20px; }
 
 .checkout-btn {
-  padding: 14px;
+  padding: 12px 28px;
   border: none;
   border-radius: 12px;
   background: linear-gradient(90deg, #f48fb1, #f06292);
@@ -161,7 +177,7 @@ span { cursor: pointer; font-size: 18px; }
 .checkout-btn:hover { transform: translateY(-2px); }
 
 .clear-btn {
-  padding: 12px;
+  padding: 12px 20px;
   border: 1.5px solid #f48fb1;
   border-radius: 12px;
   background: white;
@@ -173,7 +189,6 @@ span { cursor: pointer; font-size: 18px; }
 }
 .clear-btn:hover { background: #fff9fb; }
 
-/* EMPTY */
 .cart-empty {
   text-align: center;
   padding: 60px 40px;
@@ -191,11 +206,8 @@ span { cursor: pointer; font-size: 18px; }
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
 }
-.cart-empty button:hover { transform: translateY(-2px); }
 
-/* FOOTER */
 footer {
   background: white;
   border-top: 1px solid #fce4ec;
@@ -212,10 +224,10 @@ footer {
 .footer-col a:hover { color: #f06292; }
 
 @media (max-width: 768px) {
-  .cart-layout { grid-template-columns: 1fr; padding: 30px 16px; }
-  .cart-summary { position: static; }
+  .cart-layout { padding: 30px 16px; }
   header { flex-wrap: wrap; padding: 10px 16px; gap: 8px; }
   header h1 { font-size: 14px; }
   nav { gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  .cart-footer-row { flex-direction: column; gap: 16px; }
   footer { padding: 30px 20px; }
 }
