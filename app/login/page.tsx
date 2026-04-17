@@ -32,7 +32,7 @@ export default function Login() {
 
       {/* LEFT PANEL */}
       <div className="login-left">
-        <Image src="/logo.png" alt="Mae Little Loops Studio" width={220} height={220} className="login-logo" />
+        <Image src="/logo.png" alt="Mae Little Loops Studio" width={320} height={320} className="login-logo" />
         <h1>Mae Little Loops Studio</h1>
         <p>Handmade with love 🌸</p>
       </div>
