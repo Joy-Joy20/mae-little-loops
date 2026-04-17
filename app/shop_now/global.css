@@ -97,11 +97,11 @@ span { cursor: pointer; font-size: 18px; }
 .hero-banner {
   background: linear-gradient(135deg, #fce4ec, #f8bbd0);
   padding: 60px 40px;
-  text-align: center;
+  text-align: left;
 }
 
 .hero-text h2 { font-size: 32px; font-weight: bold; color: #c2185b; margin-bottom: 12px; }
-.hero-text p { font-size: 15px; color: #777; max-width: 500px; margin: 0 auto 24px; line-height: 1.7; }
+.hero-text p { font-size: 15px; color: #777; max-width: 500px; margin: 0 0 24px; line-height: 1.7; }
 
 .hero-btn {
   display: inline-block;
