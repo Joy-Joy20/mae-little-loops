@@ -96,13 +96,12 @@ span { cursor: pointer; font-size: 18px; }
 /* HERO BANNER */
 .hero-banner {
   background: linear-gradient(135deg, #fce4ec, #f8bbd0);
-  padding: 35px 40px; /* gikan 60px -> 35px */
+  padding: 24px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  min-height: 320px; /* fixed smaller height */
 }
 
 .hero-text {
