@@ -115,7 +115,7 @@ span { cursor: pointer; font-size: 18px; }
   font-weight: bold;
   color: #c2185b;
   margin-bottom: 28px;
-  text-align: center;
+  text-align: left;
 }
 
 .products-grid {
