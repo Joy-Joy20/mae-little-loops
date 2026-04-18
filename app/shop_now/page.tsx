@@ -104,6 +104,7 @@ export default function ShopNow() {
       {/* FEATURED PRODUCTS */}
       <section className="products-section">
         <h2 className="section-title">Featured Products</h2>
+        <p className="products-desc">Discover our handmade crochet bouquets and keychains — crafted with love and perfect for every occasion. 🌸</p>
         <div className="products-grid">
           {products.map((item, index) => (
             <div key={index} className="product-card">
