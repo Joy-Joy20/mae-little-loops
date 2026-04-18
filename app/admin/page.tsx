@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 type Order = { id: string; customer: string; product: string; price: string; status: string; shipped: boolean; };
 type Product = { name: string; price: string; category: string; stock: number; };
 type User = { email: string; joined: string; role: string; };
+type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("Dashboard");
@@ -52,6 +53,7 @@ export default function AdminDashboard() {
   const [storeEmail, setStoreEmail] = useState("maelittleloops@gmail.com");
   const [storePhone, setStorePhone] = useState("09XXXXXXXXX");
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -60,6 +62,9 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
+        supabase.from("messages").select("*").order("created_at", { ascending: false }).then(({ data }) => {
+          if (data) setMessages(data);
+        });
       }
     });
   }, [router]);
@@ -91,6 +96,7 @@ export default function AdminDashboard() {
     { label: "Products", icon: "🛍️" },
     { label: "Orders", icon: "📦" },
     { label: "Users", icon: "👥" },
+    { label: "Messages", icon: "✉️" },
     { label: "Settings", icon: "⚙️" },
   ];
 
@@ -159,6 +165,29 @@ export default function AdminDashboard() {
                       <td><span className={`status-badge ${o.status === "Completed" ? "done" : o.status === "Shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="admin-table-card" style={{marginTop:'24px'}}>
+              <div className="table-header">
+                <h2>Recent Messages</h2>
+                <span className="table-badge">{messages.length} messages</span>
+              </div>
+              <table className="admin-table">
+                <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Date</th></tr></thead>
+                <tbody>
+                  {messages.length === 0 ? (
+                    <tr><td colSpan={4} style={{textAlign:'center', color:'#aaa', padding:'24px'}}>No messages yet.</td></tr>
+                  ) : (
+                    messages.slice(0,3).map((m, i) => (
+                      <tr key={i}>
+                        <td>{m.name}</td>
+                        <td>{m.email}</td>
+                        <td>{m.subject}</td>
+                        <td>{new Date(m.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -240,6 +269,34 @@ export default function AdminDashboard() {
                     <td><span className="role-badge">{u.role}</span></td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* ===== MESSAGES ===== */}
+        {active === "Messages" && (
+          <div className="admin-table-card">
+            <div className="table-header">
+              <h2>Recent Messages</h2>
+              <span className="table-badge">{messages.length} messages</span>
+            </div>
+            <table className="admin-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th></tr></thead>
+              <tbody>
+                {messages.length === 0 ? (
+                  <tr><td colSpan={5} style={{textAlign:'center', color:'#aaa', padding:'24px'}}>No messages yet.</td></tr>
+                ) : (
+                  messages.map((m, i) => (
+                    <tr key={i}>
+                      <td>{m.name}</td>
+                      <td>{m.email}</td>
+                      <td>{m.subject}</td>
+                      <td style={{maxWidth:'200px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{m.message}</td>
+                      <td>{new Date(m.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

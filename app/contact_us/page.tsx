@@ -21,9 +21,18 @@ export default function ContactUs() {
     window.location.href = "/login";
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    const { error } = await supabase.from("messages").insert([{ name, email, subject, message }]);
+    setSending(false);
+    if (!error) setSent(true);
   }
 
   return (
@@ -105,21 +114,21 @@ export default function ContactUs() {
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-group">
                 <label>Your Name</label>
-                <input type="text" placeholder="Enter your name" required />
+                <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="Enter your email" required />
+                <input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="form-group">
                 <label>Subject</label>
-                <input type="text" placeholder="What is this about?" required />
+                <input type="text" placeholder="What is this about?" value={subject} onChange={(e) => setSubject(e.target.value)} required />
               </div>
               <div className="form-group">
                 <label>Message</label>
-                <textarea placeholder="Write your message here..." rows={5} required />
+                <textarea placeholder="Write your message here..." rows={5} value={message} onChange={(e) => setMessage(e.target.value)} required />
               </div>
-              <button type="submit">Send Message</button>
+              <button type="submit" disabled={sending}>{sending ? "Sending..." : "Send Message"}</button>
             </form>
           )}
         </div>
