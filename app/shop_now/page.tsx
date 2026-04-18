@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
@@ -27,12 +27,13 @@ export default function ShopNow() {
     { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
   ];
 
-  const [cardIndex, setCardIndex] = useState(0);
-  const visibleCount = 3;
-  const maxIndex = products.length - visibleCount;
+  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
+  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
 
-  function prevCard() { setCardIndex((i) => Math.max(i - 1, 0)); }
-  function nextCard() { setCardIndex((i) => Math.min(i + 1, maxIndex)); }
+  useEffect(() => {
+    const timer = setInterval(next, 4000);
+    return () => clearInterval(timer);
+  }, [next]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -100,31 +101,22 @@ export default function ShopNow() {
         </a>
       </div>
 
-      {/* FEATURED PRODUCTS CAROUSEL */}
+      {/* FEATURED PRODUCTS */}
       <section className="products-section">
         <h2 className="section-title">Featured Products</h2>
-        <div className="product-carousel-wrapper">
-          <button className="pcarousel-btn" onClick={prevCard} disabled={cardIndex === 0}>&#8249;</button>
-          <div className="product-carousel-track">
-            <div
-              className="product-carousel-inner"
-              style={{transform: `translateX(-${cardIndex * (100 / visibleCount)}%)`, transition: 'transform 0.4s ease'}}
-            >
-              {products.map((item, index) => (
-                <div key={index} className="product-card" style={{minWidth: `${100 / visibleCount}%`}}>
-                  <div className="product-img-wrapper">
-                    <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
-                  </div>
-                  <div className="product-info">
-                    <h3>{item.name}</h3>
-                    <p className="product-price">{item.price}</p>
-                    <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
-                  </div>
-                </div>
-              ))}
+        <div className="products-grid">
+          {products.map((item, index) => (
+            <div key={index} className="product-card">
+              <div className="product-img-wrapper">
+                <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
+              </div>
+              <div className="product-info">
+                <h3>{item.name}</h3>
+                <p className="product-price">{item.price}</p>
+                <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
+              </div>
             </div>
-          </div>
-          <button className="pcarousel-btn" onClick={nextCard} disabled={cardIndex === maxIndex}>&#8250;</button>
+          ))}
         </div>
       </section>
 
