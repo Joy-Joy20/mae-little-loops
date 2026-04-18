@@ -115,6 +115,9 @@ span { cursor: pointer; font-size: 18px; }
   border: 1px solid #fce4ec;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 20px;
 }
 
@@ -126,20 +129,13 @@ span { cursor: pointer; font-size: 18px; }
 
 .info-item {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
 }
 
-.info-icon { font-size: 20px; min-width: 28px; margin-top: 2px; }
-
-.info-label {
-  font-size: 11px;
-  font-weight: bold;
-  color: #c2185b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-}
+.info-icon { font-size: 20px; color: #f06292; flex-shrink: 0; }
 
 .info-item p { font-size: 14px; color: #555; }
 .info-item a { font-size: 14px; color: #f06292; font-weight: bold; }
@@ -155,6 +151,7 @@ span { cursor: pointer; font-size: 18px; }
   border: 1px solid #fce4ec;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
 }
 
@@ -162,13 +159,20 @@ span { cursor: pointer; font-size: 18px; }
   font-size: 22px;
   font-weight: bold;
   color: #c2185b;
+  text-align: center;
 }
 
-.contact-sub { font-size: 13px; color: #aaa; }
+.contact-sub { font-size: 13px; color: #aaa; text-align: center; }
 
-.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.contact-form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
 
-.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
 
 .form-group label {
   font-size: 12px;
@@ -176,6 +180,8 @@ span { cursor: pointer; font-size: 18px; }
   color: #555;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
+  width: 100%;
 }
 
 .contact-form input,
@@ -189,6 +195,7 @@ span { cursor: pointer; font-size: 18px; }
   outline: none;
   transition: 0.2s;
   font-family: inherit;
+  text-align: center;
 }
 
 .contact-form input:focus,
