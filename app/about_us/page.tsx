@@ -68,7 +68,7 @@ export default function AboutUs() {
 
         {/* ABOUT US CARD */}
         <div className="about-card">
-          <div className="about-card-icon">🌸</div>
+          <span style={{fontSize:'40px'}}>🌸</span>
           <h2>About Us</h2>
           <p>
             Mae Little Loops Studio is a small handmade business that specializes in beautiful crochet bouquets and adorable keychains.
@@ -79,9 +79,7 @@ export default function AboutUs() {
 
         {/* MEET THE OWNER CARD */}
         <div className="about-card owner-card">
-          <div className="owner-img-wrapper">
-            <Image src="/owner.jpg" alt="Mae Masarque" width={130} height={130} className="owner-img" />
-          </div>
+          <Image src="/owner.jpg" alt="Mae Masarque" width={130} height={130} className="owner-img" />
           <h2>Meet the Owner</h2>
           <p className="owner-name">Mae Masarque</p>
           <p>The heart and hands behind Mae Little Loops Studio. Passionate about crochet and bringing smiles through handmade creations.</p>
