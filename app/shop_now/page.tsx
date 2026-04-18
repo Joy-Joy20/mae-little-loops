@@ -101,6 +101,11 @@ export default function ShopNow() {
         </a>
       </div>
 
+      {/* DESCRIPTION BANNER */}
+      <div className="home-desc-banner">
+        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
+      </div>
+
       {/* FEATURED PRODUCTS */}
       <section className="products-section">
         <h2 className="section-title">Featured Products</h2>
