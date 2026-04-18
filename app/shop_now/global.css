@@ -193,9 +193,11 @@ span { cursor: pointer; font-size: 18px; }
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  justify-items: start;
+  grid-template-columns: repeat(4, minmax(200px, 260px));
+  gap: 28px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .product-card {
@@ -308,7 +310,11 @@ footer {
   .carousel { width: 200px; height: 200px; }
   .carousel-img { width: 180px !important; height: 180px !important; }
   .products-section { padding: 30px 16px; }
-  .products-grid { flex-wrap: wrap; }
-  .product-card { flex: 0 0 calc(50% - 10px); }
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 16px;
+    max-width: 100%;
+  }
+  .product-card { flex: unset; }
   footer { padding: 30px 20px; }
 }
