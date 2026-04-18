@@ -2,7 +2,7 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background: #fff9fb;
+  background: white;
   color: #333;
   padding-top: 70px;
 }
@@ -102,7 +102,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 /* PRODUCTS */
-.bouquets-page { min-height: 100vh; background: #fff9fb; }
+.bouquets-page { min-height: 100vh; background: white; }
 
 .products-section {
   padding: 50px 40px;
@@ -147,7 +147,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .product-img-wrapper {
-  background: #fff9fb;
+  background: white;
   width: 100%;
   height: 180px;
   display: flex;
