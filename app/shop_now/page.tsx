@@ -101,27 +101,6 @@ export default function ShopNow() {
         </a>
       </div>
 
-      {/* HERO BANNER */}
-      <div className="hero-banner">
-        <div className="hero-text">
-          <h2>Handmade with Love 🌸</h2>
-          <p>Explore our beautiful collection of crochet bouquets and adorable keychains — perfect for gifts or personal keepsakes.</p>
-          <a href="/bouquets" className="hero-btn">Shop Now</a>
-        </div>
-
-        {/* CAROUSEL */}
-        <div className="carousel">
-          <Image src={slides[current].img} alt={slides[current].alt} width={220} height={220} className="carousel-img" />
-          <button className="carousel-btn prev" onClick={prev}>&#8249;</button>
-          <button className="carousel-btn next" onClick={next}>&#8250;</button>
-          <div className="carousel-dots">
-            {slides.map((_, i) => (
-              <button key={i} className={`dot ${i === current ? 'active' : ''}`} onClick={() => setCurrent(i)} />
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* FEATURED PRODUCTS */}
       <section className="products-section">
         <h2 className="section-title">Featured Products</h2>
