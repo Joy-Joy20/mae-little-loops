@@ -2,7 +2,7 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background: #fff9fb;
+  background: white;
   color: #333;
   padding-top: 70px;
 }
@@ -183,7 +183,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 /* PRODUCTS SECTION */
-.shop-page { min-height: 100vh; background: #fff9fb; }
+.shop-page { min-height: 100vh; background: white; }
 
 .products-section {
   padding: 40px 40px 60px;
