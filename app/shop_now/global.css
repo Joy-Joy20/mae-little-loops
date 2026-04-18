@@ -218,7 +218,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .product-img-wrapper {
-  background: white;
+  background: transparent;
   width: 100%;
   height: 220px;
   display: flex;
@@ -247,7 +247,6 @@ span { cursor: pointer; font-size: 18px; }
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  border-top: 1px solid #fce4ec;
   background: white;
 }
 
