@@ -23,6 +23,12 @@ export default function Bouquets() {
     alert(`${name} added to cart!`);
   }
 
+  function handleBuyNow(name: string, price: string, img: string | null) {
+    if (!userEmail) { router.push("/login"); return; }
+    addToCart({ name, price, img });
+    router.push("/cart");
+  }
+
   const bouquets = [
     { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
     { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
@@ -93,9 +99,10 @@ export default function Bouquets() {
               <div className="product-info">
                 <h3>{item.name}</h3>
                 <p className="product-price">{item.price}</p>
-                <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>
-                  Add to Cart
-                </button>
+                <div className="btn-row">
+                  <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>Add to Cart</button>
+                  <button className="buy-btn" onClick={() => handleBuyNow(item.name, item.price, item.img ?? null)}>Buy Now</button>
+                </div>
               </div>
             </div>
           ))}

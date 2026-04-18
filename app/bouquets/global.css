@@ -201,6 +201,21 @@ span { cursor: pointer; font-size: 18px; }
 }
 .add-btn:hover { transform: scale(1.05); }
 
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+.buy-btn {
+  padding: 9px 22px;
+  border: 1.5px solid #f48fb1;
+  border-radius: 50px;
+  background: white;
+  color: #f06292;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.buy-btn:hover { background: #f06292; color: white; }
+
 /* FOOTER */
 footer {
   background: white;
