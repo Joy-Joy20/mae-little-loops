@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../../context/CartContext";
+import { supabase } from "../../lib/supabase";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -15,15 +16,63 @@ export default function Checkout() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user?.email ?? null);
+      setUserId(data.session?.user?.id ?? null);
+    });
+  }, []);
 
   const total = cart.reduce((sum, item) => {
     const price = parseFloat(item.price.replace("₱", "").replace(",", ""));
     return sum + price * (item.quantity ?? 1);
   }, 0);
 
-  function handlePlaceOrder() {
-    clearCart();
-    setPlaced(true);
+  async function handlePlaceOrder() {
+    setLoading(true);
+    try {
+      // Insert order
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert([{
+          user_id: userId,
+          user_email: userEmail,
+          total_amount: total,
+          status: "pending",
+          name,
+          address,
+          phone,
+          payment: payment === "gcash" ? `GCash (Ref: ${refNumber})` : "Cash on Delivery",
+        }])
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Insert order items
+      const orderItems = cart.map((item) => ({
+        order_id: order.id,
+        product_name: item.name,
+        price: item.price,
+        quantity: item.quantity ?? 1,
+        img: item.img ?? null,
+      }));
+
+      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+      if (itemsError) throw itemsError;
+
+      // Clear cart
+      await clearCart();
+      setPlaced(true);
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    }
+    setLoading(false);
   }
 
   return (
@@ -176,7 +225,7 @@ export default function Checkout() {
                 </div>
                 <div className="btn-row">
                   <button className="back-btn" onClick={() => setStep(3)}>← Back</button>
-                  <button className="place-order-btn" onClick={handlePlaceOrder}>Place Order</button>
+                  <button className="place-order-btn" onClick={handlePlaceOrder} disabled={loading}>{loading ? "Placing Order..." : "Place Order"}</button>
                 </div>
               </div>
             )}
