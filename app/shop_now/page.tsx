@@ -124,7 +124,7 @@ export default function ShopNow() {
       {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
