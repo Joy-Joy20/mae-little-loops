@@ -219,7 +219,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 
 .product-img-wrapper {
-  background: linear-gradient(135deg, #fff9fb, #fce4ec);
+  background: white;
   width: 100%;
   height: 220px;
   display: flex;
