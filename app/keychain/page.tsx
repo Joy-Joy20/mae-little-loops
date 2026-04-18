@@ -30,16 +30,16 @@ export default function Keychain() {
   }
 
   const keychains = [
-    { name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-    { name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
-    { name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png" },
-    { name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
-    { name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
-    { name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
-    { name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
-    { name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png" },
-    { name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png" },
-    { name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png" },
+    { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+    { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+    { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png" },
+    { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
+    { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
+    { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
+    { id: "15", name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+    { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png" },
+    { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png" },
+    { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png" },
   ];
 
   return (
@@ -93,10 +93,10 @@ export default function Keychain() {
         <div className="products-grid">
           {keychains.map((item, index) => (
             <div key={index} className="product-card">
-              <div className="product-img-wrapper">
+              <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
                 <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
               </div>
-              <h3 className="product-name">{item.name}</h3>
+              <h3 className="product-name" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>{item.name}</h3>
               <p className="product-price">{item.price}</p>
               <div className="btn-row">
                 <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img)}>Add to Cart</button>

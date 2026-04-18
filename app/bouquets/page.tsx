@@ -30,14 +30,14 @@ export default function Bouquets() {
   }
 
   const bouquets = [
-    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-    { name: "Pink Star Lily Bloom", price: "₱200.00", img: null },
-    { name: "Pastel Twin Tulips", price: "₱250.00", img: null },
-    { name: "Pure White Rosebud", price: "₱300.00", img: null },
-    { name: "Pink Tulip Delight", price: "₱150.00", img: null },
+    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+    { id: "5", name: "Pink Star Lily Bloom", price: "₱200.00", img: null },
+    { id: "6", name: "Pastel Twin Tulips", price: "₱250.00", img: null },
+    { id: "7", name: "Pure White Rosebud", price: "₱300.00", img: null },
+    { id: "8", name: "Pink Tulip Delight", price: "₱150.00", img: null },
   ];
 
   return (
@@ -89,14 +89,14 @@ export default function Bouquets() {
         <div className="products-grid">
           {bouquets.map((item, index) => (
             <div key={index} className="product-card">
-              <div className="product-img-wrapper">
+              <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
                 {item.img ? (
                   <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
                 ) : (
                   <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
                 )}
               </div>
-              <h3 className="product-name">{item.name}</h3>
+              <h3 className="product-name" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>{item.name}</h3>
               <p className="product-price">{item.price}</p>
               <div className="btn-row">
                 <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>Add to Cart</button>
