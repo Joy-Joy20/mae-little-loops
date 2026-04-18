@@ -181,7 +181,6 @@ span { cursor: pointer; font-size: 18px; }
   transition: 0.2s;
   padding: 0;
 }
-.dot.active { background: #f06292; width: 20px; border-radius: 4px; }
 
 /* PRODUCTS SECTION */
 .shop-page { min-height: 100vh; background: #fff9fb; }
