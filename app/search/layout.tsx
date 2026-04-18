@@ -1,9 +1,5 @@
-import "../shop_now/global.css";
+import "./global.css";
 
-export default function SearchLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SearchLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
