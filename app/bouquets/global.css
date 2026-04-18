@@ -107,7 +107,6 @@ span { cursor: pointer; font-size: 18px; }
 .products-section {
   padding: 50px 40px;
   width: 100%;
-  margin: 0;
 }
 
 .section-title {
@@ -115,13 +114,15 @@ span { cursor: pointer; font-size: 18px; }
   font-weight: bold;
   color: #c2185b;
   margin-bottom: 28px;
-  text-align: left;
+  text-align: center;
 }
 
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .product-card {
