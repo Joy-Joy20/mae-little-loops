@@ -182,18 +182,8 @@ span { cursor: pointer; font-size: 18px; }
   padding: 0;
 }
 
-.home-desc-banner {
-  text-align: center;
-  padding: 16px 20px;
-  background: white;
-}
-
-.home-desc-banner p {
-  color: #888;
-  font-size: 1rem;
-  margin: 0 auto;
-  max-width: 600px;
-}
+/* PRODUCTS SECTION */
+.shop-page { min-height: 100vh; background: white; }
 
 .products-section {
   padding: 40px 40px 60px;
