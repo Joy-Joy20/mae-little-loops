@@ -26,7 +26,7 @@ export default function Bouquets() {
   function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
     addToCart({ name, price, img });
-    router.push("/cart");
+    router.push("/checkout");
   }
 
   const bouquets = [

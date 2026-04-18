@@ -26,7 +26,7 @@ export default function Keychain() {
   function handleBuyNow(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
     addToCart({ name, price, img });
-    router.push("/cart");
+    router.push("/checkout");
   }
 
   const keychains = [
