@@ -96,13 +96,11 @@ export default function Bouquets() {
                   <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
                 )}
               </div>
-              <div className="product-info">
-                <h3>{item.name}</h3>
-                <p className="product-price">{item.price}</p>
-                <div className="btn-row">
-                  <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>Add to Cart</button>
-                  <button className="buy-btn" onClick={() => handleBuyNow(item.name, item.price, item.img ?? null)}>Buy Now</button>
-                </div>
+              <h3 className="product-name">{item.name}</h3>
+              <p className="product-price">{item.price}</p>
+              <div className="btn-row">
+                <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>Add to Cart</button>
+                <button className="buy-btn" onClick={() => handleBuyNow(item.name, item.price, item.img ?? null)}>Buy Now</button>
               </div>
             </div>
           ))}
