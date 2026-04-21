@@ -79,7 +79,7 @@ export default function AboutUs() {
 
         {/* MEET THE OWNER CARD */}
         <div className="about-card owner-card">
-          <Image src="/owner.jpg" alt="Mae Masarque" width={130} height={130} className="owner-img" />
+          <Image src="/owner.png" alt="Mae Masarque" width={130} height={130} className="owner-img" />
           <h2>Meet the Owner</h2>
           <p className="owner-name">Mae Masarque</p>
           <p>The heart and hands behind Mae Little Loops Studio. Passionate about crochet and bringing smiles through handmade creations.</p>
