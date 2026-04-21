@@ -34,10 +34,10 @@ export default function Bouquets() {
     { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
     { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
     { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-    { id: "5", name: "Pink Star Lily Bloom", price: "₱200.00", img: null },
-    { id: "6", name: "Pastel Twin Tulips", price: "₱250.00", img: null },
-    { id: "7", name: "Pure White Rosebud", price: "₱300.00", img: null },
-    { id: "8", name: "Pink Tulip Delight", price: "₱150.00", img: null },
+    { id: "5", name: "Crimson Charm", price: "₱200.00", img: null },
+    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: null },
+    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: null },
+    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: null },
   ];
 
   return (
