@@ -13,6 +13,21 @@ export default function Checkout() {
   const [payment, setPayment] = useState("cod");
   const [placed, setPlaced] = useState(false);
   const [refNumber, setRefNumber] = useState("");
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleReceiptUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from("receipts").upload(fileName, file);
+    if (!error && data) {
+      const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(data.path);
+      setReceiptUrl(urlData.publicUrl);
+    }
+    setUploading(false);
+  }
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -47,6 +62,7 @@ export default function Checkout() {
           address,
           phone,
           payment: payment === "gcash" ? `GCash (Ref: ${refNumber})` : "Cash on Delivery",
+          receipt_url: receiptUrl ?? null,
         }])
         .select()
         .single();
@@ -188,25 +204,42 @@ export default function Checkout() {
                 {payment === "gcash" && (
                   <div className="gcash-steps">
                     <h4>📱 GCash Payment Steps</h4>
+
+                    <div className="gcash-qr">
+                      <img src="/gcash-qr.png" alt="GCash QR Code" className="qr-img" />
+                      <p className="qr-label">Pay via GCash</p>
+                    </div>
+
                     <ol>
-                      <li>Open your <strong>GCash app</strong></li>
-                      <li>Tap <strong>Send Money</strong></li>
-                      <li>Enter number: <strong>09XXXXXXXXX</strong></li>
+                      <li>Scan the QR code using your <strong>GCash app</strong> to complete your payment.</li>
                       <li>Enter amount: <strong>₱{total.toFixed(2)}</strong></li>
                       <li>Add note: <strong>Mae Little Loops Order</strong></li>
-                      <li>Tap <strong>Send</strong> and screenshot receipt</li>
-                      <li>Enter your <strong>Reference Number</strong> below</li>
+                      <li>After payment, take a <strong>screenshot</strong> of your GCash receipt.</li>
+                      <li>Upload your <strong>proof of payment</strong> below before confirming your order.</li>
                     </ol>
-                    <div className="form-group" style={{marginTop:'12px'}}>
-                      <label>GCash Reference Number</label>
-                      <input type="text" placeholder="Enter reference number" value={refNumber} onChange={(e) => setRefNumber(e.target.value)} />
+
+                    <div className="form-group" style={{marginTop:'16px'}}>
+                      <label>Upload GCash Receipt *</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleReceiptUpload}
+                        className="receipt-upload"
+                      />
+                      {uploading && <p className="upload-status">Uploading...</p>}
+                      {receiptUrl && (
+                        <div className="receipt-preview">
+                          <p className="upload-status success">✅ Receipt uploaded!</p>
+                          <img src={receiptUrl} alt="Receipt" style={{width:'120px', borderRadius:'8px', marginTop:'8px'}} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
                 <div className="btn-row">
                   <button className="back-btn" onClick={() => setStep(2)}>← Back</button>
-                  <button className="next-btn" onClick={() => setStep(4)} disabled={payment === "gcash" && !refNumber}>Next →</button>
+                  <button className="next-btn" onClick={() => setStep(4)} disabled={payment === "gcash" && !receiptUrl}>Next →</button>
                 </div>
               </div>
             )}

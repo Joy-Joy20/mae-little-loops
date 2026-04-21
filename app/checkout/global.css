@@ -197,6 +197,55 @@ span { cursor: pointer; font-size: 18px; }
 .gcash-steps ol { padding-left: 20px; line-height: 2.2; font-size: 14px; color: #555; }
 .gcash-steps strong { color: #f06292; }
 
+.gcash-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+}
+
+.qr-img {
+  width: 180px;
+  height: 180px;
+  border: 2px solid #fce4ec;
+  border-radius: 12px;
+}
+
+.qr-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #f06292;
+}
+
+.receipt-upload {
+  padding: 10px;
+  border: 1.5px dashed #fce4ec;
+  border-radius: 12px;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.upload-status {
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 8px;
+}
+
+.upload-status.success {
+  color: #66bb6a;
+  font-weight: bold;
+}
+
+.receipt-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
 /* CONFIRM */
 .confirm-list { display: flex; flex-direction: column; gap: 0; }
 
