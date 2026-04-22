@@ -6,37 +6,46 @@ import Image from "next/image";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
-type Product = { id: string; name: string; price: string; img: string | null; };
-
 export default function Keychain() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
   const router = useRouter();
-  const [keychains, setKeychains] = useState<Product[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
-    supabase.from("products").select("id, name, price, img").eq("category", "keychain").then(({ data }) => {
-      if (data) setKeychains(data);
-    });
   }, []);
 
-  async function handleAddToCart(name: string, price: string, img: string | null) {
+  function handleAddToCart(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    await addToCart({ name, price, img });
+    addToCart({ name, price, img });
     alert(`${name} added to cart!`);
   }
 
-  async function handleBuyNow(name: string, price: string, img: string | null) {
+  function handleBuyNow(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    await addToCart({ name, price, img });
+    addToCart({ name, price, img });
     router.push("/checkout");
   }
 
+  const keychains = [
+    { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+    { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+    { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png" },
+    { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
+    { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
+    { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
+    { id: "15", name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+    { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png" },
+    { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png" },
+    { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png" },
+  ];
+
   return (
     <main className="keychain-page">
+
+      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -61,26 +70,31 @@ export default function Keychain() {
         </div>
       </header>
 
+      {/* CATEGORY BAR */}
       <div className="category-bar">
-        <a href="/bouquets" className="category-item"><span>💐</span><p>Bouquets</p></a>
-        <a href="/keychain" className="category-item active-cat"><span>🔑</span><p>Keychain</p></a>
+        <a href="/bouquets" className="category-item">
+          <span>💐</span>
+          <p>Bouquets</p>
+        </a>
+        <a href="/keychain" className="category-item active-cat">
+          <span>🔑</span>
+          <p>Keychain</p>
+        </a>
       </div>
 
+      {/* DESCRIPTION */}
       <div className="description-banner">
         <p>Handmade with love 🔑 — Cute and adorable keychains perfect as gifts or daily accessories.</p>
       </div>
 
+      {/* KEYCHAINS GRID */}
       <section className="products-section">
         <h2 className="section-title">Our Keychains</h2>
         <div className="products-grid">
-          {keychains.map((item) => (
-            <div key={item.id} className="product-card">
+          {keychains.map((item, index) => (
+            <div key={index} className="product-card">
               <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
-                {item.img ? (
-                  <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
-                ) : (
-                  <div style={{fontSize:'60px', lineHeight:'1'}}>🔑</div>
-                )}
+                <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
               </div>
               <h3 className="product-name" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>{item.name}</h3>
               <p className="product-price">{item.price}</p>
@@ -93,15 +107,26 @@ export default function Keychain() {
         </div>
       </section>
 
+      {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
+          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
-        <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
-        <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p><p>📍 Cebu City, Philippines</p></div>
+        <div className="footer-col">
+          <h3>Categories</h3>
+          <a href="/bouquets">Bouquets</a>
+          <a href="/keychain">Keychains</a>
+        </div>
+        <div className="footer-col">
+          <h3>Contact</h3>
+          <p>📧 maelittleloops@gmail.com</p>
+          <p>📱 09XXXXXXXXX</p>
+          <p>📍 Cebu City, Philippines</p>
+        </div>
       </footer>
+
     </main>
   );
 }
