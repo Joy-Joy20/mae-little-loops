@@ -71,7 +71,7 @@ function SearchResults() {
             <div className="search-grid">
               {results.map((item) => (
                 <div key={item.id} className="product-card">
-                  <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
+                  <div className="product-img-wrapper">
                     {item.img ? (
                       <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
                     ) : (
@@ -81,10 +81,10 @@ function SearchResults() {
                     )}
                   </div>
                   <div className="product-info">
-                    <h3 onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>{item.name}</h3>
+                    <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
-                    <button className="shop-btn" onClick={() => router.push(`/product/${item.id}`)}>
-                      View Product
+                    <button className="shop-btn" onClick={() => router.push(item.category === "bouquet" ? "/bouquets" : "/keychain")}>
+                      Shop Now
                     </button>
                   </div>
                 </div>

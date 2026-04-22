@@ -93,10 +93,10 @@ export default function Keychain() {
         <div className="products-grid">
           {keychains.map((item, index) => (
             <div key={index} className="product-card">
-              <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
+              <div className="product-img-wrapper">
                 <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
               </div>
-              <h3 className="product-name" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>{item.name}</h3>
+              <h3 className="product-name">{item.name}</h3>
               <p className="product-price">{item.price}</p>
               <div className="btn-row">
                 <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img)}>Add to Cart</button>
