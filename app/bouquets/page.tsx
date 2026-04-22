@@ -6,44 +6,37 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
+type Product = { id: string; name: string; price: string; img: string | null; };
+
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
   const router = useRouter();
+  const [bouquets, setBouquets] = useState<Product[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
+    supabase.from("products").select("id, name, price, img").eq("category", "bouquet").then(({ data }) => {
+      if (data) setBouquets(data);
+    });
   }, []);
 
-  function handleAddToCart(name: string, price: string, img: string | null) {
+  async function handleAddToCart(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
+    await addToCart({ name, price, img });
     alert(`${name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string | null) {
+  async function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
+    await addToCart({ name, price, img });
     router.push("/checkout");
   }
 
-  const bouquets = [
-    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png" },
-    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png" },
-    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png" },
-    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png" },
-  ];
-
   return (
     <main className="bouquets-page">
-
-      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -66,29 +59,20 @@ export default function Bouquets() {
         </div>
       </header>
 
-      {/* CATEGORY BAR */}
       <div className="category-bar">
-        <a href="/bouquets" className="category-item">
-          <span>💐</span>
-          <p>Bouquets</p>
-        </a>
-        <a href="/keychain" className="category-item">
-          <span>🔑</span>
-          <p>Keychain</p>
-        </a>
+        <a href="/bouquets" className="category-item"><span>💐</span><p>Bouquets</p></a>
+        <a href="/keychain" className="category-item"><span>🔑</span><p>Keychain</p></a>
       </div>
 
-      {/* DESCRIPTION */}
       <div className="description-banner">
         <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets perfect for any occasion.</p>
       </div>
 
-      {/* BOUQUETS GRID */}
       <section className="products-section">
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
-          {bouquets.map((item, index) => (
-            <div key={index} className="product-card">
+          {bouquets.map((item) => (
+            <div key={item.id} className="product-card">
               <div className="product-img-wrapper" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
                 {item.img ? (
                   <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
@@ -107,26 +91,15 @@ export default function Bouquets() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
-        <div className="footer-col">
-          <h3>Categories</h3>
-          <a href="/bouquets">Bouquets</a>
-          <a href="/keychain">Keychains</a>
-        </div>
-        <div className="footer-col">
-          <h3>Contact</h3>
-          <p>📧 maelittleloops@gmail.com</p>
-          <p>📱 09XXXXXXXXX</p>
-          <p>📍 Cebu City, Philippines</p>
-        </div>
+        <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
+        <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p><p>📍 Cebu City, Philippines</p></div>
       </footer>
-
     </main>
   );
 }
