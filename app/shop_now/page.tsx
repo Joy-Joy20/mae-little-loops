@@ -108,11 +108,11 @@ export default function ShopNow() {
         <div className="products-grid">
           {products.map((item, index) => (
             <div key={index} className="product-card">
-              <div className="product-img-wrapper" onClick={() => router.push(`/bouquets`)} style={{cursor:'pointer'}}>
+              <div className="product-img-wrapper">
                 <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
               </div>
               <div className="product-info">
-                <h3 onClick={() => router.push(`/bouquets`)} style={{cursor:'pointer'}}>{item.name}</h3>
+                <h3>{item.name}</h3>
                 <p className="product-price">{item.price}</p>
                 <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
               </div>

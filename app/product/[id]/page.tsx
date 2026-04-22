@@ -5,67 +5,43 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useCart } from "../../../context/CartContext";
-
-type Product = {
-  id: string;
-  name: string;
-  price: string;
-  img: string | null;
-  category: string;
-  description: string;
-  stock: number;
-};
+import { allProducts } from "../../../lib/products";
 
 export default function ProductDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { addToCart } = useCart();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const product = allProducts.find((p) => p.id === params.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
+  }, []);
 
-    async function fetchProduct() {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("id", params.id)
-        .single();
-
-      if (!error && data) setProduct(data);
-      setLoading(false);
-    }
-
-    fetchProduct();
-  }, [params.id]);
-
-  async function handleAddToCart() {
-    if (!userEmail) { router.push("/login"); return; }
-    if (!product) return;
-    await addToCart({ name: product.name, price: product.price, img: product.img });
-    alert(`${product.name} added to cart!`);
+  if (!product) {
+    return (
+      <main className="detail-page">
+        <div className="detail-not-found">
+          <p>Product not found.</p>
+          <button onClick={() => router.back()}>← Go Back</button>
+        </div>
+      </main>
+    );
   }
 
-  async function handleBuyNow() {
+  function handleAddToCart() {
     if (!userEmail) { router.push("/login"); return; }
-    if (!product) return;
-    await addToCart({ name: product.name, price: product.price, img: product.img });
+    addToCart({ name: product!.name, price: product!.price, img: product!.img });
+    alert(`${product!.name} added to cart!`);
+  }
+
+  function handleBuyNow() {
+    if (!userEmail) { router.push("/login"); return; }
+    addToCart({ name: product!.name, price: product!.price, img: product!.img });
     router.push("/checkout");
   }
-
-  if (loading) return <div className="detail-loading">Loading...</div>;
-
-  if (!product) return (
-    <main className="detail-page">
-      <div className="detail-not-found">
-        <p>Product not found.</p>
-        <button onClick={() => router.back()}>← Go Back</button>
-      </div>
-    </main>
-  );
 
   return (
     <main className="detail-page">
@@ -109,23 +85,14 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
 
         {/* INFO */}
         <div className="detail-info">
-          <span className="detail-category">
-            {product.category === "bouquet" ? "💐 Bouquet" : "🔑 Keychain"}
-          </span>
+          <span className="detail-category">{product.category === "bouquet" ? "💐 Bouquet" : "🔑 Keychain"}</span>
           <h1 className="detail-name">{product.name}</h1>
           <p className="detail-price">{product.price}</p>
           <p className="detail-description">{product.description}</p>
-          <p className={`detail-stock ${product.stock > 0 ? "in-stock" : "out-stock"}`}>
-            {product.stock > 0 ? `✅ In Stock (${product.stock} available)` : "❌ Out of Stock"}
-          </p>
 
           <div className="detail-btns">
-            <button className="detail-add-btn" onClick={handleAddToCart} disabled={product.stock === 0}>
-              Add to Cart
-            </button>
-            <button className="detail-buy-btn" onClick={handleBuyNow} disabled={product.stock === 0}>
-              Buy Now
-            </button>
+            <button className="detail-add-btn" onClick={handleAddToCart}>Add to Cart</button>
+            <button className="detail-buy-btn" onClick={handleBuyNow}>Buy Now</button>
           </div>
         </div>
 

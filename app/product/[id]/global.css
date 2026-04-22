@@ -146,24 +146,7 @@ span { cursor: pointer; font-size: 18px; }
 }
 .detail-buy-btn:hover { background: #f06292; color: white; }
 
-.detail-stock {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 50px;
-  display: inline-block;
-}
-.detail-stock.in-stock { background: #e8f5e9; color: #2e7d32; }
-.detail-stock.out-stock { background: #fce4ec; color: #c2185b; }
-
-.detail-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  font-size: 18px;
-  color: #f06292;
-}
+.detail-not-found {
   text-align: center;
   padding: 80px 40px;
   display: flex;
