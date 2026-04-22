@@ -36,7 +36,7 @@ export default function Keychain() {
     { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png" },
     { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png" },
     { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png" },
-    { id: "15", name: "Sweet Bow Keychain", price: "₱88.00", img: "/Sweet Bow Keychain.png" },
+    { id: "15", name: "Strawberry", price: "₱88.00", img: "/Strawberry.png" },
     { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png" },
     { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png" },
     { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png" },
