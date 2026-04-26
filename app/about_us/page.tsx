@@ -25,7 +25,7 @@ export default function AboutUs() {
 
       {/* NAVBAR */}
       <header>
-        <h1>Mae Little Loops Studio</h1>
+        <h1>Mae Sister's Bouquet</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
@@ -71,7 +71,7 @@ export default function AboutUs() {
           <span style={{fontSize:'40px'}}>🌸</span>
           <h2>About Us</h2>
           <p>
-            Mae Little Loops Studio is a small handmade business that specializes in beautiful crochet bouquets and adorable keychains.
+            Mae Sister's Bouquet is a small handmade business that specializes in beautiful crochet bouquets and adorable keychains.
             Every piece is crafted with love, care, and attention to detail — perfect as gifts or personal keepsakes.
             We believe that handmade items carry a special warmth that no store-bought product can replace.
           </p>
@@ -82,7 +82,7 @@ export default function AboutUs() {
           <Image src="/owner.jpg" alt="Mae Masarque" width={130} height={130} className="owner-img" />
           <h2>Meet the Owner</h2>
           <p className="owner-name">Mae Masarque</p>
-          <p>The heart and hands behind Mae Little Loops Studio. Passionate about crochet and bringing smiles through handmade creations.</p>
+          <p>The heart and hands behind Mae Sister's Bouquet. Passionate about crochet and bringing smiles through handmade creations.</p>
         </div>
 
       </section>
@@ -91,7 +91,7 @@ export default function AboutUs() {
       <footer>
         <div className="footer-col">
           <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
-          <h3>Mae Little Loops Studio</h3>
+          <h3>Mae Sister's Bouquet</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">

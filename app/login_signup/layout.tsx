@@ -1,7 +1,7 @@
 import "./global.css";
 
 export const metadata = {
-  title: "Mae Little Loops Studio",
+  title: "Mae Sister's Bouquet",
   description: "Home Page",
 };
 

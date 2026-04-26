@@ -49,7 +49,7 @@ export default function AdminDashboard() {
     { email: "rose@gmail.com", joined: "2025-02-10", role: "Customer" },
   ];
 
-  const [storeName, setStoreName] = useState("Mae Little Loops Studio");
+  const [storeName, setStoreName] = useState("Mae Sister's Bouquet");
   const [storeEmail, setStoreEmail] = useState("maelittleloops@gmail.com");
   const [storePhone, setStorePhone] = useState("09XXXXXXXXX");
   const [settingsSaved, setSettingsSaved] = useState(false);

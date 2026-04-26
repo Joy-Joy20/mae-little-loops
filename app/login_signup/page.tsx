@@ -12,7 +12,7 @@ export default function Home() {
 
         <Image
           src="/logo.png"
-          alt="Mae Little Loops Studio"
+          alt="Mae Sister's Bouquet"
           width={400}
           height={250}
           className="logo"
