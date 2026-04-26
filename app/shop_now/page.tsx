@@ -28,13 +28,33 @@ export default function ShopNow() {
 
       const { data: productData, error } = await supabase
         .from("products")
-        .select("id, name, price, img")
-        .limit(6);
+        .select("*");
 
-      if (error) console.error("Products fetch error:", error);
-      else if (productData) {
+      if (error) {
+        console.error("Error fetching products:", error);
+        // Fallback to hardcoded products if Supabase fails
+        setProducts([
+          { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+          { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+          { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+          { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+          { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+          { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+        ]);
+      } else {
         console.log("products:", productData);
-        setProducts(productData);
+        if (productData && productData.length > 0) setProducts(productData.slice(0, 6));
+        else {
+          // Supabase returned empty — use fallback
+          setProducts([
+            { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+            { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+            { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+            { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+            { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+            { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+          ]);
+        }
       }
 
       setLoading(false);
