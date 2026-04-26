@@ -28,8 +28,7 @@ export default function Keychain() {
 
   function handleBuyNow(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price, img });
-    router.push("/checkout");
+    setBuyNowProduct({ name, price, img });
   }
 
   const keychains = [
@@ -47,6 +46,7 @@ export default function Keychain() {
 
   return (
     <main className="keychain-page">
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
 
       {/* NAVBAR */}
       <header>
