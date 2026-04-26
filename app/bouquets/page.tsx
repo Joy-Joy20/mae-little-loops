@@ -6,10 +6,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
+import BuyNowModal from "../../components/BuyNowModal";
+
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
   const router = useRouter();
+  const [buyNowProduct, setBuyNowProduct] = useState<{name:string; price:string; img:string|null}|null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -25,8 +28,7 @@ export default function Bouquets() {
 
   function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
-    router.push("/checkout");
+    setBuyNowProduct({ name, price, img });
   }
 
   const bouquets = [
@@ -42,6 +44,7 @@ export default function Bouquets() {
 
   return (
     <main className="bouquets-page">
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
 
       {/* NAVBAR */}
       <header>

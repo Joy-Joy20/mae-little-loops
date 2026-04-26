@@ -6,10 +6,13 @@ import Image from "next/image";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
+import BuyNowModal from "../../components/BuyNowModal";
+
 export default function Keychain() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
   const router = useRouter();
+  const [buyNowProduct, setBuyNowProduct] = useState<{name:string; price:string; img:string|null}|null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
