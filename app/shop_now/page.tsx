@@ -77,7 +77,7 @@ export default function ShopNow() {
           />
           {userEmail ? (
             <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+              <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
               <button onClick={handleLogout} className="logout-btn">Logout</button>
             </div>
           ) : (
