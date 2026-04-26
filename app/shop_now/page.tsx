@@ -11,6 +11,7 @@ type Product = { id: string; name: string; price: string; img: string | null; };
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
   const { cart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,8 +27,21 @@ export default function ShopNow() {
       setUserEmail(data.session?.user?.email ?? null);
       setLoading(false);
     });
-    supabase.from("products").select("id, name, price, img").limit(6).then(({ data }) => {
-      if (data) setProducts(data);
+    supabase.from("products").select("id, name, price, img").limit(6).then(({ data, error }) => {
+      if (data && data.length > 0) {
+        setProducts(data);
+      } else {
+        // Fallback hardcoded products
+        setProducts([
+          { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+          { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+          { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+          { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+          { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+          { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+        ]);
+      }
+      setProductsLoading(false);
     });
   }, []);
 
@@ -122,8 +136,11 @@ export default function ShopNow() {
         <h2 style={{fontSize:'2rem', fontWeight:'bold', color:'#c2185b', marginBottom:'12px', textAlign:'center', width:'100%'}}>Featured Products</h2>
         <p style={{fontSize:'1rem', color:'#888', textAlign:'center', marginBottom:'1.5rem', width:'100%'}}>Discover our handmade crochet bouquets and keychains — crafted with love and perfect for every occasion. 🌸</p>
 
-        {products.length === 0 ? (
-          <p style={{color:'#aaa', padding:'40px'}}>Loading products...</p>
+        {productsLoading ? (
+          <div style={{display:'flex', alignItems:'center', gap:'12px', padding:'40px', color:'#c44dff'}}>
+            <div style={{width:'20px', height:'20px', border:'3px solid #f3e5ff', borderTop:'3px solid #c44dff', borderRadius:'50%', animation:'spin 0.8s linear infinite'}}></div>
+            <span>Loading products...</span>
+          </div>
         ) : (
           <div style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', gap:'16px', padding:'32px 0'}}>
 
