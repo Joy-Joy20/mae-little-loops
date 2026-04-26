@@ -1,0 +1,133 @@
+
+> capstone-app@0.1.0 build
+> next build
+
+▲ Next.js 16.2.3 (Turbopack)
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 6 errors:
+./app/about_us/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\about_us\global.css:63:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/about_us/global.css [Client Component Browser]
+    ./app/about_us/layout.tsx [Server Component]
+
+
+./app/cart/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\cart\global.css:108:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/cart/global.css [Client Component Browser]
+    ./app/cart/layout.tsx [Server Component]
+
+
+./app/contact_us/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\contact_us\global.css:77:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/contact_us/global.css [Client Component Browser]
+    ./app/contact_us/layout.tsx [Server Component]
+
+
+./app/dashboard/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\dashboard\global.css:87:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/dashboard/global.css [Client Component Browser]
+    ./app/dashboard/layout.tsx [Server Component]
+
+
+./app/keychain/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\keychain\global.css:72:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/keychain/global.css [Client Component Browser]
+    ./app/keychain/layout.tsx [Server Component]
+
+
+./app/shop_now/global.css
+Error evaluating Node.js code
+CssSyntaxError: c:\JG_maam_era\capstone-app\app\shop_now\global.css:161:212: Unknown word display
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:4652:22]
+    at error (node_modules/postcss/lib/parser.js:595:22) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5836:26]
+    at unknownWord (node_modules/postcss/lib/parser.js:236:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5519:26]
+    at decl (node_modules/postcss/lib/parser.js:401:18) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5665:30]
+    at other (node_modules/postcss/lib/parser.js:472:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5725:26]
+    at parse (node_modules/postcss/lib/parse.js:11:12) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:5862:16]
+    at parser (node_modules/postcss/lib/lazy-result.js:165:16) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6114:24]
+    at Processor.process (node_modules/postcss/lib/processor.js:53:14) [c:\JG_maam_era\capstone-app\.next\build\chunks\node_modules_13sb.px._.js:6580:20]
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52]
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37]
+
+Import trace:
+  Client Component Browser:
+    ./app/shop_now/global.css [Client Component Browser]
+    ./app/shop_now/layout.tsx [Server Component]
+
+
+    at process (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0d-m0h0._.js:146:52])
+    at getValue (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:29) [c:\JG_maam_era\capstone-app\.next\build\chunks\[root-of-the-server]__0ubbtyl._.js:443:37])
+    ... collapsed 10 duplicate lines matching above 2 lines 5 times...
