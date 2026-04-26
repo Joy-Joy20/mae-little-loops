@@ -124,29 +124,29 @@ export default function ShopNow() {
         {products.length === 0 ? (
           <p style={{color:'#aaa', padding:'40px'}}>Loading products...</p>
         ) : (
-          <div style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', gap:'16px', padding:'32px 40px', background:'#fce4ec', borderRadius:'16px'}}>
+          <div style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', gap:'16px', padding:'32px 0'}}>
 
             <button onClick={() => setCardIndex((i) => Math.max(i - 1, 0))} disabled={cardIndex === 0}
               style={{width:'44px', height:'44px', minWidth:'44px', borderRadius:'50%', border:'none', background: cardIndex === 0 ? '#f9c5d1' : '#e91e8c', color:'white', fontSize:'26px', cursor: cardIndex === 0 ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow:'0 4px 12px rgba(233,30,140,0.3)'}}>
               &#8249;
             </button>
 
-            <div style={{display:'flex', flexDirection:'row', gap:'20px', flex:1, justifyContent:'center'}}>
+            <div style={{display:'flex', flexDirection:'row', gap:'24px', flex:1, justifyContent:'center'}}>
               {visibleProducts.map((item) => (
-                <div key={item.id} style={{background:'white', borderRadius:'20px', overflow:'hidden', border:'1px solid #fce4ec', boxShadow:'0 4px 16px rgba(255,182,193,0.15)', display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center', flex:1, minWidth:0, maxWidth:'280px'}}>
-                  <div style={{background:'white', width:'100%', height:'200px', display:'flex', justifyContent:'center', alignItems:'center', padding:'16px'}}>
+                <div key={item.id} style={{background:'white', borderRadius:'20px', overflow:'hidden', border:'1px solid #fce4ec', boxShadow:'0 4px 16px rgba(255,182,193,0.12)', display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center', flex:1, minWidth:0, maxWidth:'280px', transition:'0.3s'}}>
+                  <div style={{background:'white', width:'100%', height:'180px', display:'flex', justifyContent:'center', alignItems:'center', padding:'16px'}}>
                     {item.img ? (
-                      <Image src={item.img} alt={item.name} width={160} height={160} style={{objectFit:'contain', width:'160px', height:'160px'}} />
+                      <Image src={item.img} alt={item.name} width={140} height={140} style={{objectFit:'contain', width:'140px', height:'140px'}} />
                     ) : (
-                      <Image src="/logo.png" alt={item.name} width={160} height={160} style={{objectFit:'contain'}} />
+                      <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
                     )}
                   </div>
-                  <div style={{padding:'16px', width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', background:'#fce4ec', borderRadius:'0 0 20px 20px'}}>
+                  <div style={{padding:'14px 16px 20px', width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', background:'white'}}>
                     <h3 style={{fontSize:'14px', fontWeight:'bold', color:'#333', lineHeight:'1.4', minHeight:'40px', display:'flex', alignItems:'center', justifyContent:'center'}}>{item.name}</h3>
-                    <p style={{fontSize:'16px', fontWeight:'bold', color:'#f06292'}}>
+                    <p style={{fontSize:'15px', fontWeight:'bold', color:'#f06292'}}>
                       {item.price && item.price.toString().startsWith('₱') ? item.price : `₱${parseFloat(item.price || '0').toFixed(2)}`}
                     </p>
-                    <button onClick={() => router.push('/bouquets')} style={{padding:'10px 24px', border:'none', borderRadius:'50px', background:'linear-gradient(90deg, #f48fb1, #f06292)', color:'white', fontWeight:'bold', fontSize:'13px', cursor:'pointer', width:'100%'}}>Shop Now</button>
+                    <button onClick={() => router.push('/bouquets')} style={{padding:'9px 22px', border:'none', borderRadius:'50px', background:'linear-gradient(90deg, #f48fb1, #f06292)', color:'white', fontWeight:'bold', fontSize:'13px', cursor:'pointer'}}>Shop Now</button>
                   </div>
                 </div>
               ))}
