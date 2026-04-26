@@ -138,7 +138,121 @@ span { cursor: pointer; font-size: 18px; }
 .dash-order-row span:first-child { color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 .dash-order-row strong { color: #f06292; font-size: 16px; }
 
-.dash-loading {
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #fce4ec;
+  padding-bottom: 0;
+}
+
+.dash-tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aaa;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: 0.2s;
+}
+.dash-tab:hover { color: #f06292; }
+.dash-tab.active { color: #c2185b; border-bottom-color: #f06292; }
+
+.dash-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(255,182,193,0.1);
+  border: 1px solid #fce4ec;
+}
+
+.dash-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #c2185b;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #fce4ec;
+}
+
+.dash-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.dash-field label { font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+.dash-field p { font-size: 15px; color: #333; }
+
+.dash-input {
+  padding: 10px 14px;
+  border: 1.5px solid #fce4ec;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fff9fb;
+  flex: 1;
+}
+.dash-input:focus { border-color: #f48fb1; }
+
+.dash-save-btn {
+  padding: 10px 20px; border: none; border-radius: 10px;
+  background: linear-gradient(90deg, #f48fb1, #f06292);
+  color: white; font-weight: bold; font-size: 13px; cursor: pointer;
+}
+.dash-cancel-btn {
+  padding: 10px 16px; border: 1.5px solid #fce4ec; border-radius: 10px;
+  background: white; color: #aaa; font-size: 13px; cursor: pointer;
+}
+.dash-edit-btn {
+  padding: 6px 14px; border: 1.5px solid #f48fb1; border-radius: 20px;
+  background: white; color: #f06292; font-size: 12px; font-weight: bold; cursor: pointer;
+}
+.dash-edit-btn:hover { background: #f06292; color: white; }
+
+.dash-table-wrapper { overflow-x: auto; }
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dash-table th {
+  font-size: 12px; font-weight: 600; color: #aaa;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 10px 16px; text-align: left;
+  border-bottom: 1px solid #fce4ec;
+}
+.dash-table td {
+  padding: 14px 16px; font-size: 14px; color: #444;
+  border-bottom: 1px solid #fce4ec;
+}
+.dash-table tr:last-child td { border-bottom: none; }
+.dash-table tr:hover td { background: #fff9fb; }
+
+.dash-order-id { font-weight: bold; color: #c2185b; }
+
+.dash-status {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: bold;
+}
+.dash-status.pending { background: #fff3e0; color: #e65100; }
+.dash-status.completed { background: #e8f5e9; color: #2e7d32; }
+.dash-status.shipped { background: #e3f2fd; color: #1565c0; }
+
+.dash-remove-btn {
+  padding: 5px 12px; border: 1.5px solid #fce4ec; border-radius: 20px;
+  background: white; color: #f06292; font-size: 12px; cursor: pointer;
+}
+.dash-remove-btn:hover { background: #f06292; color: white; }
+
+.dash-checkout-btn {
+  padding: 12px 28px; border: none; border-radius: 12px;
+  background: linear-gradient(90deg, #f48fb1, #f06292);
+  color: white; font-weight: bold; font-size: 14px; cursor: pointer;
+}
   display: flex; align-items: center; justify-content: center;
   height: 100vh; font-size: 18px; color: #f06292;
 }
