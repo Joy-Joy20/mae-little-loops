@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
-import { useCart } from "../context/CartContext";
 
 type Props = {
   product: { name: string; price: string; img: string | null } | null;
@@ -13,7 +12,6 @@ type Props = {
 
 export default function BuyNowModal({ product, onClose }: Props) {
   const router = useRouter();
-  const { addToCart } = useCart();
   const [step, setStep] = useState(1);
   const [payment, setPayment] = useState("cod");
   const [name, setName] = useState("");
@@ -47,8 +45,6 @@ export default function BuyNowModal({ product, onClose }: Props) {
     const { data: session } = await supabase.auth.getSession();
     const userId = session.session?.user?.id;
     const userEmail = session.session?.user?.email;
-
-    await addToCart({ name: product.name, price: product.price, img: product.img });
 
     const { data: order } = await supabase.from("orders").insert([{
       user_id: userId,
