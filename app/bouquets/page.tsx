@@ -53,7 +53,7 @@ export default function Bouquets() {
           <a href="/shop_now">Home</a>
           <a href="/bouquets" className="active-link">Products</a>
           <a href="/about_us">About Us</a>
-          <a href="/contact_us">Contact Us</a>`n          <a href="/dashboard">Dashboard</a>
+          <a href="/contact_us">Contact Us</a><a href="/dashboard">Dashboard</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />

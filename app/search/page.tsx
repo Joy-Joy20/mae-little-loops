@@ -37,7 +37,7 @@ function SearchResults() {
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
-          <a href="/contact_us">Contact Us</a>`n          <a href="/dashboard">Dashboard</a>
+          <a href="/contact_us">Contact Us</a><a href="/dashboard">Dashboard</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input
