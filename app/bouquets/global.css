@@ -67,12 +67,7 @@ span { cursor: pointer; font-size: 18px; }
 .buy-btn { padding: 9px 18px; border: 1.5px solid #c44dff; border-radius: 50px; background: white; color: #c44dff; font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.3s; font-family: inherit; }
 .buy-btn:hover { background: linear-gradient(135deg, #ff6b9d, #c44dff); color: white; border-color: transparent; transform: translateY(-2px); }
 
-footer {
-  background: linear-gradient(135deg, #ff6b9d, #c44dff);
-  display: flex; flex-direction: row; align-items: flex-start;
-  justify-content: space-around; flex-wrap: wrap;
-  padding: 2rem 3rem; gap: 2rem;
-}
+footer { background: linear-gradient(135deg, #ff6b9d, #c44dff); padding: 48px 40px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
 
 .footer-col {
   display: flex; flex-direction: column;
@@ -91,5 +86,5 @@ img { max-width: 100%; height: auto; }
   nav { gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; }
   .products-section { padding: 30px 16px; }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  footer { padding: 32px 20px; }
+  footer { background: linear-gradient(135deg, #ff6b9d, #c44dff); padding: 48px 40px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
 }
