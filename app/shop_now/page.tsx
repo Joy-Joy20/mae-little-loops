@@ -22,13 +22,24 @@ export default function ShopNow() {
   const visibleProducts = products.slice(cardIndex, cardIndex + visibleCount);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUserEmail(data.session?.user?.email ?? null);
+    const init = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      setUserEmail(sessionData.session?.user?.email ?? null);
+
+      const { data: productData, error } = await supabase
+        .from("products")
+        .select("id, name, price, img")
+        .limit(6);
+
+      if (error) console.error("Products fetch error:", error);
+      else if (productData) {
+        console.log("products:", productData);
+        setProducts(productData);
+      }
+
       setLoading(false);
-    });
-    supabase.from("products").select("id, name, price, img").limit(6).then(({ data }) => {
-      if (data) setProducts(data);
-    });
+    };
+    init();
   }, []);
 
   async function handleLogout() {
