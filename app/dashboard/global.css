@@ -253,6 +253,8 @@ span { cursor: pointer; font-size: 18px; }
   background: linear-gradient(90deg, #f48fb1, #f06292);
   color: white; font-weight: bold; font-size: 14px; cursor: pointer;
 }
+
+.dash-loading {
   display: flex; align-items: center; justify-content: center;
   height: 100vh; font-size: 18px; color: #f06292;
 }
