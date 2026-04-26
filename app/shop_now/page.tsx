@@ -95,6 +95,7 @@ export default function ShopNow() {
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
+          <a href="/dashboard">Dashboard</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input type="text" placeholder="Search..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch} />

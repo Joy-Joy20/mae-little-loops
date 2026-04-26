@@ -30,7 +30,7 @@ export default function AboutUs() {
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us" className="active-link">About Us</a>
-          <a href="/contact_us">Contact Us</a>
+          <a href="/contact_us">Contact Us</a>`n          <a href="/dashboard">Dashboard</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
