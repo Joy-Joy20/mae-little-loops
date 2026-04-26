@@ -83,6 +83,7 @@ export default function Dashboard() {
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
+          <a href="/dashboard" className="active-link">Dashboard</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
           <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
