@@ -113,7 +113,7 @@ export default function Bouquets() {
       {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={150} height={150} style={{borderRadius:'12px', objectFit:'contain'}} />
+          <Image src="/logo.png" alt="logo" width={180} height={180} style={{objectFit:'contain', display:'block'}} />
           <h3>Mae Sister's Bouquet</h3>
           <p>Handmade with love 🌸</p>
         </div>
