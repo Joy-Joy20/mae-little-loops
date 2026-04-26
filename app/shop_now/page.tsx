@@ -159,14 +159,16 @@ export default function ShopNow() {
               <div key={item.id} className="product-card">
                 <div className="product-img-wrapper">
                   {item.img ? (
-                    <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
+                    <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
                   ) : (
-                    <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
+                    <Image src="/logo.png" alt={item.name} width={160} height={160} className="product-img" />
                   )}
                 </div>
                 <div className="product-info">
                   <h3>{item.name}</h3>
-                  <p className="product-price">{item.price}</p>
+                  <p className="product-price">
+                    {item.price.startsWith('₱') ? item.price : `₱${parseFloat(item.price).toFixed(2)}`}
+                  </p>
                   <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
                 </div>
               </div>
