@@ -105,7 +105,7 @@ span { cursor: pointer; font-size: 18px; }
 .cart-empty button:hover { transform: translateY(-2px); }
 
 footer { background: linear-gradient(135deg, #ff6b9d, #c44dff); padding: 48px 40px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; margin-top: 40px; }
-.footer-col { display: flex; flex-direction: column; gap: 10px; }
+.footer-col { display: flex; flex-direction: column; gap: 10px; }.footer-col:first-child { align-self: flex-start; margin-top: -40px; }
 .footer-col h3 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px; }
 .footer-col p, .footer-col a { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.8; }
 .footer-col a:hover { color: white; }
