@@ -185,6 +185,73 @@ span { cursor: pointer; font-size: 18px; }
 /* PRODUCTS SECTION */
 .shop-page { min-height: 100vh; background: white; }
 
+/* HOME DESC BANNER */
+.home-desc-banner {
+  text-align: center;
+  padding: 16px 20px;
+  background: white;
+}
+.home-desc-banner p { color: #888; font-size: 1rem; margin: 0 auto; max-width: 600px; }
+
+/* GUEST LANDING PAGE */
+.guest-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff9fb, #fce4ec);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+}
+
+.guest-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 40px 60px;
+  gap: 20px;
+  max-width: 600px;
+}
+
+.guest-title { font-size: 2.2rem; font-weight: bold; color: #c2185b; }
+.guest-desc { font-size: 1rem; color: #777; line-height: 1.7; }
+
+.guest-btns { display: flex; gap: 16px; margin-top: 8px; }
+
+.guest-btn-primary {
+  padding: 14px 36px; border-radius: 50px;
+  background: linear-gradient(90deg, #f48fb1, #f06292);
+  color: white; font-weight: bold; font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(244,143,177,0.4); transition: 0.3s;
+}
+.guest-btn-primary:hover { transform: translateY(-2px); }
+
+.guest-btn-secondary {
+  padding: 14px 36px; border-radius: 50px;
+  border: 2px solid #f48fb1; background: white;
+  color: #f06292; font-weight: bold; font-size: 15px;
+  text-decoration: none; transition: 0.3s;
+}
+.guest-btn-secondary:hover { background: #fce4ec; }
+
+.guest-browse { font-size: 14px; color: #aaa; text-decoration: none; transition: 0.2s; cursor: pointer; }
+.guest-browse:hover { color: #f06292; }
+
+.guest-features {
+  display: flex; gap: 24px; padding: 0 40px 80px;
+  flex-wrap: wrap; justify-content: center; max-width: 900px;
+}
+
+.guest-feature {
+  background: white; border-radius: 20px; padding: 32px 28px;
+  text-align: center; flex: 1; min-width: 200px;
+  box-shadow: 0 4px 16px rgba(255,182,193,0.12); border: 1px solid #fce4ec;
+}
+.guest-feature span { font-size: 40px; display: block; margin-bottom: 12px; }
+.guest-feature h3 { font-size: 16px; font-weight: bold; color: #c2185b; margin-bottom: 8px; }
+.guest-feature p { font-size: 13px; color: #888; line-height: 1.6; }
+
 .products-section {
   padding: 40px 40px 60px;
   width: 100%;

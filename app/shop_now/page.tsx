@@ -1,43 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
+type Product = { id: string; name: string; price: string; img: string | null; };
+
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { cart } = useCart();
-  const [current, setCurrent] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cardIndex, setCardIndex] = useState(0);
   const router = useRouter();
 
-  const slides = [
-    { img: "/Rainbow Tulip Charm.png", alt: "Rainbow Tulip Charm" },
-    { img: "/Pastel Blossom Bouquet.png", alt: "Pastel Blossom Bouquet" },
-    { img: "/Lavender Bell Flowers.png", alt: "Lavender Bell Flowers" },
-    { img: "/Mini White Pastel Flower Bouquet.png", alt: "Mini White Pastel Flower Bouquet" },
-  ];
-
-  const products = [
-    { name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-  ];
-
-  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
-  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
-
-  useEffect(() => {
-    const timer = setInterval(next, 4000);
-    return () => clearInterval(timer);
-  }, [next]);
+  const visibleCount = 3;
+  const maxIndex = Math.max(0, products.length - visibleCount);
+  const visibleProducts = products.slice(cardIndex, cardIndex + visibleCount);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
+      setLoading(false);
+    });
+    supabase.from("products").select("id, name, price, img").limit(6).then(({ data }) => {
+      if (data) setProducts(data);
     });
   }, []);
 
@@ -54,10 +44,50 @@ export default function ShopNow() {
     }
   }
 
+  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',color:'#f06292',fontSize:'18px'}}>Loading...</div>;
+
+  /* ===== GUEST LANDING PAGE ===== */
+  if (!userEmail) {
+    return (
+      <main className="guest-page">
+        <div className="guest-hero">
+          <Image src="/logo.png" alt="Mae Little Loops Studio" width={200} height={200} style={{borderRadius:'20px'}} priority />
+          <h1 className="guest-title">Mae Little Loops Studio</h1>
+          <p className="guest-desc">Handmade with love 🌸 — Beautiful crochet bouquets and adorable keychains, crafted with care for every occasion.</p>
+          <div className="guest-btns">
+            <a href="/login" className="guest-btn-primary">Login</a>
+            <a href="/signup" className="guest-btn-secondary">Sign Up</a>
+          </div>
+          <a href="/shop_now?browse=true" className="guest-browse" onClick={(e) => { e.preventDefault(); setUserEmail("guest"); }}>
+            Browse as Guest →
+          </a>
+        </div>
+
+        <div className="guest-features">
+          <div className="guest-feature">
+            <span>💐</span>
+            <h3>Handmade Bouquets</h3>
+            <p>Beautiful crochet bouquets for every occasion</p>
+          </div>
+          <div className="guest-feature">
+            <span>🔑</span>
+            <h3>Cute Keychains</h3>
+            <p>Adorable handmade keychains as gifts or accessories</p>
+          </div>
+          <div className="guest-feature">
+            <span>🌸</span>
+            <h3>Made with Love</h3>
+            <p>Every piece crafted with care and attention to detail</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  /* ===== LOGGED-IN HOME PAGE ===== */
   return (
     <main className="shop-page">
 
-      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -67,78 +97,62 @@ export default function ShopNow() {
           <a href="/contact_us">Contact Us</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearch}
-          />
-          {userEmail ? (
-            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-              <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
-              <button onClick={handleLogout} className="logout-btn">Logout</button>
-            </div>
-          ) : (
-            <a href="/login" className="login-icon" title="Login">👤</a>
-          )}
+          <input type="text" placeholder="Search..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch} />
+          <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+            <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
+            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          </div>
           <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>
             🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
           </span>
         </div>
       </header>
 
-      {/* CATEGORY BAR */}
       <div className="category-bar">
-        <a href="/bouquets" className="category-item">
-          <span>💐</span>
-          <p>Bouquets</p>
-        </a>
-        <a href="/keychain" className="category-item">
-          <span>🔑</span>
-          <p>Keychain</p>
-        </a>
+        <a href="/bouquets" className="category-item"><span>💐</span><p>Bouquets</p></a>
+        <a href="/keychain" className="category-item"><span>🔑</span><p>Keychain</p></a>
       </div>
 
-      {/* FEATURED PRODUCTS */}
+      <div className="home-desc-banner">
+        <p>Handmade with love 🌸 — Explore our collection of beautiful bouquets and cute keychains perfect for any occasion.</p>
+      </div>
+
       <section className="products-section">
         <h2 className="section-title">Featured Products</h2>
         <p className="products-desc">Discover our handmade crochet bouquets and keychains — crafted with love and perfect for every occasion. 🌸</p>
-        <div className="products-grid">
-          {products.map((item, index) => (
-            <div key={index} className="product-card">
-              <div className="product-img-wrapper">
-                <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
+
+        <div className="carousel-wrapper">
+          <button className="carousel-arrow left" onClick={() => setCardIndex((i) => Math.max(i - 1, 0))} disabled={cardIndex === 0}>&#8249;</button>
+          <div className="carousel-cards">
+            {visibleProducts.map((item) => (
+              <div key={item.id} className="product-card">
+                <div className="product-img-wrapper">
+                  {item.img ? (
+                    <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
+                  ) : (
+                    <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
+                  )}
+                </div>
+                <div className="product-info">
+                  <h3>{item.name}</h3>
+                  <p className="product-price">{item.price}</p>
+                  <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
+                </div>
               </div>
-              <div className="product-info">
-                <h3>{item.name}</h3>
-                <p className="product-price">{item.price}</p>
-                <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <button className="carousel-arrow right" onClick={() => setCardIndex((i) => Math.min(i + 1, maxIndex))} disabled={cardIndex >= maxIndex}>&#8250;</button>
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer>
         <div className="footer-col">
           <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
-        <div className="footer-col">
-          <h3>Categories</h3>
-          <a href="/bouquets">Bouquets</a>
-          <a href="/keychain">Keychains</a>
-        </div>
-        <div className="footer-col">
-          <h3>Contact</h3>
-          <p>📧 maelittleloops@gmail.com</p>
-          <p>📱 09XXXXXXXXX</p>
-          <p>📍 Cebu City, Philippines</p>
-        </div>
+        <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
+        <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p><p>📍 Cebu City, Philippines</p></div>
       </footer>
 
     </main>
