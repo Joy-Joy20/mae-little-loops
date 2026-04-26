@@ -22,44 +22,13 @@ export default function ShopNow() {
   const visibleProducts = products.slice(cardIndex, cardIndex + visibleCount);
 
   useEffect(() => {
-    const init = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      setUserEmail(sessionData.session?.user?.email ?? null);
-
-      const { data: productData, error } = await supabase
-        .from("products")
-        .select("*");
-
-      if (error) {
-        console.error("Error fetching products:", error);
-        // Fallback to hardcoded products if Supabase fails
-        setProducts([
-          { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-          { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-          { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-          { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-          { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-          { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
-        ]);
-      } else {
-        console.log("products:", productData);
-        if (productData && productData.length > 0) setProducts(productData.slice(0, 6));
-        else {
-          // Supabase returned empty — use fallback
-          setProducts([
-            { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-            { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-            { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-            { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-            { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
-            { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
-          ]);
-        }
-      }
-
+    supabase.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user?.email ?? null);
       setLoading(false);
-    };
-    init();
+    });
+    supabase.from("products").select("id, name, price, img").limit(6).then(({ data }) => {
+      if (data) setProducts(data);
+    });
   }, []);
 
   async function handleLogout() {
@@ -83,7 +52,7 @@ export default function ShopNow() {
       <main className="guest-page">
         <div className="guest-hero">
           <Image src="/logo.png" alt="Mae Little Loops Studio" width={200} height={200} style={{borderRadius:'20px'}} priority />
-          <h1 className="guest-title">Mae Little Loops Studio</h1>
+          <h1 className="guest-title">Mae Sister's Bouquet</h1>
           <p className="guest-desc">Handmade with love 🌸 — Beautiful crochet bouquets and adorable keychains, crafted with care for every occasion.</p>
           <div className="guest-btns">
             <a href="/login" className="guest-btn-primary">Login</a>
@@ -159,16 +128,14 @@ export default function ShopNow() {
               <div key={item.id} className="product-card">
                 <div className="product-img-wrapper">
                   {item.img ? (
-                    <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
+                    <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
                   ) : (
-                    <Image src="/logo.png" alt={item.name} width={160} height={160} className="product-img" />
+                    <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
                   )}
                 </div>
                 <div className="product-info">
                   <h3>{item.name}</h3>
-                  <p className="product-price">
-                    {item.price.startsWith('₱') ? item.price : `₱${parseFloat(item.price).toFixed(2)}`}
-                  </p>
+                  <p className="product-price">{item.price}</p>
                   <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
                 </div>
               </div>
@@ -181,7 +148,7 @@ export default function ShopNow() {
       <footer>
         <div className="footer-col">
           <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
-          <h3>Mae Little Loops Studio</h3>
+          <h3>Mae Sister's Bouquet</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
