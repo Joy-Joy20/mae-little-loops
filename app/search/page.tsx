@@ -32,7 +32,7 @@ function SearchResults() {
     <main className="search-page">
 
       <header>
-        <h1>Mae Sister's Bouquet</h1>
+        <h1>Mae Little Loops Studio</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
@@ -95,7 +95,7 @@ function SearchResults() {
       </section>
 
       <footer>
-        <div className="footer-col"><h3>Mae Sister's Bouquet</h3><p>Handmade with love 🌸</p></div>
+        <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love 🌸</p></div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
         <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p></div>
       </footer>

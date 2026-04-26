@@ -95,7 +95,7 @@ export default function Checkout() {
     <main className="checkout-page">
 
       <header>
-        <h1>Mae Sister's Bouquet</h1>
+        <h1>Mae Little Loops Studio</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
@@ -270,7 +270,7 @@ export default function Checkout() {
       <footer>
         <div className="footer-col">
           <Image src="/logo.png" alt="logo" width={180} height={180} style={{objectFit:'contain', display:'block'}} />
-          <h3>Mae Sister's Bouquet</h3>
+          <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">

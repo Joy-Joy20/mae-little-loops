@@ -2,8 +2,8 @@ import "./global.css";
 import { CartProvider } from "../context/CartContext";
 
 export const metadata = {
-  title: "Mae Sister's Bouquet",
-  description: "Mae Sister's Bouquet",
+  title: "Mae Little Loops Studio",
+  description: "Mae Little Loops Studio",
 };
 
 export const viewport = {
