@@ -42,6 +42,7 @@ export default function BuyNowModal({ product, onClose }: Props) {
   }
 
   async function handlePlaceOrder() {
+    if (!product) return;
     setPlacing(true);
     const { data: session } = await supabase.auth.getSession();
     const userId = session.session?.user?.id;
