@@ -25,12 +25,12 @@ export default function AboutUs() {
 
       {/* NAVBAR */}
       <header>
-        <h1>Mae Little Loops Studio</h1>
+        <h1>Mae Sister's Bouquet</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us" className="active-link">About Us</a>
-          <a href="/contact_us">Contact Us</a><a href="/dashboard">Dashboard</a>
+          <a href="/contact_us">Contact Us</a>
         </nav>
         <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
@@ -90,8 +90,8 @@ export default function AboutUs() {
       {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={180} height={180} style={{objectFit:'contain', display:'block'}} />
-          <h3>Mae Little Loops Studio</h3>
+          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <h3>Mae Sister's Bouquet</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">
@@ -110,4 +110,3 @@ export default function AboutUs() {
     </main>
   );
 }
-
