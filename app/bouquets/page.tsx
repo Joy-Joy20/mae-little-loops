@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
+import Navbar from "../../components/Navbar";
 
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
