@@ -9,12 +9,10 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSignup() {
     setError("");
-    setSuccess("");
     if (password !== repeat) {
       setError("Passwords do not match.");
       return;
@@ -24,8 +22,7 @@ export default function Signup() {
     if (error) {
       setError(error.message);
     } else if (data.user) {
-      setSuccess("Account created! You can now log in.");
-      setTimeout(() => window.location.href = "/login", 2000);
+      window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
     } else {
       setError("Something went wrong. Please try again.");
     }
@@ -80,7 +77,6 @@ export default function Signup() {
             </div>
 
             {error && <p className="error-msg">⚠️ {error}</p>}
-            {success && <p className="success-msg">✅ {success}</p>}
 
             <button className="login-btn" onClick={handleSignup} disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}

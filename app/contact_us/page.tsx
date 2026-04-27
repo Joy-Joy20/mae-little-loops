@@ -30,9 +30,21 @@ export default function ContactUs() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSending(true);
-    const { error } = await supabase.from("messages").insert([{ name, email, subject, message }]);
+    try {
+      // Save to Supabase
+      await supabase.from("messages").insert([{ name, email, subject, message }]);
+      // Send email via Gmail SMTP
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+      if (!res.ok) throw new Error("Failed to send email");
+      setSent(true);
+    } catch {
+      alert("Something went wrong. Please try again.");
+    }
     setSending(false);
-    if (!error) setSent(true);
   }
 
   return (

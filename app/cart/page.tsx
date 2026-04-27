@@ -17,18 +17,18 @@ export default function Cart() {
     <main className="cart-page">
 
       <header>
-        <h1>Mae Little Loops Studio</h1>
+        <h1>Mae Sister's Bouquet</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
-          <a href="/contact_us">Contact Us</a><a href="/dashboard">Dashboard</a>
+          <a href="/contact_us">Contact Us</a>
         </nav>
-        <div className="nav-right">
+        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
           <input type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') router.push(`/search?q=${(e.target as HTMLInputElement).value}`); }} />
           <a href="/login" className="login-icon">👤</a>
-          <span onClick={() => router.push("/cart")} style={{cursor:'pointer', color:'white'}}>
-            🛒 {cart.length > 0 && <sup style={{background:'white', color:'#c44dff', borderRadius:'50%', padding:'1px 5px', fontSize:'10px', fontWeight:'bold'}}>{cart.length}</sup>}
+          <span onClick={() => router.push("/cart")} style={{cursor:'pointer'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
           </span>
         </div>
       </header>
@@ -82,7 +82,8 @@ export default function Cart() {
 
       <footer>
         <div className="footer-col">
-          <h3>Mae Little Loops Studio</h3>
+          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
+          <h3>Mae Sister's Bouquet</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">
@@ -101,4 +102,3 @@ export default function Cart() {
     </main>
   );
 }
-
