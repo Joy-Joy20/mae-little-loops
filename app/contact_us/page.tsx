@@ -38,7 +38,6 @@ export default function ContactUs() {
   return (
     <main className="contact-page">
 
-      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -48,30 +47,25 @@ export default function ContactUs() {
           <a href="/contact_us" className="active-link">Contact Us</a>
           <a href="/dashboard">Dashboard</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
+        <div className="nav-right">
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
           {userEmail ? (
-            <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-              <span style={{fontSize:'13px', fontWeight:'bold'}}>👤 {userEmail}</span>
+            <>
+              <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => window.location.href='/dashboard'}>👤 {userEmail.split('@')[0]}</span>
               <button onClick={handleLogout} className="logout-btn">Logout</button>
-            </div>
+            </>
           ) : (
             <a href="/login" className="login-icon" title="Login">👤</a>
           )}
-          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer'}}>🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}</span>
+          <span onClick={() => window.location.href='/cart'} style={{cursor:'pointer', color:'white'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'white', color:'#c44dff', borderRadius:'50%', padding:'1px 5px', fontSize:'10px', fontWeight:'bold'}}>{cart.length}</sup>}
+          </span>
         </div>
       </header>
 
-      {/* CATEGORY BAR */}
       <div className="category-bar">
-        <a href="/bouquets" className="category-item">
-          <span>💐</span>
-          <p>Bouquets</p>
-        </a>
-        <a href="/keychain" className="category-item">
-          <span>🔑</span>
-          <p>Keychain</p>
-        </a>
+        <a href="/bouquets" className="category-item"><span>💐</span> Bouquets</a>
+        <a href="/keychain" className="category-item"><span>🔑</span> Keychain</a>
       </div>
 
       {/* DESCRIPTION */}

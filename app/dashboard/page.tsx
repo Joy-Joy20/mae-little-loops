@@ -77,7 +77,7 @@ export default function Dashboard() {
     <main className="dash-page">
 
       <header>
-        <h1>Mae Sister&apos;s Bouquet</h1>
+        <h1>Mae Little Loops Studio</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
@@ -85,10 +85,10 @@ export default function Dashboard() {
           <a href="/contact_us">Contact Us</a>
           <a href="/dashboard" className="active-link">Dashboard</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-          <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
+        <div className="nav-right">
+          <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => router.push('/dashboard')}>👤 {userEmail?.split('@')[0]}</span>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
-          <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>🛒</span>
+          <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>🛒</span>
         </div>
       </header>
 
