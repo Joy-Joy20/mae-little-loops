@@ -40,8 +40,8 @@ span { cursor: pointer; font-size: 18px; }
 .category-item:hover { color: #c44dff; background: rgba(196,77,255,0.08); }
 
 /* ===== HERO TAGLINE ===== */
-.home-desc-banner { text-align: center; padding: 16px 20px; background: white; border-bottom: 1px solid #f3e5ff; }
-.home-desc-banner p { color: #888; font-size: 0.9rem; margin: 0 auto; max-width: 600px; line-height: 1.6; }
+.home-desc-banner { text-align: center; padding: 20px; background: linear-gradient(135deg, #fff0f5, #f3e5ff); border-bottom: 1px solid rgba(196,77,255,0.1); }
+.home-desc-banner p { color: #888; font-size: 14px; margin: 0 auto; max-width: 600px; line-height: 1.6; }
 
 /* ===== GUEST PAGE ===== */
 .guest-page { min-height: 100vh; background: linear-gradient(135deg, #fff0f5, #f3e5ff, #e8f4ff); display: flex; flex-direction: column; align-items: center; padding-top: 0; }
