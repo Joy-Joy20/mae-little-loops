@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
-type Order = { id: string; created_at: string; total_amount: number; status: string; payment: string; address: string; };
+type OrderItem = { product_name: string; quantity: number; };
+type Order = { id: string; created_at: string; total_amount: number; status: string; order_items: OrderItem[]; };
 type CartItem = { id: string; product_name: string; price: string; quantity: number; img: string | null; };
 
 export default function Dashboard() {
@@ -22,6 +23,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "cart">("profile");
 
+  async function fetchOrders(uid: string) {
+    const { data: orderData } = await supabase
+      .from("orders")
+      .select(`id, created_at, total_amount, status, order_items ( product_name, quantity )`)
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false });
+    if (orderData) setOrders(orderData as Order[]);
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       const user = data.session?.user;
@@ -34,8 +44,7 @@ export default function Dashboard() {
       if (profile?.username) { setFullName(profile.username); setEditName(profile.username); }
 
       // Fetch orders
-      const { data: orderData } = await supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
-      if (orderData) setOrders(orderData);
+      await fetchOrders(user.id);
 
       // Fetch cart
       const { data: cartData } = await supabase.from("cart").select("*").eq("user_id", user.id);
@@ -58,6 +67,18 @@ export default function Dashboard() {
     await supabase.from("cart").delete().eq("id", cartId);
     setCartItems((prev) => prev.filter((_, i) => i !== index));
     removeFromCart(index);
+  }
+
+  async function handleCancel(orderId: string) {
+    const confirmed = window.confirm("Are you sure you want to cancel this order?");
+    if (!confirmed) return;
+    const { error } = await supabase.from("orders").update({ status: "Cancelled" }).eq("id", orderId);
+    if (error) {
+      alert("Failed to cancel order. Please try again.");
+    } else {
+      alert("Order cancelled successfully.");
+      if (userId) fetchOrders(userId);
+    }
   }
 
   async function handleLogout() {
@@ -145,24 +166,35 @@ export default function Dashboard() {
             <h3 className="dash-card-title">Order History</h3>
             {orders.length === 0 ? (
               <div className="dash-empty">
-                <p>No orders yet.</p>
+                <p>No orders yet. Start shopping! 🛍️</p>
                 <button onClick={() => router.push("/bouquets")}>Start Shopping</button>
               </div>
             ) : (
               <div className="dash-table-wrapper">
                 <table className="dash-table">
                   <thead>
-                    <tr><th>Order ID</th><th>Total Amount</th><th>Status</th><th>Date</th></tr>
+                    <tr><th>Order ID</th><th>Product Name</th><th>Qty</th><th>Total</th><th>Status</th><th>Date Ordered</th><th>Action</th></tr>
                   </thead>
                   <tbody>
-                    {orders.map((order) => (
-                      <tr key={order.id}>
-                        <td className="dash-order-id">#{order.id.slice(0, 8)}...</td>
-                        <td style={{fontWeight:'bold', color:'#f06292'}}>₱{order.total_amount?.toFixed(2)}</td>
-                        <td><span className={`dash-status ${order.status}`}>{order.status}</span></td>
-                        <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
+                    {orders.map((order) => {
+                      const item = order.order_items?.[0];
+                      const canCancel = order.status === "Pending" || order.status === "Processing";
+                      return (
+                        <tr key={order.id}>
+                          <td className="dash-order-id">#{order.id.slice(0, 8)}...</td>
+                          <td>{item?.product_name ?? "—"}</td>
+                          <td>{item?.quantity ?? "—"}</td>
+                          <td style={{fontWeight:'bold', color:'#e91e8c'}}>₱{order.total_amount?.toFixed(2)}</td>
+                          <td><span className={`dash-status ${order.status?.toLowerCase()}`}>{order.status}</span></td>
+                          <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                          <td>
+                            {canCancel ? (
+                              <button className="dash-cancel-order-btn" onClick={() => handleCancel(order.id)}>Cancel</button>
+                            ) : "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -212,7 +244,7 @@ export default function Dashboard() {
       </div>
 
       <footer>
-        <div className="footer-col"><h3>Mae Sister&apos;s Bouquet</h3><p>Handmade with love 🌸</p></div>
+        <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love 🌸</p></div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
         <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p></div>
       </footer>

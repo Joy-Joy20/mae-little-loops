@@ -108,7 +108,6 @@ export default function Keychain() {
       {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={180} height={180} style={{objectFit:'contain', display:'block'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>

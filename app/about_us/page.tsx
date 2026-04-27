@@ -85,8 +85,7 @@ export default function AboutUs() {
       {/* FOOTER */}
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
-          <h3>Mae Sister's Bouquet</h3>
+          <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">

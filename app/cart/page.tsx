@@ -24,11 +24,11 @@ export default function Cart() {
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a><a href="/dashboard">Dashboard</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
+        <div className="nav-right">
           <input type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') router.push(`/search?q=${(e.target as HTMLInputElement).value}`); }} />
           <a href="/login" className="login-icon">👤</a>
-          <span onClick={() => router.push("/cart")} style={{cursor:'pointer'}}>
-            🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
+          <span onClick={() => router.push("/cart")} style={{cursor:'pointer', color:'white'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'white', color:'#c44dff', borderRadius:'50%', padding:'1px 5px', fontSize:'10px', fontWeight:'bold'}}>{cart.length}</sup>}
           </span>
         </div>
       </header>
@@ -82,7 +82,6 @@ export default function Cart() {
 
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={180} height={180} style={{objectFit:'contain', display:'block'}} />
           <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
