@@ -15,14 +15,25 @@ export default function Signup() {
 
   async function handleSignup() {
     setError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
     if (password !== repeat) {
       setError("Passwords do not match.");
       return;
     }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
-      setError(error.message);
+      setError(error.message || "An error occurred. Please try again.");
     } else {
       router.push("/shop_now");
     }
