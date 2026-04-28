@@ -52,7 +52,7 @@ export default function ShopNow() {
       <main className="guest-page">
         <div className="guest-hero">
           <Image src="/logo.png" alt="Mae Little Loops Studio" width={200} height={200} style={{borderRadius:'20px'}} priority />
-          <h1 className="guest-title">Mae Sister's Bouquet</h1>
+          <h1 className="guest-title">Mae Little Loops Studio</h1>
           <p className="guest-desc">Handmade with love 🌸 — Beautiful crochet bouquets and adorable keychains, crafted with care for every occasion.</p>
           <div className="guest-btns">
             <a href="/login" className="guest-btn-primary">Login</a>
@@ -147,8 +147,7 @@ export default function ShopNow() {
 
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={100} height={100} style={{borderRadius:'12px', objectFit:'contain'}} />
-          <h3>Mae Sister's Bouquet</h3>
+          <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
