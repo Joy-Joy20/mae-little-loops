@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 export default function Signup() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
@@ -18,13 +20,11 @@ export default function Signup() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
-    } else if (data.user) {
-      window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
     } else {
-      setError("Something went wrong. Please try again.");
+      router.push("/shop_now");
     }
     setLoading(false);
   }
