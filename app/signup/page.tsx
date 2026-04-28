@@ -31,9 +31,9 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      setError(error.message || "An error occurred. Please try again.");
+    const { error: signUpError } = await supabase.auth.signUp({ email, password });
+    if (signUpError) {
+      setError(signUpError.message || "An error occurred. Please try again.");
     } else {
       router.push("/shop_now");
     }
@@ -87,7 +87,7 @@ export default function Signup() {
               />
             </div>
 
-            {error && <p className="error-msg">⚠️ {error}</p>}
+            {error ? <p className="error-msg">⚠️ {error}</p> : null}
 
             <button className="login-btn" onClick={handleSignup} disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
