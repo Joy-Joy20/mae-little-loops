@@ -48,6 +48,20 @@ body { font-family: 'Poppins', 'Arial', sans-serif; background: linear-gradient(
 
 .verify-note { font-size: 13px; color: #bbb; }
 
+.verify-input {
+  width: 100%; padding: 14px; text-align: center; letter-spacing: 8px;
+  font-size: 22px; font-weight: 700; color: #c44dff;
+  border: 2px solid #e8d5f5; border-radius: 12px; outline: none;
+  font-family: inherit; transition: border-color 0.2s; background: #fafafa;
+}
+.verify-input:focus { border-color: #c44dff; background: white; }
+
+.verify-error {
+  font-size: 13px; color: #e57373; background: #fff0f0;
+  border: 1px solid #ffcdd2; padding: 10px 16px;
+  border-radius: 10px; width: 100%; text-align: left;
+}
+
 .verify-btn {
   display: block; width: 100%; padding: 14px;
   border-radius: 12px; border: none;

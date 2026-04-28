@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -17,7 +17,8 @@ function VerifyEmailContent() {
         <p className="verify-sub">We sent a verification link to</p>
         <p className="verify-email">{email}</p>
         <p className="verify-desc">
-          Click the link in your email to verify your account before logging in.
+          Click the <strong>Verify My Account</strong> button in your email to confirm your account.
+          After clicking, you will be redirected to the login page.
           Check your spam folder if you don&apos;t see it.
         </p>
         <div className="verify-divider" />

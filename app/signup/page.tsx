@@ -31,11 +31,34 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error: signUpError } = await supabase.auth.signUp({ email, password });
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    });
     if (signUpError) {
       setError(signUpError.message || "An error occurred. Please try again.");
     } else {
-      router.push("/shop_now");
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email,
+          subject: "Welcome to Mae Little Loops Studio! 🌸",
+          html: `
+            <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">
+              <h2 style="color:#c44dff;">Welcome to Mae Little Loops Studio! 🌸</h2>
+              <p>Thank you for signing up, <strong>${email}</strong>!</p>
+              <p>Explore our handmade crochet bouquets and keychains — crafted with love.</p>
+              <a href="${window.location.origin}/shop_now" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#ff6b9d,#c44dff);color:white;text-decoration:none;border-radius:50px;font-weight:bold;margin-top:16px;">Start Shopping</a>
+              <p style="color:#aaa;font-size:12px;margin-top:24px;">If you did not sign up, ignore this email.</p>
+            </div>
+          `,
+        }),
+      });
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     }
     setLoading(false);
   }

@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 export async function POST(req: NextRequest) {
-  const { name, email, subject, message } = await req.json();
-
-  if (!name || !email || !subject || !message) {
-    return NextResponse.json({ error: "All fields are required." }, { status: 400 });
-  }
+  const body = await req.json();
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -16,8 +12,25 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // Welcome email (from signup)
+  if (body.to) {
+    const { to, subject, html } = body;
+    await transporter.sendMail({
+      from: `"Mae Little Loops Studio" <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+    return NextResponse.json({ success: true });
+  }
+
+  // Contact form email
+  const { name, email, subject, message } = body;
+  if (!name || !email || !subject || !message) {
+    return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+  }
   await transporter.sendMail({
-    from: `"${name}" <${process.env.GMAIL_USER}>`,
+    from: `"Mae Little Loops Studio" <${process.env.GMAIL_USER}>`,
     to: process.env.GMAIL_USER,
     replyTo: email,
     subject: `[Mae Little Loops] ${subject}`,
@@ -30,6 +43,5 @@ export async function POST(req: NextRequest) {
       <p>${message.replace(/\n/g, "<br/>")}</p>
     `,
   });
-
   return NextResponse.json({ success: true });
 }
