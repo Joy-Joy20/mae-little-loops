@@ -71,6 +71,8 @@ export default function Login() {
               {loading ? "Signing in..." : "Log In"}
             </button>
 
+            <p className="forgot-link"><a href="/forgot-password">Forgot password?</a></p>
+
             <div className="divider"><span>or</span></div>
 
             <p className="signup-link">

@@ -42,7 +42,32 @@ export default function Dashboard() {
     router.push("/login");
   }
 
-  if (loading) return <div className="dash-loading">Loading...</div>;
+  if (loading) return (
+    <main className="dash-page">
+      <div className="dash-content">
+        <div className="skeleton-card" style={{marginBottom:'24px', padding:'28px 32px', display:'flex', alignItems:'center', gap:'20px'}}>
+          <div className="skeleton" style={{width:'60px', height:'60px', borderRadius:'50%', flexShrink:0}} />
+          <div style={{flex:1}}>
+            <div className="skeleton skeleton-line" style={{width:'40%'}} />
+            <div className="skeleton skeleton-line" style={{width:'60%'}} />
+          </div>
+        </div>
+        <div style={{display:'flex', gap:'10px', marginBottom:'24px'}}>
+          {[1,2,3].map(i => <div key={i} className="skeleton" style={{width:'120px', height:'40px', borderRadius:'50px'}} />)}
+        </div>
+        <div className="skeleton-card">
+          <div className="skeleton skeleton-line" style={{width:'30%', marginBottom:'24px'}} />
+          {[1,2,3].map(i => (
+            <div key={i} style={{display:'flex', gap:'16px', marginBottom:'16px'}}>
+              <div className="skeleton skeleton-line" style={{flex:1}} />
+              <div className="skeleton skeleton-line" style={{flex:1}} />
+              <div className="skeleton skeleton-line" style={{flex:1}} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
 
   return (
     <main className="dash-page">

@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-type Order = { id: string; customer: string; product: string; price: string; status: string; shipped: boolean; };
+type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { name: string; price: string; category: string; stock: number; };
-type User = { email: string; joined: string; role: string; };
+type User = { id: string; email: string; created_at: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
 
 export default function AdminDashboard() {
@@ -14,13 +14,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const [orders, setOrders] = useState<Order[]>([
-    { id: "#001", customer: "Joy", product: "Flower Bouquet", price: "₱250", status: "Completed", shipped: true },
-    { id: "#002", customer: "Ana", product: "Keychain", price: "₱150", status: "Pending", shipped: false },
-    { id: "#003", customer: "Mae", product: "Pastel Blossom Bouquet", price: "₱250", status: "Completed", shipped: true },
-    { id: "#004", customer: "Lyn", product: "Rainbow Tulip Charm", price: "₱200", status: "Pending", shipped: false },
-    { id: "#005", customer: "Rose", product: "Lavender Bell Flowers", price: "₱300", status: "Shipped", shipped: true },
-  ]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const products: Product[] = [
     { name: "Rainbow Tulip Charm", price: "₱200", category: "Bouquet", stock: 10 },
@@ -41,15 +36,7 @@ export default function AdminDashboard() {
     { name: "Brown Teddy Bear", price: "₱75", category: "Keychain", stock: 14 },
   ];
 
-  const users: User[] = [
-    { email: "joy@gmail.com", joined: "2025-01-10", role: "Customer" },
-    { email: "ana@gmail.com", joined: "2025-01-15", role: "Customer" },
-    { email: "mae@gmail.com", joined: "2025-01-20", role: "Customer" },
-    { email: "lyn@gmail.com", joined: "2025-02-01", role: "Customer" },
-    { email: "rose@gmail.com", joined: "2025-02-10", role: "Customer" },
-  ];
-
-  const [storeName, setStoreName] = useState("Mae Little Loops Studio");
+const [storeName, setStoreName] = useState("Mae Little Loops Studio");
   const [storeEmail, setStoreEmail] = useState("maelittleloops@gmail.com");
   const [storePhone, setStorePhone] = useState("09XXXXXXXXX");
   const [settingsSaved, setSettingsSaved] = useState(false);
@@ -62,6 +49,15 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
+        // Fetch real orders from Supabase
+        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, order_items ( product_name, quantity )`)
+          .order("created_at", { ascending: false })
+          .then(({ data }) => { if (data) setOrders(data as Order[]); });
+        // Fetch real users from Supabase
+        supabase.from("profiles").select("id, email, created_at")
+          .order("created_at", { ascending: false })
+          .then(({ data }) => { if (data) setUsers(data as User[]); });
+        // Fetch messages
         supabase.from("messages").select("*").order("created_at", { ascending: false }).then(({ data }) => {
           if (data) setMessages(data);
         });
@@ -74,21 +70,66 @@ export default function AdminDashboard() {
     router.push("/login");
   }
 
-  function updateOrderStatus(index: number, status: string) {
-    setOrders(prev => prev.map((o, i) => i === index ? { ...o, status } : o));
+  async function updateOrderStatus(orderId: string, newStatus: string, customerEmail: string) {
+    const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+    if (error) { alert("Failed to update status."); return; }
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+
+    // Send email notification to customer
+    const statusColors: Record<string, string> = {
+      Pending: "#856404", Processing: "#004085", Shipped: "#155724", Delivered: "#0c5460", Cancelled: "#721c24",
+    };
+    const color = statusColors[newStatus] || "#c44dff";
+    await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: customerEmail,
+        subject: `Your Order Status Updated — ${newStatus}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">
+            <h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2>
+            <p>Hi! Your order status has been updated.</p>
+            <div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;text-align:center;">
+              <p style="font-size:13px;color:#888;margin-bottom:8px;">Order Status</p>
+              <span style="background:${color}22;color:${color};padding:6px 20px;border-radius:50px;font-weight:700;font-size:16px;">${newStatus}</span>
+            </div>
+            <p style="color:#666;">Thank you for shopping with us! 💕</p>
+            <p style="color:#aaa;font-size:12px;margin-top:16px;">If you have questions, reply to this email or contact us on Facebook.</p>
+          </div>
+        `,
+      }),
+    });
   }
 
   function toggleShipped(index: number) {
-    setOrders(prev => prev.map((o, i) => i === index ? { ...o, shipped: !o.shipped } : o));
+    setOrders(prev => prev.map((o, i) => i === index ? { ...o } : o));
   }
 
-  if (loading) return <div className="admin-loading">Loading...</div>;
+  if (loading) return (
+    <div style={{display:'flex',height:'100vh',background:'#f8f4ff'}}>
+      <div style={{width:'240px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',padding:'24px',display:'flex',flexDirection:'column',gap:'12px'}}>
+        <div className="skeleton" style={{width:'120px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.3)'}} />
+        {[1,2,3,4,5,6].map(i => <div key={i} className="skeleton" style={{height:'40px',borderRadius:'10px',background:'rgba(255,255,255,0.2)'}} />)}
+      </div>
+      <div style={{flex:1,padding:'32px',display:'flex',flexDirection:'column',gap:'24px'}}>
+        <div className="skeleton" style={{width:'200px',height:'32px'}} />
+        <div style={{display:'flex',gap:'16px'}}>
+          {[1,2,3,4].map(i => <div key={i} className="skeleton-card skeleton" style={{flex:1,height:'80px'}} />)}
+        </div>
+        <div className="skeleton-card">
+          <div className="skeleton skeleton-line" style={{width:'30%',marginBottom:'20px'}} />
+          {[1,2,3,4].map(i => <div key={i} className="skeleton skeleton-line" style={{marginBottom:'12px'}} />)}
+        </div>
+      </div>
+    </div>
+  );
 
   const stats = [
     { label: "Total Products", value: products.length.toString(), icon: "🛍️", color: "#f48fb1" },
     { label: "Total Orders", value: orders.length.toString(), icon: "📦", color: "#81d4fa" },
     { label: "Total Users", value: users.length.toString(), icon: "👥", color: "#a5d6a7" },
-    { label: "Revenue", value: "₱" + orders.filter(o => o.status === "Completed").reduce((s, o) => s + parseInt(o.price.replace("₱","")), 0).toLocaleString(), icon: "💰", color: "#ffcc80" },
+    { label: "Revenue", value: "₱" + orders.filter(o => o.status === "Delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "💰", color: "#ffcc80" },
   ];
 
   const navItems = [
@@ -154,17 +195,21 @@ export default function AdminDashboard() {
                 <span className="table-badge">{orders.length} orders</span>
               </div>
               <table className="admin-table">
-                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Price</th><th>Status</th></tr></thead>
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th></tr></thead>
                 <tbody>
-                  {orders.slice(0,4).map((o, i) => (
-                    <tr key={i}>
-                      <td className="order-id">{o.id}</td>
-                      <td>{o.customer}</td>
-                      <td>{o.product}</td>
-                      <td className="order-price">{o.price}</td>
-                      <td><span className={`status-badge ${o.status === "Completed" ? "done" : o.status === "Shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
-                    </tr>
-                  ))}
+                  {orders.length === 0 ? (
+                    <tr><td colSpan={5} style={{textAlign:'center', color:'#aaa', padding:'24px'}}>No orders yet.</td></tr>
+                  ) : (
+                    orders.slice(0,4).map((o) => (
+                      <tr key={o.id}>
+                        <td className="order-id">#{o.id.slice(0,8)}...</td>
+                        <td>{o.user_email}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
+                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
+                        <td><span className={`status-badge ${o.status === "Delivered" ? "done" : o.status === "Shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -225,28 +270,31 @@ export default function AdminDashboard() {
               <span className="table-badge">{orders.length} orders</span>
             </div>
             <table className="admin-table">
-              <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Price</th><th>Status</th><th>Shipped</th></tr></thead>
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
               <tbody>
-                {orders.map((o, i) => (
-                  <tr key={i}>
-                    <td className="order-id">{o.id}</td>
-                    <td>{o.customer}</td>
-                    <td>{o.product}</td>
-                    <td className="order-price">{o.price}</td>
-                    <td>
-                      <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(i, e.target.value)}>
-                        <option>Pending</option>
-                        <option>Shipped</option>
-                        <option>Completed</option>
-                      </select>
-                    </td>
-                    <td>
-                      <button className={`shipped-btn ${o.shipped ? "yes" : "no"}`} onClick={() => toggleShipped(i)}>
-                        {o.shipped ? "✅ Shipped" : "❌ Not Shipped"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {orders.length === 0 ? (
+                  <tr><td colSpan={6} style={{textAlign:'center', color:'#aaa', padding:'24px'}}>No orders yet.</td></tr>
+                ) : (
+                  orders.map((o) => (
+                    <tr key={o.id}>
+                      <td className="order-id">#{o.id.slice(0,8)}...</td>
+                      <td>{o.user_email}</td>
+                      <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
+                      <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
+                      <td>
+                        <select className="status-select" value={o.status}
+                          onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
+                          <option>Pending</option>
+                          <option>Processing</option>
+                          <option>Shipped</option>
+                          <option>Delivered</option>
+                          <option>Cancelled</option>
+                        </select>
+                      </td>
+                      <td>{new Date(o.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -262,13 +310,17 @@ export default function AdminDashboard() {
             <table className="admin-table">
               <thead><tr><th>Email</th><th>Joined</th><th>Role</th></tr></thead>
               <tbody>
-                {users.map((u, i) => (
-                  <tr key={i}>
-                    <td>{u.email}</td>
-                    <td>{u.joined}</td>
-                    <td><span className="role-badge">{u.role}</span></td>
-                  </tr>
-                ))}
+                {users.length === 0 ? (
+                  <tr><td colSpan={3} style={{textAlign:'center', color:'#aaa', padding:'24px'}}>No users yet.</td></tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id}>
+                      <td>{u.email}</td>
+                      <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td><span className="role-badge">Customer</span></td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

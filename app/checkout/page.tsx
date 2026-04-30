@@ -81,8 +81,61 @@ export default function Checkout() {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
+      // Decrement stock for each ordered item
+      for (const item of cart) {
+        const qty = item.quantity ?? 1;
+        const { data: product } = await supabase
+          .from("products")
+          .select("id, stock")
+          .eq("name", item.name)
+          .single();
+        if (product && product.stock > 0) {
+          await supabase
+            .from("products")
+            .update({ stock: Math.max(0, product.stock - qty) })
+            .eq("id", product.id);
+        }
+      }
+
       // Clear cart
       await clearCart();
+
+      // Send order confirmation email
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: userEmail,
+          subject: "Order Confirmed — Mae Little Loops Studio 🌸",
+          html: `
+            <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+              <h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2>
+              <p>Hi <strong>${name}</strong>, your order has been placed successfully!</p>
+              <div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;">
+                <h3 style="color:#c44dff;margin-bottom:12px;">Order Summary</h3>
+                ${cart.map(item => `
+                  <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3e5ff;font-size:14px;">
+                    <span>${item.name} x${item.quantity ?? 1}</span>
+                    <span style="color:#e91e8c;font-weight:700;">₱${(parseFloat(item.price.replace('₱','').replace(',','')) * (item.quantity ?? 1)).toFixed(2)}</span>
+                  </div>
+                `).join('')}
+                <div style="display:flex;justify-content:space-between;padding:12px 0 0;font-size:16px;font-weight:700;">
+                  <span>Total</span>
+                  <span style="color:#e91e8c;">₱${total.toFixed(2)}</span>
+                </div>
+              </div>
+              <div style="background:#fff0f5;border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px;">
+                <p><strong>Delivery to:</strong> ${address}</p>
+                <p><strong>Phone:</strong> ${phone}</p>
+                <p><strong>Payment:</strong> ${payment === "gcash" ? "GCash" : "Cash on Delivery"}</p>
+              </div>
+              <p style="color:#666;">We will contact you shortly to confirm your delivery. Thank you for shopping with us! 💕</p>
+              <p style="color:#aaa;font-size:12px;margin-top:16px;">Questions? Message us on Facebook or reply to this email.</p>
+            </div>
+          `,
+        }),
+      });
+
       setPlaced(true);
     } catch (err) {
       console.error(err);
@@ -95,16 +148,16 @@ export default function Checkout() {
     <main className="checkout-page">
 
       <header>
-        <h1>Mae Sister's Bouquet</h1>
+        <h1>Mae Little Loops Studio</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
+        <div className="nav-right">
           <a href="/login" className="login-icon">👤</a>
-          <span onClick={() => router.push("/cart")} style={{cursor:'pointer'}}>🛒</span>
+          <span onClick={() => router.push("/cart")} style={{cursor:'pointer', color:'white'}}>🛒</span>
         </div>
       </header>
 
@@ -269,8 +322,7 @@ export default function Checkout() {
 
       <footer>
         <div className="footer-col">
-          <Image src="/logo.png" alt="logo" width={70} height={70} style={{borderRadius:'12px'}} />
-          <h3>Mae Sister's Bouquet</h3>
+          <h3>Mae Little Loops Studio</h3>
           <p>Handmade with love 🌸</p>
         </div>
         <div className="footer-col">

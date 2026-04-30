@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-type Product = { id: string; name: string; price: string; img: string | null; category: string; };
+type Product = { id: string; name: string; price: number; image_url: string | null; category: string; };
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -20,9 +20,10 @@ function SearchResults() {
     setLoading(true);
     supabase
       .from("products")
-      .select("id, name, price, img, category")
+      .select("id, name, price, image_url, category")
       .ilike("name", `%${query}%`)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error("Search error:", error);
         if (data) setResults(data);
         setLoading(false);
       });
@@ -32,24 +33,24 @@ function SearchResults() {
     <main className="search-page">
 
       <header>
-        <h1>Mae Sister's Bouquet</h1>
+        <h1>Mae Little Loops Studio</h1>
         <nav>
           <a href="/shop_now">Home</a>
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
+        <div className="nav-right">
           <input
             name="q"
             type="text"
             defaultValue={query}
             placeholder="Search..."
             className="search-input"
-            onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${encodeURIComponent((e.target as HTMLInputElement).value)}`; }}
+            onKeyDown={(e) => { if(e.key === 'Enter') { const q = (e.target as HTMLInputElement).value.trim().replace(/[<>"']/g, ""); if(q) window.location.href = `/search?q=${encodeURIComponent(q)}`; }}}
           />
           <a href="/login" className="login-icon">👤</a>
-          <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>🛒</span>
+          <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>🛒</span>
         </div>
       </header>
 
@@ -72,8 +73,8 @@ function SearchResults() {
               {results.map((item) => (
                 <div key={item.id} className="product-card">
                   <div className="product-img-wrapper">
-                    {item.img ? (
-                      <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
+                    {item.image_url ? (
+                      <Image src={item.image_url} alt={item.name} width={160} height={160} className="product-img" />
                     ) : (
                       <div style={{fontSize:'60px', lineHeight:'1'}}>
                         {item.category === "bouquet" ? "🌸" : "🔑"}
@@ -82,7 +83,7 @@ function SearchResults() {
                   </div>
                   <div className="product-info">
                     <h3>{item.name}</h3>
-                    <p className="product-price">{item.price}</p>
+                    <p className="product-price">₱{parseFloat(String(item.price)).toFixed(2)}</p>
                     <button className="shop-btn" onClick={() => router.push(item.category === "bouquet" ? "/bouquets" : "/keychain")}>
                       Shop Now
                     </button>
@@ -95,7 +96,7 @@ function SearchResults() {
       </section>
 
       <footer>
-        <div className="footer-col"><h3>Mae Sister's Bouquet</h3><p>Handmade with love 🌸</p></div>
+        <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love 🌸</p></div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
         <div className="footer-col"><h3>Contact</h3><p>📧 maelittleloops@gmail.com</p><p>📱 09XXXXXXXXX</p></div>
       </footer>

@@ -60,7 +60,15 @@ export default function ShopNow() {
     }
   }
 
-  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',color:'#f06292',fontSize:'18px'}}>Loading...</div>;
+  if (loading) return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'linear-gradient(135deg,#fff0f5,#f3e5ff)'}}>
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'16px'}}>
+        <div className="skeleton" style={{width:'80px',height:'80px',borderRadius:'50%'}} />
+        <div className="skeleton" style={{width:'200px',height:'20px'}} />
+        <div className="skeleton" style={{width:'140px',height:'16px'}} />
+      </div>
+    </div>
+  );
 
   /* ===== GUEST LANDING PAGE ===== */
   if (!userEmail) {
@@ -138,7 +146,20 @@ export default function ShopNow() {
         <p className="products-desc">Discover our handmade crochet bouquets and keychains — crafted with love and perfect for every occasion. 🌸</p>
 
         {productsLoading ? (
-          <p style={{color:'#c44dff', textAlign:'center', padding:'40px'}}>Loading products...</p>
+          <div className="carousel-wrapper">
+            <div style={{width:'48px', minWidth:'48px'}} />
+            <div className="carousel-cards">
+              {[1,2,3].map((i) => (
+                <div key={i} className="skeleton-card" style={{flex:1, minWidth:0, maxWidth:'280px'}}>
+                  <div className="skeleton skeleton-circle" />
+                  <div className="skeleton skeleton-line" style={{width:'80%', margin:'0 auto 10px'}} />
+                  <div className="skeleton skeleton-line" style={{width:'50%', margin:'0 auto 10px'}} />
+                  <div className="skeleton skeleton-btn" />
+                </div>
+              ))}
+            </div>
+            <div style={{width:'48px', minWidth:'48px'}} />
+          </div>
         ) : (
           <div className="carousel-wrapper">
             <button className="carousel-arrow" onClick={() => setCardIndex((i) => Math.max(i - 1, 0))} disabled={cardIndex === 0}>&#8249;</button>

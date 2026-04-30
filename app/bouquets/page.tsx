@@ -14,6 +14,22 @@ export default function Bouquets() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [buyNowProduct, setBuyNowProduct] = useState<{name:string; price:string; img:string|null}|null>(null);
+  const [page, setPage] = useState(0);
+  const perPage = 4;
+
+  const bouquets = [
+    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png" },
+    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png" },
+    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png" },
+    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png" },
+  ];
+
+  const totalPages = Math.ceil(bouquets.length / perPage);
+  const paginated = bouquets.slice(page * perPage, page * perPage + perPage);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -31,17 +47,6 @@ export default function Bouquets() {
     if (!userEmail) { router.push("/login"); return; }
     setBuyNowProduct({ name, price, img });
   }
-
-  const bouquets = [
-    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png" },
-    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png" },
-    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png" },
-    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png" },
-  ];
 
   return (
     <main className="bouquets-page">
@@ -88,8 +93,8 @@ export default function Bouquets() {
       <section className="products-section">
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
-          {bouquets.map((item, index) => (
-            <div key={index} className="product-card">
+          {paginated.map((item, index) => (
+            <div key={index} className="product-card" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
               <div className="product-img-wrapper">
                 {item.img ? (
                   <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
@@ -100,12 +105,21 @@ export default function Bouquets() {
               <h3 className="product-name">{item.name}</h3>
               <p className="product-price">{item.price}</p>
               <div className="btn-row">
-                <button className="add-btn" onClick={() => handleAddToCart(item.name, item.price, item.img ?? null)}>Add to Cart</button>
-                <button className="buy-btn" onClick={() => handleBuyNow(item.name, item.price, item.img ?? null)}>Buy Now</button>
+                <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
+                <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
               </div>
             </div>
           ))}
         </div>
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button className="page-btn" onClick={() => setPage(p => Math.max(p - 1, 0))} disabled={page === 0}>← Prev</button>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button key={i} className={`page-btn ${page === i ? "active" : ""}`} onClick={() => setPage(i)}>{i + 1}</button>
+            ))}
+            <button className="page-btn" onClick={() => setPage(p => Math.min(p + 1, totalPages - 1))} disabled={page === totalPages - 1}>Next →</button>
+          </div>
+        )}
       </section>
 
       {/* FOOTER */}

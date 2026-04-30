@@ -61,6 +61,10 @@ body { font-family: 'Poppins', 'Arial', sans-serif; }
 .divider { display: flex; align-items: center; gap: 12px; color: #ccc; font-size: 13px; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #f3e5ff; }
 
+.forgot-link { text-align: right; font-size: 13px; margin-top: -8px; }
+.forgot-link a { color: #c44dff; font-weight: 600; text-decoration: none; }
+.forgot-link a:hover { text-decoration: underline; }
+
 .signup-link { text-align: center; font-size: 14px; color: #aaa; }
 .signup-link a { color: #c44dff; font-weight: 700; text-decoration: none; }
 .signup-link a:hover { text-decoration: underline; }
