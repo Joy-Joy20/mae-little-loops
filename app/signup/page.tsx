@@ -75,7 +75,11 @@ export default function Signup() {
     setLoading(true);
     const { error: signUpError } = await supabase.auth.signUp({ email, password });
     if (signUpError) {
-      setError(signUpError.message || "An error occurred. Please try again.");
+      if (signUpError.message === "User already registered") {
+        setError("This email is already registered. Please log in instead.");
+      } else {
+        setError(signUpError.message || "An error occurred. Please try again.");
+      }
       setLoading(false);
       return;
     }
@@ -150,7 +154,16 @@ export default function Signup() {
                   <label>Confirm Password</label>
                   <input type="password" placeholder="Repeat your password" value={repeat} onChange={(e) => setRepeat(e.target.value)} />
                 </div>
-                {error ? <p className="error-msg">⚠️ {error}</p> : null}
+                {error ? (
+                  <div>
+                    <p className="error-msg">⚠️ {error}</p>
+                    {error.includes("already registered") && (
+                      <p className="signup-link" style={{marginTop:'8px'}}>
+                        Already have an account? <a href="/login">Log in</a>
+                      </p>
+                    )}
+                  </div>
+                ) : null}
                 <button className="login-btn" onClick={handleSignup} disabled={loading}>
                   {loading ? "Creating account..." : "Sign Up"}
                 </button>
