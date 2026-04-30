@@ -1,6 +1,10 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 body { font-family: 'Poppins', 'Arial', sans-serif; background: #fafafa; color: #333; padding-top: 70px; }
 a { text-decoration: none; color: inherit; }
+
+/* Guest page overrides body padding since it has no navbar */
+body:has(.guest-page) { padding-top: 0; background: linear-gradient(135deg, #fff0f5, #f3e5ff, #e8f4ff); }
 
 /* ===== NAVBAR ===== */
 header {
@@ -44,7 +48,16 @@ span { cursor: pointer; font-size: 18px; }
 .home-desc-banner p { color: #888; font-size: 14px; margin: 0 auto; max-width: 600px; line-height: 1.6; }
 
 /* ===== GUEST PAGE ===== */
-.guest-page { min-height: 100vh; background: linear-gradient(135deg, #fff0f5, #f3e5ff, #e8f4ff); display: flex; flex-direction: column; align-items: center; padding-top: 0; }
+.guest-page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #fff0f5, #f3e5ff, #e8f4ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  margin: 0;
+}
 .guest-hero { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 80px 40px 60px; gap: 20px; max-width: 600px; }
 .guest-title { font-size: 2.4rem; font-weight: 700; color: #c44dff; letter-spacing: -0.5px; }
 .guest-desc { font-size: 1rem; color: #777; line-height: 1.7; }
