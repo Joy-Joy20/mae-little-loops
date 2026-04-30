@@ -13,9 +13,19 @@ export default function ShopNow() {
   const [loading, setLoading] = useState(true);
   const { cart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
   const router = useRouter();
+
+  const fallback: Product[] = [
+    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
+    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
+    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
+    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
+    { id: "5", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png" },
+    { id: "6", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png" },
+  ];
 
   const visibleCount = 3;
   const maxIndex = Math.max(0, products.length - visibleCount);
@@ -26,8 +36,14 @@ export default function ShopNow() {
       setUserEmail(data.session?.user?.email ?? null);
       setLoading(false);
     });
-    supabase.from("products").select("id, name, price, img").limit(6).then(({ data }) => {
-      if (data) setProducts(data);
+    supabase.from("products").select("id, name, price, image_url").limit(6).then(({ data, error }) => {
+      if (error) console.error("Error fetching products:", error);
+      if (data && data.length > 0) {
+        setProducts(data.map((p) => ({ id: String(p.id), name: p.name, price: `₱${parseFloat(p.price).toFixed(2)}`, img: p.image_url || null })));
+      } else {
+        setProducts(fallback);
+      }
+      setProductsLoading(false);
     });
   }, []);
 
@@ -121,28 +137,32 @@ export default function ShopNow() {
         <h2 className="section-title">Featured Products</h2>
         <p className="products-desc">Discover our handmade crochet bouquets and keychains — crafted with love and perfect for every occasion. 🌸</p>
 
-        <div className="carousel-wrapper">
-          <button className="carousel-arrow left" onClick={() => setCardIndex((i) => Math.max(i - 1, 0))} disabled={cardIndex === 0}>&#8249;</button>
-          <div className="carousel-cards">
-            {visibleProducts.map((item) => (
-              <div key={item.id} className="product-card">
-                <div className="product-img-wrapper">
-                  {item.img ? (
-                    <Image src={item.img} alt={item.name} width={180} height={180} className="product-img" />
-                  ) : (
-                    <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
-                  )}
+        {productsLoading ? (
+          <p style={{color:'#c44dff', textAlign:'center', padding:'40px'}}>Loading products...</p>
+        ) : (
+          <div className="carousel-wrapper">
+            <button className="carousel-arrow" onClick={() => setCardIndex((i) => Math.max(i - 1, 0))} disabled={cardIndex === 0}>&#8249;</button>
+            <div className="carousel-cards">
+              {visibleProducts.map((item) => (
+                <div key={item.id} className="product-card">
+                  <div className="product-img-wrapper">
+                    {item.img ? (
+                      <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
+                    ) : (
+                      <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
+                    )}
+                  </div>
+                  <div className="product-info">
+                    <h3>{item.name}</h3>
+                    <p className="product-price">{item.price}</p>
+                    <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
+                  </div>
                 </div>
-                <div className="product-info">
-                  <h3>{item.name}</h3>
-                  <p className="product-price">{item.price}</p>
-                  <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <button className="carousel-arrow" onClick={() => setCardIndex((i) => Math.min(i + 1, maxIndex))} disabled={cardIndex >= maxIndex}>&#8250;</button>
           </div>
-          <button className="carousel-arrow right" onClick={() => setCardIndex((i) => Math.min(i + 1, maxIndex))} disabled={cardIndex >= maxIndex}>&#8250;</button>
-        </div>
+        )}
       </section>
 
       <footer>

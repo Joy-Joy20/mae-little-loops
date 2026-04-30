@@ -60,7 +60,7 @@ export default function ContactUs() {
           <a href="/dashboard">Dashboard</a>
         </nav>
         <div className="nav-right">
-          <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') window.location.href = `/search?q=${(e.target as HTMLInputElement).value}`; }} />
+          <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') { const q = (e.target as HTMLInputElement).value.trim().replace(/[<>"']/g, ""); if(q) window.location.href = `/search?q=${encodeURIComponent(q)}`; }}} />
           {userEmail ? (
             <>
               <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => window.location.href='/dashboard'}>👤 {userEmail.split('@')[0]}</span>
@@ -103,7 +103,7 @@ export default function ContactUs() {
                 <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
               </svg>
             </span>
-            <a href="https://www.facebook.com/mae.09706383306" target="_blank">Mae Orayan Masarque</a>
+            <a href="https://www.facebook.com/mae.09706383306" target="_blank" rel="noopener noreferrer">Mae Orayan Masarque</a>
           </div>
         </div>
 
