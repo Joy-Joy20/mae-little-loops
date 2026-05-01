@@ -40,7 +40,7 @@ export default function ForgotPassword() {
     <main className="login-page">
 
       <div className="login-left">
-        <Image src="/logo.png" alt="Mae Little Loops Studio" width={420} height={420} className="login-logo" />
+        <Image src="/logo.png" alt="Mae Little Loops Studio" width={420} height={420} className="login-logo" priority />
         <h1>Mae Little Loops Studio</h1>
         <p>Handmade with love 🌸</p>
       </div>

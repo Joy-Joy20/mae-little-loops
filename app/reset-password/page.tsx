@@ -14,11 +14,15 @@ export default function ResetPassword() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Supabase sets the session from the URL hash after clicking the reset link
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady(true);
-      else setError("Invalid or expired reset link. Please request a new one.");
+    // Handle the recovery token from the URL hash (Supabase sets session via PKCE/implicit flow)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
+        setReady(true);
+      } else if (!session) {
+        setError("Invalid or expired reset link. Please request a new one.");
+      }
     });
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleUpdate() {
@@ -40,7 +44,7 @@ export default function ResetPassword() {
     <main className="login-page">
 
       <div className="login-left">
-        <Image src="/logo.png" alt="Mae Little Loops Studio" width={420} height={420} className="login-logo" />
+        <Image src="/logo.png" alt="Mae Little Loops Studio" width={420} height={420} className="login-logo" priority />
         <h1>Mae Little Loops Studio</h1>
         <p>Handmade with love 🌸</p>
       </div>
