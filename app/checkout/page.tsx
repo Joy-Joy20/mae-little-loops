@@ -215,16 +215,16 @@ export default function Checkout() {
               <div className="checkout-card">
                 <h3>Delivery Information</h3>
                 <div className="form-group">
-                  <label>Full Name</label>
-                  <input type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} />
+                  <label htmlFor="checkout-name">Full Name</label>
+                  <input id="checkout-name" name="name" type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="form-group">
-                  <label>Address</label>
-                  <input type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                  <label htmlFor="checkout-address">Address</label>
+                  <input id="checkout-address" name="address" type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </div>
                 <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="text" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <label htmlFor="checkout-phone">Phone Number</label>
+                  <input id="checkout-phone" name="phone" type="text" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 </div>
                 <div className="btn-row">
                   <button className="back-btn" onClick={() => setStep(1)}>← Back</button>
@@ -272,8 +272,10 @@ export default function Checkout() {
                     </ol>
 
                     <div className="form-group" style={{marginTop:'16px'}}>
-                      <label>Upload GCash Receipt *</label>
+                      <label htmlFor="gcash-receipt">Upload GCash Receipt *</label>
                       <input
+                        id="gcash-receipt"
+                        name="gcash-receipt"
                         type="file"
                         accept="image/*"
                         onChange={handleReceiptUpload}
