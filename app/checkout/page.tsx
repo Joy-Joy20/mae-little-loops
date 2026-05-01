@@ -332,9 +332,9 @@ export default function Checkout() {
         </div>
         <div className="footer-col">
           <h3>Contact</h3>
-          <p>📧 maelittleloops@gmail.com</p>
-          <p>📱 09XXXXXXXXX</p>
-          <p>📍 Cebu City, Philippines</p>
+          <p>📧 masarquemae65@gmail.com</p>
+          <p>📱 09706383306</p>
+          <p>📍 Masbate, Philippines</p>
         </div>
       </footer>
 

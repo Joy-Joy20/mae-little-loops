@@ -95,7 +95,7 @@ export default function ContactUs() {
           <div className="info-item"><span className="info-icon">📱</span><p>09706383306</p></div>
           <div className="info-item"><span className="info-icon">📍</span><p>Masbate, Philippines</p></div>
           <div className="info-item"><span className="info-icon">⏰</span><p>Mon - Sat, 8:00 AM - 6:00 PM</p></div>
-          <div className="info-item"><span className="info-icon">🚚</span><p>Available within Cebu City</p></div>
+          <div className="info-item"><span className="info-icon">🚚</span><p>Available within Masbate</p></div>
           <div className="info-item"><span className="info-icon">💳</span><p>Cash on Delivery / GCash</p></div>
           <div className="info-item">
             <span className="info-icon">
@@ -155,9 +155,9 @@ export default function ContactUs() {
         </div>
         <div className="footer-col">
           <h3>Contact</h3>
-          <p>📧 maelittleloops@gmail.com</p>
-          <p>📱 09XXXXXXXXX</p>
-          <p>📍 Cebu City, Philippines</p>
+          <p>📧 masarquemae65@gmail.com</p>
+          <p>📱 09706383306</p>
+          <p>📍 Masbate, Philippines</p>
         </div>
       </footer>
 
