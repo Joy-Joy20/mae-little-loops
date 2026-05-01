@@ -39,7 +39,18 @@ export default function ShopNow() {
     supabase.from("products").select("id, name, price, image_url").limit(6).then(({ data, error }) => {
       if (error) console.error("Error fetching products:", error);
       if (data && data.length > 0) {
-        setProducts(data.map((p) => ({ id: String(p.id), name: p.name, price: `₱${parseFloat(p.price).toFixed(2)}`, img: p.image_url || null })));
+        const mapped = data.map((p) => ({
+          id: String(p.id),
+          name: p.name,
+          price: `₱${parseFloat(p.price).toFixed(2)}`,
+          img: p.image_url && p.image_url.trim() !== "" ? p.image_url : null,
+        }));
+        // If all image_urls are empty, use fallback images by name
+        const withImages = mapped.map((p) => ({
+          ...p,
+          img: p.img ?? (fallback.find(f => f.name === p.name)?.img ?? null),
+        }));
+        setProducts(withImages);
       } else {
         setProducts(fallback);
       }
@@ -166,11 +177,15 @@ export default function ShopNow() {
               {visibleProducts.map((item) => (
                 <div key={item.id} className="product-card">
                   <div className="product-img-wrapper">
-                    {item.img ? (
-                      <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
-                    ) : (
-                      <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
-                    )}
+                    <img
+                      src={item.img ?? "/Rainbow Tulip Charm.png"}
+                      alt={item.name}
+                      width={160}
+                      height={160}
+                      className="product-img"
+                      style={{objectFit:'contain', objectPosition:'center', display:'block', margin:'0 auto'}}
+                      onError={(e) => { (e.target as HTMLImageElement).src = "/Rainbow Tulip Charm.png"; }}
+                    />
                   </div>
                   <div className="product-info">
                     <h3>{item.name}</h3>
