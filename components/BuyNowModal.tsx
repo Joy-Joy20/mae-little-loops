@@ -68,6 +68,7 @@ export default function BuyNowModal({ product, onClose }: Props) {
 
     setPlacing(false);
     setPlaced(true);
+    setTimeout(() => { onClose(); }, 3000);
   }
 
   return (
@@ -78,9 +79,9 @@ export default function BuyNowModal({ product, onClose }: Props) {
         {placed ? (
           <div className="modal-success">
             <div style={{fontSize:'48px'}}>✅</div>
-            <h2>Order Placed!</h2>
-            <p>Thank you for your purchase 🌸</p>
-            <button className="modal-btn" onClick={() => { onClose(); router.push("/shop_now"); }}>Continue Shopping</button>
+            <h2>Order placed successfully! 🌸</h2>
+            <p>Thank you for your purchase. We will contact you shortly.</p>
+            <p style={{fontSize:'13px', color:'#aaa', marginTop:'8px'}}>This will close automatically...</p>
           </div>
         ) : (
           <>

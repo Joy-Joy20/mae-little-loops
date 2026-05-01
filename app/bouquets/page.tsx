@@ -16,6 +16,7 @@ export default function Bouquets() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
 
   const bouquets: Product[] = [
     { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
@@ -46,13 +47,14 @@ export default function Bouquets() {
 
   function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
     setSelectedProduct(null);
-    router.push("/checkout");
+    setBuyNowProduct({ id: "", name, price, img });
   }
 
   return (
     <main className="bouquets-page">
+
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
@@ -127,7 +129,7 @@ export default function Bouquets() {
               <h3 className="product-name">{item.name}</h3>
               <p className="product-price">{item.price}</p>
               <div className="btn-row">
-                <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
+              <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
                 <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
               </div>
             </div>

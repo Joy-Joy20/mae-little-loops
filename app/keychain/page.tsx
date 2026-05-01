@@ -15,6 +15,7 @@ export default function Keychain() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Keychain | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<Keychain | null>(null);
 
   const keychains: Keychain[] = [
     { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
@@ -47,13 +48,14 @@ export default function Keychain() {
 
   function handleBuyNow(name: string, price: string, img: string) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price, img });
     setSelectedProduct(null);
-    router.push("/checkout");
+    setBuyNowProduct({ id: "", name, price, img });
   }
 
   return (
     <main className="keychain-page">
+
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
