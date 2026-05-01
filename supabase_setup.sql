@@ -88,6 +88,19 @@ create policy "Anyone can view products"
   on public.products for select
   using (true);
 
+create policy "Admin can insert products"
+  on public.products for insert
+  with check ((auth.jwt() ->> 'email') = 'admin@maelittleloops.com');
+
+create policy "Admin can update products"
+  on public.products for update
+  using ((auth.jwt() ->> 'email') = 'admin@maelittleloops.com')
+  with check ((auth.jwt() ->> 'email') = 'admin@maelittleloops.com');
+
+create policy "Admin can delete products"
+  on public.products for delete
+  using ((auth.jwt() ->> 'email') = 'admin@maelittleloops.com');
+
 -- Orders: users can only view their own orders
 create policy "Users can view own orders"
   on public.orders for select
