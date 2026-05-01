@@ -2,16 +2,15 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import QuantitySelector from "./QuantitySelector";
 
 type Props = {
-  product: { name: string; price: string; img: string | null } | null;
+  product: { name: string; price: string; img: string | null; quantity?: number } | null;
   onClose: () => void;
 };
 
 export default function BuyNowModal({ product, onClose }: Props) {
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [payment, setPayment] = useState("cod");
   const [name, setName] = useState("");
@@ -21,10 +20,12 @@ export default function BuyNowModal({ product, onClose }: Props) {
   const [uploading, setUploading] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
+  const [quantity, setQuantity] = useState(product?.quantity ?? 1);
 
   if (!product) return null;
 
-  const price = parseFloat(product.price.replace("₱", "").replace(",", ""));
+  const unitPrice = parseFloat(product.price.replace("₱", "").replace(",", ""));
+  const totalPrice = unitPrice * quantity;
 
   async function handleReceiptUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -49,9 +50,11 @@ export default function BuyNowModal({ product, onClose }: Props) {
     const { data: order } = await supabase.from("orders").insert([{
       user_id: userId,
       user_email: userEmail,
-      total_amount: price,
+      total_amount: totalPrice,
       status: "pending",
-      name, address, phone,
+      name,
+      address,
+      phone,
       payment: payment === "gcash" ? "GCash" : "Cash on Delivery",
       receipt_url: receiptUrl ?? null,
     }]).select().single();
@@ -61,7 +64,7 @@ export default function BuyNowModal({ product, onClose }: Props) {
         order_id: order.id,
         product_name: product.name,
         price: product.price,
-        quantity: 1,
+        quantity,
         img: product.img ?? null,
       }]);
     }
@@ -78,24 +81,29 @@ export default function BuyNowModal({ product, onClose }: Props) {
 
         {placed ? (
           <div className="modal-success">
-            <div style={{fontSize:'48px'}}>✅</div>
+            <div style={{ fontSize: "48px" }}>✅</div>
             <h2>Order placed successfully! 🌸</h2>
             <p>Thank you for your purchase. We will contact you shortly.</p>
-            <p style={{fontSize:'13px', color:'#aaa', marginTop:'8px'}}>This will close automatically...</p>
+            <p style={{ fontSize: "13px", color: "#aaa", marginTop: "8px" }}>This will close automatically...</p>
           </div>
         ) : (
           <>
             <div className="modal-product">
-              {product.img && <Image src={product.img} alt={product.name} width={80} height={80} style={{borderRadius:'12px', objectFit:'contain'}} />}
+              {product.img && <Image src={product.img} alt={product.name} width={80} height={80} style={{ borderRadius: "12px", objectFit: "contain" }} />}
               <div>
                 <p className="modal-product-name">{product.name}</p>
-                <p className="modal-product-price">{product.price}</p>
+                <p className="modal-product-price">₱{totalPrice.toFixed(2)}</p>
+                <p style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>Unit price: ₱{unitPrice.toFixed(2)}</p>
               </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+              <QuantitySelector value={quantity} onChange={setQuantity} />
             </div>
 
             <div className="modal-steps">
               {["Delivery", "Payment", "Confirm"].map((label, i) => (
-                <div key={i} style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   <div className={`modal-step ${step >= i + 1 ? "active" : ""}`}>{i + 1}. {label}</div>
                   {i < 2 && <div className="modal-step-line" />}
                 </div>
@@ -123,14 +131,14 @@ export default function BuyNowModal({ product, onClose }: Props) {
                 </label>
                 {payment === "gcash" && (
                   <div className="modal-gcash">
-                    <img src="/gcash-qr.png" alt="GCash QR" style={{width:'140px', borderRadius:'8px', border:'1px solid #fce4ec'}} />
-                    <p style={{fontSize:'12px', color:'#888', textAlign:'center'}}>Scan to pay ₱{price.toFixed(2)}</p>
+                    <img src="/gcash-qr.png" alt="GCash QR" style={{ width: "140px", borderRadius: "8px", border: "1px solid #fce4ec" }} />
+                    <p style={{ fontSize: "12px", color: "#888", textAlign: "center" }}>Scan to pay ₱{totalPrice.toFixed(2)}</p>
                     <input type="file" accept="image/*" onChange={handleReceiptUpload} />
-                    {uploading && <p style={{fontSize:'12px', color:'#aaa'}}>Uploading...</p>}
-                    {receiptUrl && <p style={{fontSize:'12px', color:'#66bb6a'}}>✅ Receipt uploaded!</p>}
+                    {uploading && <p style={{ fontSize: "12px", color: "#aaa" }}>Uploading...</p>}
+                    {receiptUrl && <p style={{ fontSize: "12px", color: "#66bb6a" }}>✅ Receipt uploaded!</p>}
                   </div>
                 )}
-                <div style={{display:'flex', gap:'10px'}}>
+                <div style={{ display: "flex", gap: "10px" }}>
                   <button className="modal-btn-outline" onClick={() => setStep(1)}>← Back</button>
                   <button className="modal-btn" onClick={() => setStep(3)} disabled={payment === "gcash" && !receiptUrl}>Next →</button>
                 </div>
@@ -140,12 +148,14 @@ export default function BuyNowModal({ product, onClose }: Props) {
             {step === 3 && (
               <div className="modal-form">
                 <div className="modal-confirm-row"><span>Product</span><span>{product.name}</span></div>
-                <div className="modal-confirm-row"><span>Price</span><span>{product.price}</span></div>
+                <div className="modal-confirm-row"><span>Quantity</span><span>{quantity}</span></div>
+                <div className="modal-confirm-row"><span>Unit Price</span><span>₱{unitPrice.toFixed(2)}</span></div>
+                <div className="modal-confirm-row"><span>Total</span><span>₱{totalPrice.toFixed(2)}</span></div>
                 <div className="modal-confirm-row"><span>Name</span><span>{name}</span></div>
                 <div className="modal-confirm-row"><span>Address</span><span>{address}</span></div>
                 <div className="modal-confirm-row"><span>Phone</span><span>{phone}</span></div>
                 <div className="modal-confirm-row"><span>Payment</span><span>{payment === "gcash" ? "GCash" : "Cash on Delivery"}</span></div>
-                <div style={{display:'flex', gap:'10px'}}>
+                <div style={{ display: "flex", gap: "10px" }}>
                   <button className="modal-btn-outline" onClick={() => setStep(2)}>← Back</button>
                   <button className="modal-btn" onClick={handlePlaceOrder} disabled={placing}>{placing ? "Placing..." : "Place Order"}</button>
                 </div>

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 import BuyNowModal from "../../components/BuyNowModal";
+import QuantitySelector from "../../components/QuantitySelector";
 
 type Product = { id: string; name: string; price: number; image_url: string | null; category: string; };
 
@@ -18,7 +19,8 @@ function SearchResults() {
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [buyNowProduct, setBuyNowProduct] = useState<{ name: string; price: string; img: string | null } | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<{ name: string; price: string; img: string | null; quantity?: number } | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -37,15 +39,18 @@ function SearchResults() {
       });
   }, [query]);
 
-  function handleAddToCart(name: string, price: string, img: string | null) {
+  const getQuantity = (id: string) => quantities[id] ?? 1;
+  const setQuantity = (id: string, value: number) => setQuantities((prev) => ({ ...prev, [id]: value }));
+
+  function handleAddToCart(name: string, price: string, img: string | null, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
+    addToCart({ name, price, img, quantity });
     alert(`${name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string | null) {
+  function handleBuyNow(name: string, price: string, img: string | null, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
-    setBuyNowProduct({ name, price, img });
+    setBuyNowProduct({ name, price, img, quantity });
   }
 
   async function handleLogout() {
@@ -56,7 +61,7 @@ function SearchResults() {
   return (
     <main className="search-page">
 
-      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+      {buyNowProduct && <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />}
 
       <header>
         <h1>Mae Little Loops Studio</h1>
@@ -118,9 +123,12 @@ function SearchResults() {
                     <div className="product-info">
                       <h3>{item.name}</h3>
                       <p className="product-price">{price}</p>
+                      <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
+                        <QuantitySelector value={getQuantity(item.id)} onChange={(value) => setQuantity(item.id, value)} compact />
+                      </div>
                       <div className="btn-row">
-                        <button className="add-btn" onClick={() => handleAddToCart(item.name, price, img)}>Add to Cart</button>
-                        <button className="buy-btn" onClick={() => handleBuyNow(item.name, price, img)}>Buy Now</button>
+                        <button className="add-btn" onClick={() => handleAddToCart(item.name, price, img, getQuantity(item.id))}>Add to Cart</button>
+                        <button className="buy-btn" onClick={() => handleBuyNow(item.name, price, img, getQuantity(item.id))}>Buy Now</button>
                       </div>
                     </div>
                   </div>

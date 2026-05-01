@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
+import QuantitySelector from "../../components/QuantitySelector";
 
 type Keychain = { id: string; name: string; price: string; img: string; description?: string; };
 
@@ -15,7 +16,9 @@ export default function Keychain() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Keychain | null>(null);
-  const [buyNowProduct, setBuyNowProduct] = useState<Keychain | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<(Keychain & { quantity?: number }) | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const keychains: Keychain[] = [
     { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
@@ -39,23 +42,31 @@ export default function Keychain() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  function handleAddToCart(name: string, price: string, img: string) {
+  const getQuantity = (id: string) => quantities[id] ?? 1;
+  const setQuantity = (id: string, value: number) => setQuantities((prev) => ({ ...prev, [id]: value }));
+
+  function openProduct(product: Keychain) {
+    setSelectedProduct(product);
+    setSelectedQuantity(getQuantity(product.id));
+  }
+
+  function handleAddToCart(name: string, price: string, img: string, quantity: number) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price, img });
+    addToCart({ name, price, img, quantity });
     setSelectedProduct(null);
     alert(`${name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string) {
+  function handleBuyNow(name: string, price: string, img: string, quantity: number) {
     if (!userEmail) return router.push("/login");
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name, price, img });
+    setBuyNowProduct({ id: "", name, price, img, quantity });
   }
 
   return (
     <main className="keychain-page">
 
-      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+      {buyNowProduct && <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />}
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
@@ -68,10 +79,13 @@ export default function Keychain() {
             <span style={{background:'#f3e5ff',color:'#c44dff',fontSize:'12px',fontWeight:'700',padding:'4px 12px',borderRadius:'50px'}}>🔑 Keychain</span>
             <h2 style={{fontSize:'20px',fontWeight:'700',color:'#333',margin:'12px 0 6px'}}>{selectedProduct.name}</h2>
             <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
-            <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
+            <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'16px'}}>{selectedProduct.description}</p>
+            <div style={{display:'flex',justifyContent:'center',marginBottom:'16px'}}>
+              <QuantitySelector value={selectedQuantity} onChange={setSelectedQuantity} />
+            </div>
             <div style={{display:'flex',gap:'12px'}}>
-              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
-              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
+              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img, selectedQuantity)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img, selectedQuantity)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
             </div>
           </div>
         </div>
@@ -125,16 +139,19 @@ export default function Keychain() {
         <h2 className="section-title">Our Keychains</h2>
         <div className="products-grid">
           {keychains.map((item, index) => (
-            <div key={index} className="product-card" onClick={() => setSelectedProduct(item)} style={{cursor:'pointer'}}>
+            <div key={index} className="product-card" onClick={() => openProduct(item)} style={{cursor:'pointer'}}>
               <div className="product-img-wrapper">
                 <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
               </div>
               <div className="product-info">
                 <h3 className="product-name">{item.name}</h3>
                 <p className="product-price">{item.price}</p>
+                <div style={{display:'flex',justifyContent:'center',width:'100%'}} onClick={(e) => e.stopPropagation()}>
+                  <QuantitySelector value={getQuantity(item.id)} onChange={(value) => setQuantity(item.id, value)} compact />
+                </div>
                 <div className="btn-row">
-                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img); }}>Add to Cart</button>
-                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img); }}>Buy Now</button>
+                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img, getQuantity(item.id)); }}>Add to Cart</button>
+                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img, getQuantity(item.id)); }}>Buy Now</button>
                 </div>
               </div>
             </div>

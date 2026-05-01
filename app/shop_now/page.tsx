@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 import BuyNowModal from "../../components/BuyNowModal";
+import QuantitySelector from "../../components/QuantitySelector";
 
 type Product = { id: string; name: string; price: string; img: string | null; };
 
@@ -17,7 +18,8 @@ export default function ShopNow() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
-  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<(Product & { quantity?: number }) | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
   const router = useRouter();
 
   const fallback: Product[] = [
@@ -32,6 +34,8 @@ export default function ShopNow() {
   const visibleCount = 3;
   const maxIndex = Math.max(0, products.length - visibleCount);
   const visibleProducts = products.slice(cardIndex, cardIndex + visibleCount);
+  const getQuantity = (id: string) => quantities[id] ?? 1;
+  const setQuantity = (id: string, value: number) => setQuantities((prev) => ({ ...prev, [id]: value }));
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -125,7 +129,7 @@ export default function ShopNow() {
   return (
     <main className="shop-page">
 
-      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+      {buyNowProduct && <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />}
 
       <header>
         <h1>Mae Little Loops Studio</h1>
@@ -194,9 +198,12 @@ export default function ShopNow() {
                   <div className="product-info">
                     <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
+                    <div style={{display:'flex', justifyContent:'center', width:'100%', marginTop:'2px'}}>
+                      <QuantitySelector value={getQuantity(item.id)} onChange={(value) => setQuantity(item.id, value)} compact />
+                    </div>
                     <div className="btn-row">
-                      <button className="add-btn" onClick={() => { addToCart({ name: item.name, price: item.price, img: item.img }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
-                      <button className="buy-btn" onClick={() => setBuyNowProduct(item)}>Buy Now</button>
+                      <button className="add-btn" onClick={() => { const quantity = getQuantity(item.id); addToCart({ name: item.name, price: item.price, img: item.img, quantity }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
+                      <button className="buy-btn" onClick={() => setBuyNowProduct({ ...item, quantity: getQuantity(item.id) })}>Buy Now</button>
                     </div>
                   </div>
                 </div>

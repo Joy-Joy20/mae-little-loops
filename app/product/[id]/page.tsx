@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useCart } from "../../../context/CartContext";
 import { allProducts } from "../../../lib/products";
+import QuantitySelector from "../../../components/QuantitySelector";
 
 export default function ProductDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
   const product = allProducts.find((p) => p.id === params.id);
 
@@ -32,21 +34,25 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
   }
 
   function handleAddToCart() {
-    if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name: product!.name, price: product!.price, img: product!.img });
-    alert(`${product!.name} added to cart!`);
+    if (!userEmail) {
+      router.push("/login");
+      return;
+    }
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
+    alert(`${product.name} added to cart!`);
   }
 
   function handleBuyNow() {
-    if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name: product!.name, price: product!.price, img: product!.img });
+    if (!userEmail) {
+      router.push("/login");
+      return;
+    }
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     router.push("/checkout");
   }
 
   return (
     <main className="detail-page">
-
-      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -57,11 +63,10 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
         </nav>
         <div className="nav-right">
           <a href="/login" className="login-icon">👤</a>
-          <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>🛒</span>
+          <span onClick={() => router.push("/cart")} style={{ cursor: "pointer", color: "white" }}>🛒</span>
         </div>
       </header>
 
-      {/* BREADCRUMB */}
       <div className="breadcrumb">
         <button onClick={() => router.back()} className="back-btn">← Back to Products</button>
         <span className="breadcrumb-path">
@@ -69,10 +74,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
         </span>
       </div>
 
-      {/* PRODUCT DETAIL */}
       <section className="detail-content">
-
-        {/* IMAGE */}
         <div className="detail-img-wrapper">
           {product.img ? (
             <Image src={product.img} alt={product.name} width={320} height={320} className="detail-img" />
@@ -83,22 +85,23 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
           )}
         </div>
 
-        {/* INFO */}
         <div className="detail-info">
           <span className="detail-category">{product.category === "bouquet" ? "💐 Bouquet" : "🔑 Keychain"}</span>
           <h1 className="detail-name">{product.name}</h1>
           <p className="detail-price">{product.price}</p>
           <p className="detail-description">{product.description}</p>
+          <div className="detail-quantity">
+            <span className="detail-quantity-label">Quantity</span>
+            <QuantitySelector value={quantity} onChange={setQuantity} />
+          </div>
 
           <div className="detail-btns">
             <button className="detail-add-btn" onClick={handleAddToCart}>Add to Cart</button>
             <button className="detail-buy-btn" onClick={handleBuyNow}>Buy Now</button>
           </div>
         </div>
-
       </section>
 
-      {/* FOOTER */}
       <footer>
         <div className="footer-col">
           <h3>Mae Little Loops Studio</h3>
@@ -115,7 +118,6 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
           <p>📱 09XXXXXXXXX</p>
         </div>
       </footer>
-
     </main>
   );
 }
