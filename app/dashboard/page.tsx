@@ -16,6 +16,10 @@ export default function Dashboard() {
   const [userId, setUserId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [editName, setEditName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [editAddress, setEditAddress] = useState("");
   const [editing, setEditing] = useState(false);
   const [savingName, setSavingName] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -39,8 +43,10 @@ export default function Dashboard() {
       setUserEmail(user.email ?? null);
       setUserId(user.id);
 
-      const { data: profile } = await supabase.from("profiles").select("username").eq("id", user.id).single();
+      const { data: profile } = await supabase.from("profiles").select("username, phone, address").eq("id", user.id).single();
       if (profile?.username) { setFullName(profile.username); setEditName(profile.username); }
+      if (profile?.phone) { setPhone(profile.phone); setEditPhone(profile.phone); }
+      if (profile?.address) { setAddress(profile.address); setEditAddress(profile.address); }
 
       await fetchOrders(user.id);
 
@@ -54,8 +60,10 @@ export default function Dashboard() {
   async function handleSaveName() {
     if (!userId) return;
     setSavingName(true);
-    await supabase.from("profiles").upsert({ id: userId, username: editName, email: userEmail });
+    await supabase.from("profiles").upsert({ id: userId, username: editName, email: userEmail, phone: editPhone, address: editAddress });
     setFullName(editName);
+    setPhone(editPhone);
+    setAddress(editAddress);
     setEditing(false);
     setSavingName(false);
   }
@@ -167,16 +175,39 @@ export default function Dashboard() {
             <div className="dash-field">
               <label>Full Name</label>
               {editing ? (
-                <div style={{display:'flex', gap:'10px', alignItems:'center'}}>
+                <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
                   <input className="dash-input" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Enter your full name" />
-                  <button className="dash-save-btn" onClick={handleSaveName} disabled={savingName}>{savingName ? "Saving..." : "Save"}</button>
-                  <button className="dash-cancel-btn" onClick={() => setEditing(false)}>Cancel</button>
                 </div>
               ) : (
                 <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
                   <p>{fullName || "Not set"}</p>
-                  <button className="dash-edit-btn" onClick={() => setEditing(true)}>Edit</button>
                 </div>
+              )}
+            </div>
+            <div className="dash-field">
+              <label>Phone Number</label>
+              {editing ? (
+                <input className="dash-input" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Enter your phone number" />
+              ) : (
+                <p>{phone || "Not set"}</p>
+              )}
+            </div>
+            <div className="dash-field">
+              <label>Address</label>
+              {editing ? (
+                <input className="dash-input" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Enter your address" />
+              ) : (
+                <p>{address || "Not set"}</p>
+              )}
+            </div>
+            <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
+              {editing ? (
+                <>
+                  <button className="dash-save-btn" onClick={handleSaveName} disabled={savingName}>{savingName ? "Saving..." : "Save Changes"}</button>
+                  <button className="dash-cancel-btn" onClick={() => { setEditing(false); setEditName(fullName); setEditPhone(phone); setEditAddress(address); }}>Cancel</button>
+                </>
+              ) : (
+                <button className="dash-edit-btn" onClick={() => setEditing(true)}>Edit Profile</button>
               )}
             </div>
           </div>
