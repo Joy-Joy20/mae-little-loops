@@ -33,21 +33,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  async function loadCartFromSupabase(uid: string) {
-    const { data } = await supabase
-      .from("cart")
-      .select("*")
-      .eq("user_id", uid)
-      .order("created_at", { ascending: true });
-    if (data) setCart(data.map((item) => ({
-      id: item.id,
-      name: item.product_name,
-      price: item.price,
-      quantity: item.quantity,
-      img: item.img,
-    })));
-  }
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       const uid = data.session?.user?.id ?? null;
@@ -65,19 +50,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  async function loadCartFromSupabase(uid: string) {
+    const { data } = await supabase
+      .from("cart")
+      .select("*")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: true });
+    if (data) setCart(data.map((item) => ({
+      id: item.id,
+      name: item.product_name,
+      price: item.price,
+      quantity: item.quantity,
+      img: item.img,
+    })));
+  }
+
   async function loadCart() {
     if (userId) await loadCartFromSupabase(userId);
   }
 
   async function addToCart(item: CartItem) {
-    const qtyToAdd = Math.max(1, item.quantity ?? 1);
-
     if (!userId) {
       // fallback localStorage for non-logged in
       setCart((prev) => {
         const existing = prev.findIndex((i) => i.name === item.name);
-        if (existing >= 0) return prev.map((i, idx) => idx === existing ? { ...i, quantity: (i.quantity ?? 1) + qtyToAdd } : i);
-        return [...prev, { ...item, quantity: qtyToAdd }];
+        if (existing >= 0) return prev.map((i, idx) => idx === existing ? { ...i, quantity: (i.quantity ?? 1) + 1 } : i);
+        return [...prev, { ...item, quantity: 1 }];
       });
       return;
     }
@@ -91,13 +89,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       .single();
 
     if (existing) {
-      await supabase.from("cart").update({ quantity: existing.quantity + qtyToAdd }).eq("id", existing.id);
+      await supabase.from("cart").update({ quantity: existing.quantity + 1 }).eq("id", existing.id);
     } else {
       await supabase.from("cart").insert([{
         user_id: userId,
         product_name: item.name,
         price: item.price,
-        quantity: qtyToAdd,
+        quantity: 1,
         img: item.img ?? null,
       }]);
     }

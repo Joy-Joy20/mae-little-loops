@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import QuantitySelector from "./QuantitySelector";
 
@@ -20,7 +20,21 @@ export default function BuyNowModal({ product, onClose }: Props) {
   const [uploading, setUploading] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
-  const [quantity, setQuantity] = useState(product?.quantity ?? 1);
+  const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    if (!product) return;
+    setStep(1);
+    setPayment("cod");
+    setName("");
+    setAddress("");
+    setPhone("");
+    setReceiptUrl(null);
+    setUploading(false);
+    setPlacing(false);
+    setPlaced(false);
+    setQuantity(Math.max(1, product.quantity ?? 1));
+  }, [product]);
 
   if (!product) return null;
 

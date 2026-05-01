@@ -7,7 +7,6 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
-import QuantitySelector from "../../components/QuantitySelector";
 
 type Product = { id: string; name: string; price: string; img: string | null; description?: string; };
 
@@ -16,9 +15,7 @@ export default function Bouquets() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [buyNowProduct, setBuyNowProduct] = useState<(Product & { quantity?: number }) | null>(null);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
 
   const bouquets: Product[] = [
     { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
@@ -40,31 +37,23 @@ export default function Bouquets() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  const getQuantity = (id: string) => quantities[id] ?? 1;
-  const setQuantity = (id: string, value: number) => setQuantities((prev) => ({ ...prev, [id]: value }));
-
-  function openProduct(product: Product) {
-    setSelectedProduct(product);
-    setSelectedQuantity(getQuantity(product.id));
-  }
-
-  function handleAddToCart(name: string, price: string, img: string | null, quantity: number) {
+  function handleAddToCart(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img, quantity });
+    addToCart({ name, price, img });
     setSelectedProduct(null);
     alert(`${name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string | null, quantity: number) {
+  function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name, price, img, quantity });
+    setBuyNowProduct({ id: "", name, price, img });
   }
 
   return (
     <main className="bouquets-page">
 
-      {buyNowProduct && <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />}
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
@@ -77,13 +66,10 @@ export default function Bouquets() {
             <span style={{background:'#f3e5ff',color:'#c44dff',fontSize:'12px',fontWeight:'700',padding:'4px 12px',borderRadius:'50px'}}>💐 Bouquet</span>
             <h2 style={{fontSize:'20px',fontWeight:'700',color:'#333',margin:'12px 0 6px'}}>{selectedProduct.name}</h2>
             <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
-            <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'16px'}}>{selectedProduct.description}</p>
-            <div style={{display:'flex',justifyContent:'center',marginBottom:'16px'}}>
-              <QuantitySelector value={selectedQuantity} onChange={setSelectedQuantity} />
-            </div>
+            <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
             <div style={{display:'flex',gap:'12px'}}>
-              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img, selectedQuantity)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
-              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img, selectedQuantity)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
+              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
             </div>
           </div>
         </div>
@@ -131,7 +117,7 @@ export default function Bouquets() {
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
           {bouquets.map((item, index) => (
-            <div key={index} className="product-card" onClick={() => openProduct(item)} style={{cursor:'pointer'}}>
+            <div key={index} className="product-card" onClick={() => setSelectedProduct(item)} style={{cursor:'pointer'}}>
               <div className="product-img-wrapper">
                 {item.img ? (
                   <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
@@ -142,12 +128,9 @@ export default function Bouquets() {
               <div className="product-info">
                 <h3 className="product-name">{item.name}</h3>
                 <p className="product-price">{item.price}</p>
-                <div style={{display:'flex',justifyContent:'center',width:'100%'}} onClick={(e) => e.stopPropagation()}>
-                  <QuantitySelector value={getQuantity(item.id)} onChange={(value) => setQuantity(item.id, value)} compact />
-                </div>
                 <div className="btn-row">
-                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null, getQuantity(item.id)); }}>Add to Cart</button>
-                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null, getQuantity(item.id)); }}>Buy Now</button>
+                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
+                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
                 </div>
               </div>
             </div>
