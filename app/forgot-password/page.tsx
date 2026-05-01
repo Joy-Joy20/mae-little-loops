@@ -8,23 +8,30 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   async function handleReset() {
-    setError(null);
-    if (!email.trim()) { setError("Please enter your email."); return; }
+    setErrorMsg("");
+    if (!email.trim()) {
+      setErrorMsg("Please enter your email.");
+      return;
+    }
     setLoading(true);
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      const result = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-      if (resetError) {
-        setError(resetError.message || "Something went wrong. Please try again.");
+      if (result.error) {
+        setErrorMsg(
+          typeof result.error.message === "string"
+            ? result.error.message
+            : "Something went wrong. Please try again."
+        );
       } else {
         setSuccess(true);
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setErrorMsg("Failed to send reset link. Please try again.");
     }
     setLoading(false);
   }
@@ -43,10 +50,14 @@ export default function ForgotPassword() {
           {success ? (
             <>
               <h2>Check Your Email</h2>
-              <p className="login-sub">We sent a password reset link to <strong>{email}</strong>. Click the link to reset your password.</p>
-              <p style={{color:'#e91e8c', textAlign:'center', marginTop:'16px', fontSize:'14px'}}>✅ Reset link sent! Please check your email inbox.</p>
+              <p className="login-sub">We sent a password reset link to <strong>{email}</strong>.</p>
+              <p style={{color:'#e91e8c', textAlign:'center', marginTop:'16px', fontSize:'14px'}}>
+                ✅ Reset link sent! Please check your email inbox.
+              </p>
               <div style={{marginTop:'24px'}}>
-                <a href="/login" className="login-btn" style={{display:'block', textAlign:'center', textDecoration:'none'}}>Back to Login</a>
+                <a href="/login" className="login-btn" style={{display:'block', textAlign:'center', textDecoration:'none'}}>
+                  Back to Login
+                </a>
               </div>
             </>
           ) : (
@@ -64,7 +75,7 @@ export default function ForgotPassword() {
                     onKeyDown={(e) => { if (e.key === "Enter") handleReset(); }}
                   />
                 </div>
-                {error ? <p className="error-msg">⚠️ {error}</p> : null}
+                {errorMsg !== "" ? <p className="error-msg">⚠️ {errorMsg}</p> : null}
                 <button className="login-btn" onClick={handleReset} disabled={loading}>
                   {loading ? "Sending..." : "Send Reset Link"}
                 </button>
