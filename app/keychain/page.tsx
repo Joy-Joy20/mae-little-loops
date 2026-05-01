@@ -8,7 +8,36 @@ import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
 
-type Keychain = { id: string; name: string; price: string; img: string; description?: string; };
+type Keychain = { id: string; name: string; price: string; img: string; description?: string; stock: number; };
+
+function KeychainCard({ item, onAddToCart, onBuyNow, onSelect }: {
+  item: Keychain;
+  onAddToCart: (p: Keychain, qty: number) => void;
+  onBuyNow: (p: Keychain, qty: number) => void;
+  onSelect: (p: Keychain) => void;
+}) {
+  const [quantity, setQuantity] = useState(1);
+  return (
+    <div className="product-card" onClick={() => onSelect(item)} style={{cursor:'pointer'}}>
+      <div className="product-img-wrapper">
+        <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
+      </div>
+      <div className="product-info">
+        <h3 className="product-name">{item.name}</h3>
+        <p className="product-price">{item.price}</p>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',margin:'8px 0'}}>
+          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.max(1, q - 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'1.5px solid #e91e8c',background:'white',color:'#e91e8c',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>−</button>
+          <span style={{fontWeight:'600',fontSize:'16px',minWidth:'24px',textAlign:'center'}}>{quantity}</span>
+          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
+        </div>
+        <div className="btn-row">
+          <button className="add-btn" onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }}>Add to Cart</button>
+          <button className="buy-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }}>Buy Now</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Keychain() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -18,16 +47,16 @@ export default function Keychain() {
   const [buyNowProduct, setBuyNowProduct] = useState<Keychain | null>(null);
 
   const keychains: Keychain[] = [
-    { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
-    { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png", description: "A cute crochet frog keychain wearing a tiny hat. A fun and quirky accessory for bags and keys." },
-    { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png", description: "A charming little crochet creature wearing a strawberry hat. Unique and handmade with love." },
-    { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png", description: "A pretty purple crochet bow keychain. Simple, elegant, and perfect as an everyday accessory." },
-    { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png", description: "A handmade crochet Monkey D. Luffy keychain inspired by One Piece. A must-have for anime fans!" },
-    { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png", description: "A classic and cuddly crochet teddy bear keychain. Sweet and simple — perfect for all ages." },
-    { id: "15", name: "Strawberry", price: "₱88.00", img: "/Strawberry.png", description: "A cute crochet strawberry keychain with vibrant red color and green leaves. Fresh and adorable!" },
-    { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png", description: "A handmade crochet Kuromi head keychain. Perfect for Sanrio fans who love the edgy little bunny." },
-    { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png", description: "A full-body crochet Kuromi keychain with detailed craftsmanship. A collector's item for Sanrio lovers." },
-    { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png", description: "A warm brown crochet teddy bear keychain. Soft, cute, and handmade with care." },
+    { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", stock: 10, description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
+    { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png", stock: 10, description: "A cute crochet frog keychain wearing a tiny hat. A fun and quirky accessory for bags and keys." },
+    { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png", stock: 10, description: "A charming little crochet creature wearing a strawberry hat. Unique and handmade with love." },
+    { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png", stock: 10, description: "A pretty purple crochet bow keychain. Simple, elegant, and perfect as an everyday accessory." },
+    { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png", stock: 10, description: "A handmade crochet Monkey D. Luffy keychain inspired by One Piece. A must-have for anime fans!" },
+    { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png", stock: 10, description: "A classic and cuddly crochet teddy bear keychain. Sweet and simple — perfect for all ages." },
+    { id: "15", name: "Strawberry", price: "₱88.00", img: "/Strawberry.png", stock: 10, description: "A cute crochet strawberry keychain with vibrant red color and green leaves. Fresh and adorable!" },
+    { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png", stock: 10, description: "A handmade crochet Kuromi head keychain. Perfect for Sanrio fans who love the edgy little bunny." },
+    { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png", stock: 10, description: "A full-body crochet Kuromi keychain with detailed craftsmanship. A collector's item for Sanrio lovers." },
+    { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png", stock: 10, description: "A warm brown crochet teddy bear keychain. Soft, cute, and handmade with care." },
   ];
 
   useEffect(() => {
@@ -39,17 +68,17 @@ export default function Keychain() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  function handleAddToCart(name: string, price: string, img: string) {
+  function handleAddToCart(product: Keychain, quantity: number) {
     if (!userEmail) return router.push("/login");
-    addToCart({ name, price, img });
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     setSelectedProduct(null);
-    alert(`${name} added to cart!`);
+    alert(`${product.name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string) {
+  function handleBuyNow(product: Keychain, quantity: number) {
     if (!userEmail) return router.push("/login");
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name, price, img });
+    setBuyNowProduct({ id: "", name: product.name, price: product.price, img: product.img, quantity });
   }
 
   return (
@@ -70,8 +99,8 @@ export default function Keychain() {
             <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
             <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
             <div style={{display:'flex',gap:'12px'}}>
-              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
-              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
+              <button onClick={() => handleAddToCart(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+              <button onClick={() => handleBuyNow(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
             </div>
           </div>
         </div>
@@ -125,19 +154,7 @@ export default function Keychain() {
         <h2 className="section-title">Our Keychains</h2>
         <div className="products-grid">
           {keychains.map((item, index) => (
-            <div key={index} className="product-card" onClick={() => setSelectedProduct(item)} style={{cursor:'pointer'}}>
-              <div className="product-img-wrapper">
-                <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
-              </div>
-              <div className="product-info">
-                <h3 className="product-name">{item.name}</h3>
-                <p className="product-price">{item.price}</p>
-                <div className="btn-row">
-                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img); }}>Add to Cart</button>
-                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img); }}>Buy Now</button>
-                </div>
-              </div>
-            </div>
+            <KeychainCard key={index} item={item} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} onSelect={setSelectedProduct} />
           ))}
         </div>
       </section>

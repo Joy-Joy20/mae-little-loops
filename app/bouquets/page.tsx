@@ -8,7 +8,40 @@ import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
 
-type Product = { id: string; name: string; price: string; img: string | null; description?: string; };
+type Product = { id: string; name: string; price: string; img: string | null; description?: string; stock: number; };
+
+function BouquetCard({ item, onAddToCart, onBuyNow, onSelect }: {
+  item: Product;
+  onAddToCart: (p: Product, qty: number) => void;
+  onBuyNow: (p: Product, qty: number) => void;
+  onSelect: (p: Product) => void;
+}) {
+  const [quantity, setQuantity] = useState(1);
+  return (
+    <div className="product-card" onClick={() => onSelect(item)} style={{cursor:'pointer'}}>
+      <div className="product-img-wrapper">
+        {item.img ? (
+          <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
+        ) : (
+          <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
+        )}
+      </div>
+      <div className="product-info">
+        <h3 className="product-name">{item.name}</h3>
+        <p className="product-price">{item.price}</p>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',margin:'8px 0'}}>
+          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.max(1, q - 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'1.5px solid #e91e8c',background:'white',color:'#e91e8c',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>−</button>
+          <span style={{fontWeight:'600',fontSize:'16px',minWidth:'24px',textAlign:'center'}}>{quantity}</span>
+          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
+        </div>
+        <div className="btn-row">
+          <button className="add-btn" onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }}>Add to Cart</button>
+          <button className="buy-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }}>Buy Now</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -18,14 +51,14 @@ export default function Bouquets() {
   const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
 
   const bouquets: Product[] = [
-    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
-    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png", description: "A lovely pastel-colored crochet flower bouquet with soft pink and blue blossoms. Great for birthdays and special occasions." },
-    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png", description: "An elegant bouquet of handcrafted lavender bell-shaped flowers wrapped in premium tissue paper with a pink ribbon." },
-    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png", description: "A delicate mini bouquet of white pastel crochet flowers, perfect as a small gift or desk decoration." },
-    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png", description: "A bold and beautiful crimson crochet bouquet that makes a striking statement for any occasion." },
-    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png", description: "A luxurious lavender crochet bouquet with rich purple tones, perfect for anniversaries and special events." },
-    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png", description: "A dreamy blue-toned crochet bouquet inspired by the sky. A unique and calming gift for loved ones." },
-    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png", description: "A cheerful pastel rainbow crochet bouquet bursting with soft colors. Brings joy to any room or occasion." },
+    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", stock: 10, description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
+    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png", stock: 10, description: "A lovely pastel-colored crochet flower bouquet with soft pink and blue blossoms. Great for birthdays and special occasions." },
+    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png", stock: 10, description: "An elegant bouquet of handcrafted lavender bell-shaped flowers wrapped in premium tissue paper with a pink ribbon." },
+    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png", stock: 10, description: "A delicate mini bouquet of white pastel crochet flowers, perfect as a small gift or desk decoration." },
+    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png", stock: 10, description: "A bold and beautiful crimson crochet bouquet that makes a striking statement for any occasion." },
+    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png", stock: 10, description: "A luxurious lavender crochet bouquet with rich purple tones, perfect for anniversaries and special events." },
+    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png", stock: 10, description: "A dreamy blue-toned crochet bouquet inspired by the sky. A unique and calming gift for loved ones." },
+    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png", stock: 10, description: "A cheerful pastel rainbow crochet bouquet bursting with soft colors. Brings joy to any room or occasion." },
   ];
 
   useEffect(() => {
@@ -37,17 +70,17 @@ export default function Bouquets() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  function handleAddToCart(name: string, price: string, img: string | null) {
+  function handleAddToCart(product: Product, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
-    addToCart({ name, price, img });
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     setSelectedProduct(null);
-    alert(`${name} added to cart!`);
+    alert(`${product.name} added to cart!`);
   }
 
-  function handleBuyNow(name: string, price: string, img: string | null) {
+  function handleBuyNow(product: Product, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name, price, img });
+    setBuyNowProduct({ id: "", name: product.name, price: product.price, img: product.img, quantity });
   }
 
   return (
@@ -68,8 +101,8 @@ export default function Bouquets() {
             <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
             <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
             <div style={{display:'flex',gap:'12px'}}>
-              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
-              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
+              <button onClick={() => handleAddToCart(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+              <button onClick={() => handleBuyNow(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
             </div>
           </div>
         </div>
@@ -117,23 +150,7 @@ export default function Bouquets() {
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
           {bouquets.map((item, index) => (
-            <div key={index} className="product-card" onClick={() => setSelectedProduct(item)} style={{cursor:'pointer'}}>
-              <div className="product-img-wrapper">
-                {item.img ? (
-                  <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
-                ) : (
-                  <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
-                )}
-              </div>
-              <div className="product-info">
-                <h3 className="product-name">{item.name}</h3>
-                <p className="product-price">{item.price}</p>
-                <div className="btn-row">
-                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
-                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
-                </div>
-              </div>
-            </div>
+            <BouquetCard key={index} item={item} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} onSelect={setSelectedProduct} />
           ))}
         </div>
       </section>
