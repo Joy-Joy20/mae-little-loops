@@ -7,20 +7,24 @@ import { supabase } from "../../lib/supabase";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleReset() {
-    setError("");
-    if (!email) { setError("Please enter your email."); return; }
+    setError(null);
+    if (!email.trim()) { setError("Please enter your email."); return; }
     setLoading(true);
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (resetError) {
-      setError(resetError.message || "Something went wrong. Please try again.");
-    } else {
-      setSent(true);
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (resetError) {
+        setError(resetError.message || "Something went wrong. Please try again.");
+      } else {
+        setSuccess(true);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
     }
     setLoading(false);
   }
@@ -36,10 +40,11 @@ export default function ForgotPassword() {
 
       <div className="login-right">
         <div className="login-card">
-          {sent ? (
+          {success ? (
             <>
               <h2>Check Your Email</h2>
               <p className="login-sub">We sent a password reset link to <strong>{email}</strong>. Click the link to reset your password.</p>
+              <p style={{color:'#e91e8c', textAlign:'center', marginTop:'16px', fontSize:'14px'}}>✅ Reset link sent! Please check your email inbox.</p>
               <div style={{marginTop:'24px'}}>
                 <a href="/login" className="login-btn" style={{display:'block', textAlign:'center', textDecoration:'none'}}>Back to Login</a>
               </div>
