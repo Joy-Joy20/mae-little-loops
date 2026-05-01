@@ -91,9 +91,9 @@ export default function ContactUs() {
         {/* GET IN TOUCH */}
         <div className="contact-info-card">
           <h2>Get in Touch</h2>
-          <div className="info-item"><span className="info-icon">📧</span><p>maelittleloops@gmail.com</p></div>
-          <div className="info-item"><span className="info-icon">📱</span><p>09XXXXXXXXX</p></div>
-          <div className="info-item"><span className="info-icon">📍</span><p>Cebu City, Philippines</p></div>
+          <div className="info-item"><span className="info-icon">📧</span><p>masarquemae65@gmail.com</p></div>
+          <div className="info-item"><span className="info-icon">📱</span><p>09706383306</p></div>
+          <div className="info-item"><span className="info-icon">📍</span><p>Masbate, Philippines</p></div>
           <div className="info-item"><span className="info-icon">⏰</span><p>Mon - Sat, 8:00 AM - 6:00 PM</p></div>
           <div className="info-item"><span className="info-icon">🚚</span><p>Available within Cebu City</p></div>
           <div className="info-item"><span className="info-icon">💳</span><p>Cash on Delivery / GCash</p></div>
