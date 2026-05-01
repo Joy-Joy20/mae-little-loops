@@ -68,17 +68,19 @@ export default function Keychain() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  function handleAddToCart(product: Keychain, quantity: number) {
+  function handleAddToCart(product: Keychain | undefined, quantity: number) {
     if (!userEmail) return router.push("/login");
+    if (!product) return;
     addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     setSelectedProduct(null);
     alert(`${product.name} added to cart!`);
   }
 
-  function handleBuyNow(product: Keychain, quantity: number) {
+  function handleBuyNow(product: Keychain | undefined, quantity: number) {
     if (!userEmail) return router.push("/login");
+    if (!product) return;
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name: product.name, price: product.price, img: product.img, quantity });
+    setBuyNowProduct({ id: product.id, name: product.name, price: product.price, img: product.img, quantity });
   }
 
   return (

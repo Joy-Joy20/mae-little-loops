@@ -70,17 +70,19 @@ export default function Bouquets() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  function handleAddToCart(product: Product, quantity: number) {
+  function handleAddToCart(product: Product | undefined, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
+    if (!product) return;
     addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     setSelectedProduct(null);
     alert(`${product.name} added to cart!`);
   }
 
-  function handleBuyNow(product: Product, quantity: number) {
+  function handleBuyNow(product: Product | undefined, quantity: number) {
     if (!userEmail) { router.push("/login"); return; }
+    if (!product) return;
     setSelectedProduct(null);
-    setBuyNowProduct({ id: "", name: product.name, price: product.price, img: product.img, quantity });
+    setBuyNowProduct({ id: product.id, name: product.name, price: product.price, img: product.img, quantity });
   }
 
   return (
