@@ -7,7 +7,6 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
-import Navbar from "../../components/Navbar";
 
 type Product = { id: string; name: string; price: string; img: string | null; description?: string; };
 
@@ -126,11 +125,13 @@ export default function Bouquets() {
                   <div style={{fontSize:'60px', lineHeight:'1'}}>🌸</div>
                 )}
               </div>
-              <h3 className="product-name">{item.name}</h3>
-              <p className="product-price">{item.price}</p>
-              <div className="btn-row">
-              <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
-                <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
+              <div className="product-info">
+                <h3 className="product-name">{item.name}</h3>
+                <p className="product-price">{item.price}</p>
+                <div className="btn-row">
+                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img ?? null); }}>Add to Cart</button>
+                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img ?? null); }}>Buy Now</button>
+                </div>
               </div>
             </div>
           ))}
