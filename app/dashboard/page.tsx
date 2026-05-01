@@ -69,7 +69,7 @@ export default function Dashboard() {
   async function handleCancel(orderId: string) {
     const confirmed = window.confirm("Are you sure you want to cancel this order?");
     if (!confirmed) return;
-    const { error } = await supabase.from("orders").update({ status: "Cancelled" }).eq("id", orderId);
+    const { error } = await supabase.from("orders").update({ status: "cancelled" }).eq("id", orderId);
     if (error) {
       alert("Failed to cancel order. Please try again.");
     } else {
@@ -200,7 +200,7 @@ export default function Dashboard() {
                   <tbody>
                     {orders.map((order) => {
                       const item = order.order_items?.[0];
-                      const canCancel = order.status === "Pending" || order.status === "Processing";
+                      const canCancel = order.status?.toLowerCase() === "pending" || order.status?.toLowerCase() === "processing";
                       return (
                         <tr key={order.id}>
                           <td className="dash-order-id">#{order.id.slice(0, 8)}...</td>
