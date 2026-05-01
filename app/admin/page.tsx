@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
 type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; created_at: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
+type ProductFormState = { name: string; price: string; category: "bouquet" | "keychain"; stock: string; description: string; image_url: string; };
 
-const emptyProduct = { name: "", price: 0, category: "bouquet", stock: 0, description: "", image_url: "" };
+const emptyProduct: ProductFormState = { name: "", price: "", category: "bouquet", stock: "0", description: "", image_url: "" };
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("Dashboard");
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
   // Product CRUD state
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
-  const [formData, setFormData] = useState(emptyProduct);
+  const [formData, setFormData] = useState<ProductFormState>(emptyProduct);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -34,8 +36,34 @@ export default function AdminDashboard() {
   const [settingsSaved, setSettingsSaved] = useState(false);
 
   async function fetchProducts() {
-    const { data } = await supabase.from("products").select("*").order("id");
-    if (data) setProducts(data as Product[]);
+    try {
+      console.log("Fetching product list from /api/products...");
+      const response = await fetch("/api/products", { cache: "no-store" });
+      const result = await response.json();
+      if (!response.ok) {
+        console.error("Failed to fetch products:", result);
+        alert(result.error || "Failed to load products.");
+        return;
+      }
+      if (result.products) setProducts(result.products as Product[]);
+    } catch (error) {
+      console.error("Unexpected fetchProducts error:", error);
+      alert("Unexpected error while loading products.");
+    }
+  }
+
+  async function getAccessToken() {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Failed to get Supabase session:", error);
+      return null;
+    }
+
+    return session?.access_token ?? null;
   }
 
   useEffect(() => {
@@ -87,31 +115,100 @@ export default function AdminDashboard() {
 
   function openEdit(p: Product) {
     setEditProduct(p);
-    setFormData({ name: p.name, price: p.price, category: p.category, stock: p.stock, description: p.description, image_url: p.image_url });
+    setFormData({ name: p.name, price: String(p.price ?? ""), category: p.category as "bouquet" | "keychain", stock: String(p.stock ?? 0), description: p.description ?? "", image_url: p.image_url ?? "" });
     setShowForm(true);
   }
 
   async function handleSaveProduct() {
-    if (!formData.name || !formData.price) { alert("Name and price are required."); return; }
-    setSaving(true);
-    if (editProduct) {
-      const { error } = await supabase.from("products").update(formData).eq("id", editProduct.id);
-      if (error) { alert("Failed to update product."); setSaving(false); return; }
-    } else {
-      const { error } = await supabase.from("products").insert([formData]);
-      if (error) { alert("Failed to create product."); setSaving(false); return; }
+    const { data: payload, errors } = validateAndNormalizeProductInput({
+      ...formData,
+      price: formData.price.trim(),
+      stock: formData.stock.trim(),
+    });
+    if (!payload) {
+      console.error("Product form validation failed:", { formData, errors });
+      alert(errors.join("\n"));
+      return;
     }
-    await fetchProducts();
-    setShowForm(false);
-    setSaving(false);
+
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      alert("Your admin session is missing. Please log in again.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const url = editProduct ? `/api/products/${editProduct.id}` : "/api/products";
+      const method = editProduct ? "PUT" : "POST";
+
+      console.log(`${method} ${url}`, payload);
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Product save failed:", result);
+        const details = Array.isArray(result.details)
+          ? result.details.join("\n")
+          : result.details;
+        alert([result.error, details].filter(Boolean).join("\n"));
+        return;
+      }
+
+      console.log("Product saved successfully:", result.product);
+      await fetchProducts();
+      setShowForm(false);
+      setEditProduct(null);
+      setFormData(emptyProduct);
+    } catch (error) {
+      console.error("Unexpected handleSaveProduct error:", error);
+      alert("Unexpected error while saving product.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleDeleteProduct(id: number) {
     if (!window.confirm("Delete this product?")) return;
+
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      alert("Your admin session is missing. Please log in again.");
+      return;
+    }
+
     setDeleteId(id);
-    await supabase.from("products").delete().eq("id", id);
-    await fetchProducts();
-    setDeleteId(null);
+    try {
+      console.log(`DELETE /api/products/${id}`);
+      const response = await fetch(`/api/products/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Product delete failed:", result);
+        alert(result.error || "Failed to delete product.");
+        return;
+      }
+
+      await fetchProducts();
+    } catch (error) {
+      console.error("Unexpected handleDeleteProduct error:", error);
+      alert("Unexpected error while deleting product.");
+    } finally {
+      setDeleteId(null);
+    }
   }
 
   if (loading) return (
@@ -227,16 +324,16 @@ export default function AdminDashboard() {
                     <div style={{display:'flex',gap:'12px'}}>
                       <div className="settings-group" style={{flex:1}}>
                         <label>Price (₱) *</label>
-                        <input type="number" value={formData.price} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} placeholder="0.00" />
+                        <input type="number" min="0" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="0.00" />
                       </div>
                       <div className="settings-group" style={{flex:1}}>
                         <label>Stock</label>
-                        <input type="number" value={formData.stock} onChange={e => setFormData({...formData, stock: parseInt(e.target.value)})} placeholder="0" />
+                        <input type="number" min="0" step="1" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} placeholder="0" />
                       </div>
                     </div>
                     <div className="settings-group">
                       <label>Category</label>
-                      <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
+                      <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as "bouquet" | "keychain"})} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
                         <option value="bouquet">Bouquet</option>
                         <option value="keychain">Keychain</option>
                       </select>
