@@ -119,13 +119,40 @@ span { cursor: pointer; font-size: 18px; }
 .product-info h3 { font-size: 14px; font-weight: 600; color: #333; line-height: 1.4; min-height: 36px; display: flex; align-items: center; justify-content: center; }
 .product-price { font-size: 15px; font-weight: 700; color: #e91e8c; }
 
-.shop-btn {
-  padding: 7px 18px; border: none; border-radius: 8px;
-  background: linear-gradient(135deg, #ff6b9d, #c44dff);
-  color: white; font-weight: 700; font-size: 12px; cursor: pointer;
-  box-shadow: 0 3px 10px rgba(196,77,255,0.3); transition: all 0.2s; font-family: inherit;
+.btn-row { display: flex; gap: 8px; margin-top: 4px; width: 100%; }
+
+.add-btn {
+  flex: 1;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 2px solid #e91e8c;
+  background: white;
+  color: #e91e8c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  text-align: center;
 }
-.shop-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(196,77,255,0.4); }
+.add-btn:hover { background: #e91e8c; color: white; }
+
+.buy-btn {
+  flex: 1;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #ff6b9d, #c44dff);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  box-shadow: 0 3px 10px rgba(196,77,255,0.3);
+  text-align: center;
+}
+.buy-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(196,77,255,0.4); }
 
 /* ===== FOOTER ===== */
 footer {

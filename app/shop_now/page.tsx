@@ -194,9 +194,9 @@ export default function ShopNow() {
                   <div className="product-info">
                     <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
-                    <div style={{display:'flex', gap:'6px', width:'100%'}}>
-                      <button className="shop-btn" style={{flex:1, border:'2px solid #e91e8c', background:'white', color:'#e91e8c', boxShadow:'none'}} onClick={() => { addToCart({ name: item.name, price: item.price, img: item.img }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
-                      <button className="shop-btn" style={{flex:1}} onClick={() => setBuyNowProduct(item)}>Buy Now</button>
+                    <div className="btn-row">
+                      <button className="add-btn" onClick={() => { addToCart({ name: item.name, price: item.price, img: item.img }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
+                      <button className="buy-btn" onClick={() => setBuyNowProduct(item)}>Buy Now</button>
                     </div>
                   </div>
                 </div>
