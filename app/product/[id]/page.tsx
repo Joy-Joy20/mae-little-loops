@@ -22,6 +22,20 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
     });
   }, []);
 
+  function handleAddToCart() {
+    if (!userEmail) { router.push("/login"); return; }
+    if (!product) return;
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
+    alert(`${product.name} added to cart!`);
+  }
+
+  function handleBuyNow() {
+    if (!userEmail) { router.push("/login"); return; }
+    if (!product) return;
+    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
+    router.push("/checkout");
+  }
+
   if (!product) {
     return (
       <main className="detail-page">
@@ -31,24 +45,6 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
         </div>
       </main>
     );
-  }
-
-  function handleAddToCart() {
-    if (!userEmail) {
-      router.push("/login");
-      return;
-    }
-    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
-    alert(`${product.name} added to cart!`);
-  }
-
-  function handleBuyNow() {
-    if (!userEmail) {
-      router.push("/login");
-      return;
-    }
-    addToCart({ name: product.name, price: product.price, img: product.img, quantity });
-    router.push("/checkout");
   }
 
   return (
