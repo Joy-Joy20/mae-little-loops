@@ -119,15 +119,14 @@ export default function ShopNow() {
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
+          <a href="/dashboard">Dashboard</a>
         </nav>
-        <div style={{display:'flex', alignItems:'center', gap:'10px', flexWrap:'nowrap'}}>
+        <div className="nav-right">
           <input type="text" placeholder="Search..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch} />
-          <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-            <span style={{fontSize:'13px', fontWeight:'bold', cursor:'pointer'}} onClick={() => router.push('/dashboard')}>👤 {userEmail}</span>
-            <button onClick={handleLogout} className="logout-btn">Logout</button>
-          </div>
-          <span onClick={() => router.push('/cart')} style={{cursor:'pointer'}}>
-            🛒 {cart.length > 0 && <sup style={{background:'#f06292', color:'white', borderRadius:'50%', padding:'1px 5px', fontSize:'11px'}}>{cart.length}</sup>}
+          <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => router.push('/dashboard')}>👤 {userEmail?.split('@')[0]}</span>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
+          <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>
+            🛒 {cart.length > 0 && <sup style={{background:'white', color:'#c44dff', borderRadius:'50%', padding:'1px 5px', fontSize:'10px', fontWeight:'bold'}}>{cart.length}</sup>}
           </span>
         </div>
       </header>
