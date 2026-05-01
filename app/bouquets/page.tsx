@@ -9,44 +9,70 @@ import { useCart } from "../../context/CartContext";
 import BuyNowModal from "../../components/BuyNowModal";
 import Navbar from "../../components/Navbar";
 
+type Product = { id: string; name: string; price: string; img: string | null; description?: string; };
+
 export default function Bouquets() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { cart, addToCart } = useCart();
   const router = useRouter();
-  const [buyNowProduct, setBuyNowProduct] = useState<{name:string; price:string; img:string|null}|null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const bouquets = [
-    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
-    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png" },
-    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png" },
-    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png" },
-    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png" },
-    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png" },
-    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png" },
-    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png" },
+  const bouquets: Product[] = [
+    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
+    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png", description: "A lovely pastel-colored crochet flower bouquet with soft pink and blue blossoms. Great for birthdays and special occasions." },
+    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png", description: "An elegant bouquet of handcrafted lavender bell-shaped flowers wrapped in premium tissue paper with a pink ribbon." },
+    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png", description: "A delicate mini bouquet of white pastel crochet flowers, perfect as a small gift or desk decoration." },
+    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png", description: "A bold and beautiful crimson crochet bouquet that makes a striking statement for any occasion." },
+    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png", description: "A luxurious lavender crochet bouquet with rich purple tones, perfect for anniversaries and special events." },
+    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png", description: "A dreamy blue-toned crochet bouquet inspired by the sky. A unique and calming gift for loved ones." },
+    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png", description: "A cheerful pastel rainbow crochet bouquet bursting with soft colors. Brings joy to any room or occasion." },
   ];
-
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
+    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedProduct(null); };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
   function handleAddToCart(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
     addToCart({ name, price, img });
+    setSelectedProduct(null);
     alert(`${name} added to cart!`);
   }
 
   function handleBuyNow(name: string, price: string, img: string | null) {
     if (!userEmail) { router.push("/login"); return; }
-    setBuyNowProduct({ name, price, img });
+    addToCart({ name, price, img });
+    setSelectedProduct(null);
+    router.push("/checkout");
   }
 
   return (
     <main className="bouquets-page">
-      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+
+      {/* PRODUCT DETAIL MODAL */}
+      {selectedProduct && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={() => setSelectedProduct(null)}>
+          <div style={{background:'white',borderRadius:'24px',padding:'32px',maxWidth:'500px',width:'100%',position:'relative',boxShadow:'0 20px 60px rgba(0,0,0,0.2)',maxHeight:'90vh',overflowY:'auto'}} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setSelectedProduct(null)} style={{position:'absolute',top:'16px',right:'16px',background:'#fce4ec',border:'none',borderRadius:'50%',width:'32px',height:'32px',fontSize:'16px',color:'#e91e8c',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+            <div style={{background:'linear-gradient(135deg,#fff0f5,#f3e5ff)',borderRadius:'16px',padding:'24px',display:'flex',justifyContent:'center',marginBottom:'20px'}}>
+              {selectedProduct.img && <Image src={selectedProduct.img} alt={selectedProduct.name} width={200} height={200} style={{objectFit:'contain'}} />}
+            </div>
+            <span style={{background:'#f3e5ff',color:'#c44dff',fontSize:'12px',fontWeight:'700',padding:'4px 12px',borderRadius:'50px'}}>💐 Bouquet</span>
+            <h2 style={{fontSize:'20px',fontWeight:'700',color:'#333',margin:'12px 0 6px'}}>{selectedProduct.name}</h2>
+            <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
+            <p style={{fontSize:'14px',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
+            <div style={{display:'flex',gap:'12px'}}>
+              <button onClick={() => handleAddToCart(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'12px',borderRadius:'12px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+              <button onClick={() => handleBuyNow(selectedProduct.name, selectedProduct.price, selectedProduct.img)} style={{flex:1,padding:'12px',borderRadius:'12px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'14px',cursor:'pointer',fontFamily:'inherit'}}>Buy Now</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* NAVBAR - same as home */}
       <header>
@@ -90,7 +116,7 @@ export default function Bouquets() {
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
           {bouquets.map((item, index) => (
-            <div key={index} className="product-card" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
+            <div key={index} className="product-card" onClick={() => setSelectedProduct(item)} style={{cursor:'pointer'}}>
               <div className="product-img-wrapper">
                 {item.img ? (
                   <Image src={item.img} alt={item.name} width={160} height={160} className="product-img" />
