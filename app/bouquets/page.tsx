@@ -48,7 +48,7 @@ export default function Bouquets() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [buyNowProduct, setBuyNowProduct] = useState<{ name: string; price: string; img: string | null; quantity?: number } | null>(null);
+  const [buyNowProduct, setBuyNowProduct] = useState<{ id?: string; name: string; price: string; img: string | null; quantity?: number } | null>(null);
 
   const bouquets: Product[] = [
     { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", stock: 10, description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
