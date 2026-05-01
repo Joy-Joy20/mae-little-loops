@@ -5,17 +5,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
+import BuyNowModal from "../../components/BuyNowModal";
 
 type Product = { id: string; name: string; price: string; img: string | null; };
 
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const { cart } = useCart();
+  const { cart, addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
+  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
   const router = useRouter();
 
   const fallback: Product[] = [
@@ -123,6 +125,8 @@ export default function ShopNow() {
   return (
     <main className="shop-page">
 
+      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -190,7 +194,10 @@ export default function ShopNow() {
                   <div className="product-info">
                     <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
-                    <button className="shop-btn" onClick={() => router.push('/bouquets')}>Shop Now</button>
+                    <div style={{display:'flex', gap:'6px', width:'100%'}}>
+                      <button className="shop-btn" style={{flex:1, border:'2px solid #e91e8c', background:'white', color:'#e91e8c', boxShadow:'none'}} onClick={() => { addToCart({ name: item.name, price: item.price, img: item.img }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
+                      <button className="shop-btn" style={{flex:1}} onClick={() => setBuyNowProduct(item)}>Buy Now</button>
+                    </div>
                   </div>
                 </div>
               ))}
