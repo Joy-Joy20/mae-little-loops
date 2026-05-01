@@ -136,10 +136,10 @@ footer {
 .product-price { font-size: 16px; font-weight: 700; color: #e91e8c; }
 
 .btn-row { display: flex; gap: 8px; margin-top: 4px; }
-.add-btn { flex: 1; padding: 8px 16px; border-radius: 8px; border: 2px solid #e91e8c; background: white; color: #e91e8c; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.add-btn { flex: 1; padding: 7px 16px; border-radius: 8px; border: 2px solid #e91e8c; background: white; color: #e91e8c; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 .add-btn:hover { background: #e91e8c; color: white; }
-.buy-btn { flex: 1; padding: 8px 16px; border-radius: 8px; border: none; background: #e91e8c; color: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; box-shadow: 0 4px 12px rgba(233,30,140,0.3); }
-.buy-btn:hover { background: #c2185b; transform: translateY(-1px); }
+.buy-btn { flex: 1; padding: 7px 16px; border-radius: 8px; border: none; background: linear-gradient(135deg, #ff6b9d, #c44dff); color: white; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; box-shadow: 0 3px 10px rgba(196,77,255,0.3); }
+.buy-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(196,77,255,0.4); }
 
 /* ===== PAGINATION ===== */
 .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 32px 0 16px; flex-wrap: wrap; }
