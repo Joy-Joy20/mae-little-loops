@@ -129,11 +129,13 @@ export default function Keychain() {
               <div className="product-img-wrapper">
                 <Image src={item.img} alt={item.name} width={140} height={140} className="product-img" />
               </div>
-              <h3 className="product-name">{item.name}</h3>
-              <p className="product-price">{item.price}</p>
-              <div className="btn-row">
-                <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img); }}>Add to Cart</button>
-                <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img); }}>Buy Now</button>
+              <div className="product-info">
+                <h3 className="product-name">{item.name}</h3>
+                <p className="product-price">{item.price}</p>
+                <div className="btn-row">
+                  <button className="add-btn" onClick={(e) => { e.stopPropagation(); handleAddToCart(item.name, item.price, item.img); }}>Add to Cart</button>
+                  <button className="buy-btn" onClick={(e) => { e.stopPropagation(); handleBuyNow(item.name, item.price, item.img); }}>Buy Now</button>
+                </div>
               </div>
             </div>
           ))}
