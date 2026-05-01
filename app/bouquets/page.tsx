@@ -14,8 +14,6 @@ export default function Bouquets() {
   const { cart, addToCart } = useCart();
   const router = useRouter();
   const [buyNowProduct, setBuyNowProduct] = useState<{name:string; price:string; img:string|null}|null>(null);
-  const [page, setPage] = useState(0);
-  const perPage = 4;
 
   const bouquets = [
     { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png" },
@@ -28,8 +26,6 @@ export default function Bouquets() {
     { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png" },
   ];
 
-  const totalPages = Math.ceil(bouquets.length / perPage);
-  const paginated = bouquets.slice(page * perPage, page * perPage + perPage);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -93,7 +89,7 @@ export default function Bouquets() {
       <section className="products-section">
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
-          {paginated.map((item, index) => (
+          {bouquets.map((item, index) => (
             <div key={index} className="product-card" onClick={() => router.push(`/product/${item.id}`)} style={{cursor:'pointer'}}>
               <div className="product-img-wrapper">
                 {item.img ? (
@@ -111,15 +107,6 @@ export default function Bouquets() {
             </div>
           ))}
         </div>
-        {totalPages > 1 && (
-          <div className="pagination">
-            <button className="page-btn" onClick={() => setPage(p => Math.max(p - 1, 0))} disabled={page === 0}>← Prev</button>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button key={i} className={`page-btn ${page === i ? "active" : ""}`} onClick={() => setPage(i)}>{i + 1}</button>
-            ))}
-            <button className="page-btn" onClick={() => setPage(p => Math.min(p + 1, totalPages - 1))} disabled={page === totalPages - 1}>Next →</button>
-          </div>
-        )}
       </section>
 
       {/* FOOTER */}
