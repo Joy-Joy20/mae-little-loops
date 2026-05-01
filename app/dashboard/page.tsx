@@ -137,6 +137,7 @@ export default function Dashboard() {
           <a href="/dashboard" className="active-link">Dashboard</a>
         </nav>
         <div className="nav-right">
+          <input type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') { const q = (e.target as HTMLInputElement).value.trim().replace(/[<>"']/g, ""); if(q) router.push(`/search?q=${encodeURIComponent(q)}`); }}} />
           <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => router.push('/dashboard')}>👤 {userEmail?.split('@')[0]}</span>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
           <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>🛒</span>
