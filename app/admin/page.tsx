@@ -52,8 +52,8 @@ export default function AdminDashboard() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const [storeName, setStoreName] = useState("Mae Little Loops Studio");
-  const [storeEmail, setStoreEmail] = useState("maelittleloops@gmail.com");
-  const [storePhone, setStorePhone] = useState("09XXXXXXXXX");
+  const [storeEmail, setStoreEmail] = useState("masarquemae65@gmail.com");
+  const [storePhone, setStorePhone] = useState("09706383306");
   const [settingsSaved, setSettingsSaved] = useState(false);
 
   async function fetchOrders() {
