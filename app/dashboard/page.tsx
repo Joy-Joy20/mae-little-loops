@@ -43,7 +43,7 @@ export default function Dashboard() {
       setUserEmail(user.email ?? null);
       setUserId(user.id);
 
-      const { data: profile } = await supabase.from("profiles").select("username, phone, address").eq("id", user.id).single();
+      const { data: profile } = await supabase.from("users").select("username, phone, address").eq("id", user.id).single();
       if (profile?.username) { setFullName(profile.username); setEditName(profile.username); }
       if (profile?.phone) { setPhone(profile.phone); setEditPhone(profile.phone); }
       if (profile?.address) { setAddress(profile.address); setEditAddress(profile.address); }
@@ -60,7 +60,7 @@ export default function Dashboard() {
   async function handleSaveName() {
     if (!userId) return;
     setSavingName(true);
-    await supabase.from("profiles").upsert({ id: userId, username: editName, email: userEmail, phone: editPhone, address: editAddress });
+    await supabase.from("users").upsert({ id: userId, username: editName, email: userEmail, phone: editPhone, address: editAddress });
     setFullName(editName);
     setPhone(editPhone);
     setAddress(editAddress);

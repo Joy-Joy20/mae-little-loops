@@ -197,7 +197,7 @@ export default function AdminDashboard() {
         supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
-        supabase.from("profiles").select("id, email, full_name, created_at, role")
+        supabase.from("users").select("id, email, full_name, created_at, role")
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setUsers(data as User[]); });
         supabase.from("messages").select("*").order("created_at", { ascending: false })
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
     const result = await res.json();
     if (!res.ok) { alert("Sync failed: " + result.error); return; }
     alert(`Synced ${result.synced} new user(s). Total: ${result.total}`);
-    supabase.from("profiles").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+    supabase.from("users").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setUsers(data as User[]); });
   }
 
@@ -294,13 +294,13 @@ export default function AdminDashboard() {
     if (!res.ok) { alert("Failed to create user: " + result.error); return; }
     setShowAddUser(false);
     setNewUserEmail(""); setNewUserPassword(""); setNewUserName(""); setNewUserRole("customer");
-    supabase.from("profiles").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+    supabase.from("users").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setUsers(data as User[]); });
   }
 
   async function handleDeleteUser(userId: string) {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-    const { error } = await supabase.from("profiles").delete().eq("id", userId);
+    const { error } = await supabase.from("users").delete().eq("id", userId);
     if (error) {
       alert("Failed to delete user: " + error.message);
     } else {
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
   }
 
   async function handleRoleChange(userId: string, newRole: string) {
-    const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", userId);
+    const { error } = await supabase.from("users").update({ role: newRole }).eq("id", userId);
     if (error) {
       alert("Failed to update role: " + error.message);
     } else {

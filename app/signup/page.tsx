@@ -86,7 +86,7 @@ export default function Signup() {
 
     // Insert profile row so admin dashboard can see this user
     if (signUpData.user) {
-      await supabase.from("profiles").insert([{
+      await supabase.from("users").insert([{
         id: signUpData.user.id,
         email,
         role: "customer",

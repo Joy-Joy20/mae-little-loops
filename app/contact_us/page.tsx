@@ -20,7 +20,7 @@ export default function ContactUs() {
       if (user?.email) {
         setUserEmail(user.email);
         const { data: profile } = await supabase
-          .from("profiles")
+          .from("users")
           .select("full_name")
           .eq("id", user.id)
           .single();

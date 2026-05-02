@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert into profiles table
-    await adminClient.from("profiles").insert([{
+    await adminClient.from("users").insert([{
       id: user.id,
       email,
       full_name: full_name || null,

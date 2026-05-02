@@ -20,7 +20,7 @@ export async function POST() {
   }
 
   // Get existing profile IDs
-  const { data: existingProfiles } = await adminClient.from("profiles").select("id");
+  const { data: existingProfiles } = await adminClient.from("users").select("id");
   const existingIds = new Set((existingProfiles ?? []).map((p: { id: string }) => p.id));
 
   // Insert missing profiles
@@ -34,7 +34,7 @@ export async function POST() {
     }));
 
   if (missing.length > 0) {
-    const { error: insertError } = await adminClient.from("profiles").insert(missing);
+    const { error: insertError } = await adminClient.from("users").insert(missing);
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
