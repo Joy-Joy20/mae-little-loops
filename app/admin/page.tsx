@@ -312,6 +312,19 @@ export default function AdminDashboard() {
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     if (error) { alert("Failed to update status."); return; }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+
+    // Restore stock if order is cancelled
+    if (newStatus === "Cancelled") {
+      const order = orders.find(o => o.id === orderId);
+      if (order?.order_items) {
+        for (const item of order.order_items) {
+          const { data: product } = await supabase.from("products").select("id, stock").eq("name", item.product_name).single();
+          if (product) {
+            await supabase.from("products").update({ stock: product.stock + item.quantity }).eq("id", product.id);
+          }
+        }
+      }
+    }
     const statusColors: Record<string, string> = { Pending: "#856404", Processing: "#004085", Shipped: "#155724", Delivered: "#0c5460", Cancelled: "#721c24" };
     const color = statusColors[newStatus] || "#c44dff";
     await fetch("/api/send-email", {
