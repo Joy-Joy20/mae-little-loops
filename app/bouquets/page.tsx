@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 import BuyNowModal from "../../components/BuyNowModal";
+import ChatWidget from "../../components/ChatWidget";
 
 type Product = { id: string; name: string; price: string; img: string | null; description?: string; stock: number; };
 
@@ -175,6 +176,8 @@ export default function Bouquets() {
           <p>📍 Masbate, Philippines</p>
         </div>
       </footer>
+
+      <ChatWidget userEmail={userEmail} />
 
     </main>
   );

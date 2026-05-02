@@ -9,6 +9,8 @@ type Order = { id: string; user_email: string; total_amount: number; status: str
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
+type Conversation = { id: string; user_email: string; last_message?: string; last_message_at: string; };
+type ChatMessage = { id: string; message: string; is_admin: boolean; sender_email: string; created_at: string; };
 type Rider = { id: string; full_name: string; email?: string; phone: string; status: string; created_at: string; };
 type RiderForm = { full_name: string; email: string; phone: string; status: string; };
 const emptyRider: RiderForm = { full_name: "", email: "", phone: "", status: "available" };
@@ -25,6 +27,10 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConv, setActiveConv] = useState<Conversation | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [adminReply, setAdminReply] = useState("");
   const [riders, setRiders] = useState<Rider[]>([]);
   const [riderForm, setRiderForm] = useState<RiderForm>(emptyRider);
   const [editRider, setEditRider] = useState<Rider | null>(null);
@@ -186,9 +192,34 @@ export default function AdminDashboard() {
         fetchProducts();
         supabase.from("riders").select("*").order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setRiders(data as Rider[]); });
+        supabase.from("conversations").select("*").order("last_message_at", { ascending: false })
+          .then(({ data }) => { if (data) setConversations(data as Conversation[]); });
       }
     });
   }, [router]);
+
+  async function fetchChatMessages(convId: string) {
+    const { data } = await supabase.from("chat_messages").select("*").eq("conversation_id", convId).order("created_at", { ascending: true });
+    setChatMessages((data ?? []) as ChatMessage[]);
+  }
+
+  async function handleAdminReply() {
+    if (!adminReply.trim() || !activeConv) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const text = adminReply.trim();
+    setAdminReply("");
+    await supabase.from("chat_messages").insert([{
+      conversation_id: activeConv.id,
+      sender_id: user.id,
+      sender_email: user.email,
+      message: text,
+      is_admin: true,
+    }]);
+    await supabase.from("conversations").update({ last_message: text, last_message_at: new Date().toISOString() }).eq("id", activeConv.id);
+    fetchChatMessages(activeConv.id);
+    setConversations(prev => prev.map(c => c.id === activeConv.id ? { ...c, last_message: text, last_message_at: new Date().toISOString() } : c));
+  }
 
   async function fetchRiders() {
     const { data } = await supabase.from("riders").select("*").order("created_at", { ascending: false });
@@ -402,6 +433,7 @@ export default function AdminDashboard() {
     { label: "Orders", icon: "📦" },
     { label: "Users", icon: "👥" },
     { label: "Riders", icon: "🏍️" },
+    { label: "Chats", icon: "💬" },
     { label: "Messages", icon: "✉️" },
     { label: "Settings", icon: "⚙️" },
   ];
@@ -725,6 +757,59 @@ export default function AdminDashboard() {
               </table>
             </div>
           </>
+        )}
+
+        {/* ===== CHATS ===== */}
+        {active === "Chats" && (
+          <div style={{display:'flex',gap:'16px',height:'560px'}}>
+            {/* Conversation list */}
+            <div className="admin-table-card" style={{width:'280px',flexShrink:0,overflowY:'auto',padding:'16px'}}>
+              <h3 style={{margin:'0 0 12px',fontSize:'15px',fontWeight:'700'}}>Conversations <span className="table-badge">{conversations.length}</span></h3>
+              {conversations.length === 0 ? <p style={{color:'#aaa',fontSize:'13px'}}>No conversations yet.</p> :
+                conversations.map(c => (
+                  <div key={c.id} onClick={() => { setActiveConv(c); fetchChatMessages(c.id); }} style={{padding:'12px',borderRadius:'12px',cursor:'pointer',background:activeConv?.id === c.id ? '#fce4ec' : '#fff9fb',border:'1.5px solid #fce4ec',marginBottom:'8px'}}>
+                    <p style={{fontWeight:'600',fontSize:'13px',margin:'0 0 4px',color:'#e91e8c'}}>{c.user_email}</p>
+                    <p style={{fontSize:'12px',color:'#888',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.last_message || 'No messages yet'}</p>
+                    <p style={{fontSize:'11px',color:'#bbb',margin:'4px 0 0'}}>{new Date(c.last_message_at).toLocaleString()}</p>
+                  </div>
+                ))
+              }
+            </div>
+            {/* Chat window */}
+            <div className="admin-table-card" style={{flex:1,display:'flex',flexDirection:'column',padding:0,overflow:'hidden'}}>
+              {!activeConv ? (
+                <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'#aaa',flexDirection:'column',gap:'8px'}}>
+                  <span style={{fontSize:'40px'}}>💬</span>
+                  <p>Select a conversation to view messages</p>
+                </div>
+              ) : (
+                <>
+                  <div style={{padding:'16px 20px',borderBottom:'1px solid #fce4ec',background:'#fff9fb'}}>
+                    <p style={{fontWeight:'700',margin:0,color:'#e91e8c'}}>{activeConv.user_email}</p>
+                  </div>
+                  <div style={{flex:1,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:'8px'}}>
+                    {chatMessages.length === 0 && <p style={{color:'#aaa',fontSize:'13px',textAlign:'center',marginTop:'20px'}}>No messages yet.</p>}
+                    {chatMessages.map(msg => (
+                      <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-end' : 'flex-start',background:msg.is_admin ? 'linear-gradient(135deg,#e91e8c,#f06292)' : '#fce4ec',color:msg.is_admin ? 'white' : '#333',padding:'10px 14px',borderRadius:msg.is_admin ? '12px 4px 12px 12px' : '4px 12px 12px 12px',maxWidth:'75%',fontSize:'14px'}}>
+                        <p style={{margin:0}}>{msg.message}</p>
+                        <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{msg.is_admin ? 'Admin' : msg.sender_email} · {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{padding:'12px 16px',borderTop:'1px solid #fce4ec',display:'flex',gap:'8px'}}>
+                    <input
+                      type="text" value={adminReply}
+                      onChange={e => setAdminReply(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAdminReply(); }}
+                      placeholder="Type a reply..."
+                      style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
+                    />
+                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>➤</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )}
 
         {/* ===== MESSAGES ===== */}

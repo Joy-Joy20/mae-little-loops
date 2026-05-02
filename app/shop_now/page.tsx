@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
+import ChatWidget from "../../components/ChatWidget";
 
 type Product = { id: string; name: string; price: string; img: string | null; };
 
@@ -213,6 +214,8 @@ export default function ShopNow() {
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
         <div className="footer-col"><h3>Contact</h3><p>📧 masarquemae65@gmail.com</p><p>📱 09706383306</p><p>📍 Masbate, Philippines</p></div>
       </footer>
+
+      <ChatWidget userEmail={userEmail} />
 
     </main>
   );
