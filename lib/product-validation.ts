@@ -21,7 +21,7 @@ export function validateAndNormalizeProductInput(input: unknown): {
   const description = String(payload.description ?? "").trim();
   const imageUrl = String(payload.image_url ?? "").trim();
   const price = Number(payload.price);
-  const stock = Number(payload.stock);
+  const stock = Math.floor(Number(payload.stock ?? 0));
   const errors: string[] = [];
 
   if (!name) errors.push("Product name is required.");
@@ -34,7 +34,7 @@ export function validateAndNormalizeProductInput(input: unknown): {
   if (!Number.isInteger(stock) || stock < 0) {
     errors.push("Stock must be a whole number that is 0 or higher.");
   }
-  if (!description) errors.push("Description is required.");
+  // description is optional — no required check
 
   if (errors.length > 0) {
     return { data: null, errors };

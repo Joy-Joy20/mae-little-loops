@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                       <input type="text" value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} placeholder="/Rainbow Tulip Charm.png" />
                     </div>
                     <div className="settings-group">
-                      <label>Description</label>
+                      <label>Description <span style={{fontWeight:'400',color:'#aaa',fontSize:'12px'}}>(optional)</span></label>
                       <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Product description..." rows={3} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none',resize:'vertical',fontFamily:'inherit'}} />
                     </div>
                     <div style={{display:'flex',gap:'10px'}}>
