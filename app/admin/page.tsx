@@ -9,6 +9,9 @@ type Order = { id: string; user_email: string; total_amount: number; status: str
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
+type Rider = { id: string; full_name: string; email?: string; phone: string; status: string; created_at: string; };
+type RiderForm = { full_name: string; email: string; phone: string; status: string; };
+const emptyRider: RiderForm = { full_name: "", email: "", phone: "", status: "available" };
 type ProductFormState = { name: string; price: string; category: "bouquet" | "keychain"; stock: string; description: string; image_url: string; };
 
 const emptyProduct: ProductFormState = { name: "", price: "", category: "bouquet", stock: "0", description: "", image_url: "" };
@@ -22,6 +25,11 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [riders, setRiders] = useState<Rider[]>([]);
+  const [riderForm, setRiderForm] = useState<RiderForm>(emptyRider);
+  const [editRider, setEditRider] = useState<Rider | null>(null);
+  const [showRiderForm, setShowRiderForm] = useState(false);
+  const [riderSaving, setRiderSaving] = useState(false);
 
   // Product CRUD state
   const [showForm, setShowForm] = useState(false);
@@ -83,9 +91,47 @@ export default function AdminDashboard() {
         supabase.from("messages").select("*").order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setMessages(data); });
         fetchProducts();
+        supabase.from("riders").select("*").order("created_at", { ascending: false })
+          .then(({ data }) => { if (data) setRiders(data as Rider[]); });
       }
     });
   }, [router]);
+
+  async function fetchRiders() {
+    const { data } = await supabase.from("riders").select("*").order("created_at", { ascending: false });
+    if (data) setRiders(data as Rider[]);
+  }
+
+  async function handleSaveRider() {
+    if (!riderForm.full_name.trim() || !riderForm.phone.trim()) {
+      alert("Full name and phone number are required."); return;
+    }
+    setRiderSaving(true);
+    if (editRider) {
+      const { error } = await supabase.from("riders").update(riderForm).eq("id", editRider.id);
+      if (error) { alert("Failed to update rider: " + error.message); }
+    } else {
+      const { error } = await supabase.from("riders").insert([riderForm]);
+      if (error) { alert("Failed to add rider: " + error.message); }
+    }
+    await fetchRiders();
+    setShowRiderForm(false);
+    setEditRider(null);
+    setRiderForm(emptyRider);
+    setRiderSaving(false);
+  }
+
+  async function handleStatusChange(riderId: string, newStatus: string) {
+    const { error } = await supabase.from("riders").update({ status: newStatus }).eq("id", riderId);
+    if (!error) setRiders(prev => prev.map(r => r.id === riderId ? { ...r, status: newStatus } : r));
+  }
+
+  async function handleDeleteRider(riderId: string) {
+    if (!window.confirm("Are you sure you want to delete this rider?")) return;
+    const { error } = await supabase.from("riders").delete().eq("id", riderId);
+    if (!error) setRiders(prev => prev.filter(r => r.id !== riderId));
+    else alert("Failed to delete rider: " + error.message);
+  }
 
   async function handleDeleteUser(userId: string) {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
@@ -253,6 +299,7 @@ export default function AdminDashboard() {
     { label: "Total Products", value: products.length.toString(), icon: "🛍️", color: "#f48fb1" },
     { label: "Total Orders", value: orders.length.toString(), icon: "📦", color: "#81d4fa" },
     { label: "Total Users", value: users.length.toString(), icon: "👥", color: "#a5d6a7" },
+    { label: "Total Riders", value: riders.length.toString(), icon: "🏍️", color: "#b39ddb" },
     { label: "Revenue", value: "₱" + orders.filter(o => o.status?.toLowerCase() === "delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "💰", color: "#ffcc80" },
   ];
 
@@ -261,6 +308,7 @@ export default function AdminDashboard() {
     { label: "Products", icon: "🛍️" },
     { label: "Orders", icon: "📦" },
     { label: "Users", icon: "👥" },
+    { label: "Riders", icon: "🏍️" },
     { label: "Messages", icon: "✉️" },
     { label: "Settings", icon: "⚙️" },
   ];
@@ -469,6 +517,85 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* ===== RIDERS ===== */}
+        {active === "Riders" && (
+          <>
+            {showRiderForm && (
+              <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={() => { setShowRiderForm(false); setEditRider(null); setRiderForm(emptyRider); }}>
+                <div style={{background:'white',borderRadius:'20px',padding:'32px',width:'100%',maxWidth:'440px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}} onClick={e => e.stopPropagation()}>
+                  <h3 style={{fontSize:'18px',fontWeight:'700',marginBottom:'20px',color:'#222'}}>{editRider ? "Edit Rider" : "Add New Rider"}</h3>
+                  <div className="settings-form">
+                    <div className="settings-group">
+                      <label>Full Name *</label>
+                      <input type="text" value={riderForm.full_name} onChange={e => setRiderForm({...riderForm, full_name: e.target.value})} placeholder="e.g. Juan Dela Cruz" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Email <span style={{fontWeight:'400',color:'#aaa',fontSize:'12px'}}>(optional)</span></label>
+                      <input type="email" value={riderForm.email} onChange={e => setRiderForm({...riderForm, email: e.target.value})} placeholder="rider@email.com" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Phone Number *</label>
+                      <input type="text" value={riderForm.phone} onChange={e => setRiderForm({...riderForm, phone: e.target.value})} placeholder="09XXXXXXXXX" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Status</label>
+                      <select value={riderForm.status} onChange={e => setRiderForm({...riderForm, status: e.target.value})} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
+                        <option value="available">Available</option>
+                        <option value="busy">Busy</option>
+                        <option value="offline">Offline</option>
+                      </select>
+                    </div>
+                    <div style={{display:'flex',gap:'10px'}}>
+                      <button className="save-btn" onClick={handleSaveRider} disabled={riderSaving} style={{flex:1}}>{riderSaving ? "Saving..." : editRider ? "Update Rider" : "Add Rider"}</button>
+                      <button onClick={() => { setShowRiderForm(false); setEditRider(null); setRiderForm(emptyRider); }} style={{flex:1,padding:'13px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'white',color:'#888',fontWeight:'600',cursor:'pointer',fontSize:'14px'}}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="admin-table-card">
+              <div className="table-header">
+                <h2>All Riders</h2>
+                <span className="table-badge">{riders.length} riders</span>
+                <button onClick={() => { setEditRider(null); setRiderForm(emptyRider); setShowRiderForm(true); }} style={{marginLeft:'auto',padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add Rider</button>
+              </div>
+              <table className="admin-table">
+                <thead><tr><th>Full Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {riders.length === 0 ? (
+                    <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No riders yet.</td></tr>
+                  ) : (
+                    riders.map((r) => (
+                      <tr key={r.id}>
+                        <td>{r.full_name}</td>
+                        <td>{r.email || '—'}</td>
+                        <td>{r.phone}</td>
+                        <td>
+                          <select
+                            value={r.status}
+                            onChange={(e) => handleStatusChange(r.id, e.target.value)}
+                            style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color: r.status === 'available' ? '#2e7d32' : r.status === 'busy' ? '#e91e8c' : '#aaa',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}
+                          >
+                            <option value="available">Available</option>
+                            <option value="busy">Busy</option>
+                            <option value="offline">Offline</option>
+                          </select>
+                        </td>
+                        <td>
+                          <div style={{display:'flex',gap:'8px'}}>
+                            <button onClick={() => { setEditRider(r); setRiderForm({ full_name: r.full_name, email: r.email ?? "", phone: r.phone, status: r.status }); setShowRiderForm(true); }} style={{padding:'5px 14px',borderRadius:'20px',border:'1.5px solid #c44dff',background:'white',color:'#c44dff',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Edit</button>
+                            <button onClick={() => handleDeleteRider(r.id)} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'#ffebee',color:'#c62828',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* ===== MESSAGES ===== */}
