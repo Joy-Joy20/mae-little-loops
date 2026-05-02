@@ -757,7 +757,7 @@ export default function AdminDashboard() {
                     users.map((u) => (
                       <tr key={u.id}>
                         <td>{u.email}</td>
-                        <td>{u.full_name || '—'}</td>
+                        
                         <td>
                           <select value={u.role || 'customer'} onChange={(e) => handleRoleChange(u.id, e.target.value)} style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}>
                             <option value="customer">Customer</option>
@@ -946,6 +946,7 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
 
 
 
