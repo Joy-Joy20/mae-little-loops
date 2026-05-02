@@ -100,13 +100,13 @@ export default function Checkout() {
       // Clear cart
       await clearCart();
 
-      // Send order confirmation email
+      // Send order confirmation email to customer
       await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           to: userEmail,
-          subject: "Order Confirmed — Mae Little Loops Studio 🌸",
+          subject: "🌸 Order Confirmed — Mae Little Loops Studio",
           html: `
             <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
               <h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2>
@@ -116,12 +116,12 @@ export default function Checkout() {
                 ${cart.map(item => `
                   <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3e5ff;font-size:14px;">
                     <span>${item.name} x${item.quantity ?? 1}</span>
-                    <span style="color:#e91e8c;font-weight:700;">₱${(parseFloat(item.price.replace('₱','').replace(',','')) * (item.quantity ?? 1)).toFixed(2)}</span>
+                    <span style="color:#e91e8c;font-weight:700;">&#8369;${(parseFloat(item.price.replace('&#8369;','').replace(',','')) * (item.quantity ?? 1)).toFixed(2)}</span>
                   </div>
                 `).join('')}
                 <div style="display:flex;justify-content:space-between;padding:12px 0 0;font-size:16px;font-weight:700;">
                   <span>Total</span>
-                  <span style="color:#e91e8c;">₱${total.toFixed(2)}</span>
+                  <span style="color:#e91e8c;">&#8369;${total.toFixed(2)}</span>
                 </div>
               </div>
               <div style="background:#fff0f5;border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px;">
@@ -131,6 +131,37 @@ export default function Checkout() {
               </div>
               <p style="color:#666;">We will contact you shortly to confirm your delivery. Thank you for shopping with us! 💕</p>
               <p style="color:#aaa;font-size:12px;margin-top:16px;">Questions? Message us on Facebook or reply to this email.</p>
+            </div>
+          `,
+        }),
+      });
+
+      // Send admin notification email
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: "masarquemae65@gmail.com",
+          subject: "🛍️ New Order Received — Mae Little Loops Studio",
+          html: `
+            <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+              <h2 style="color:#e91e8c;">New Order Received! 🛍️</h2>
+              <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:16px 0;">
+                <p><strong>Customer:</strong> ${userEmail}</p>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Phone:</strong> ${phone}</p>
+                <p><strong>Address:</strong> ${address}</p>
+                <p><strong>Payment:</strong> ${payment === "gcash" ? "GCash" : "Cash on Delivery"}</p>
+                <p><strong>Total:</strong> &#8369;${total.toFixed(2)}</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+              </div>
+              <h3 style="color:#c44dff;">Items Ordered:</h3>
+              ${cart.map(item => `
+                <div style="padding:6px 0;border-bottom:1px solid #fce4ec;font-size:14px;">
+                  ${item.name} x${item.quantity ?? 1} — &#8369;${(parseFloat(item.price.replace('&#8369;','').replace(',','')) * (item.quantity ?? 1)).toFixed(2)}
+                </div>
+              `).join('')}
+              <p style="margin-top:16px;">Please check the admin dashboard to process this order.</p>
             </div>
           `,
         }),
@@ -168,7 +199,8 @@ export default function Checkout() {
             <div className="success-icon">✅</div>
             <h2>Order Placed!</h2>
             <p>Thank you for your purchase 🌸</p>
-            <p>We will contact you shortly to confirm your order.</p>
+            <p>A confirmation email has been sent to <strong>{userEmail}</strong></p>
+            <p style={{fontSize:'13px',color:'#aaa',marginTop:'4px'}}>We will contact you shortly to confirm your order.</p>
             <button onClick={() => router.push("/shop_now")}>Continue Shopping</button>
           </div>
         ) : (
