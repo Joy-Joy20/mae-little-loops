@@ -8,7 +8,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   async function handleReset() {
     setErrorMsg("");
@@ -22,14 +22,16 @@ export default function ForgotPassword() {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) {
-        setErrorMsg(error.message || "Something went wrong. Please try again.");
+        setErrorMsg(typeof error.message === "string" && error.message ? error.message : "Something went wrong. Please try again.");
       } else {
         setSuccess(true);
       }
-    } catch {
-      setErrorMsg("Network error. Please check your connection and try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error. Please check your connection and try again.";
+      setErrorMsg(msg);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -71,7 +73,7 @@ export default function ForgotPassword() {
                     onKeyDown={(e) => { if (e.key === "Enter") handleReset(); }}
                   />
                 </div>
-                {errorMsg !== "" ? <p className="error-msg">⚠️ {errorMsg}</p> : null}
+                {errorMsg ? <p className="error-msg">⚠️ {String(errorMsg)}</p> : null}
                 <button className="login-btn" onClick={handleReset} disabled={loading}>
                   {loading ? "Sending..." : "Send Reset Link"}
                 </button>
