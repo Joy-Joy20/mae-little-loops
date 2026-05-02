@@ -32,6 +32,12 @@ export default function AdminDashboard() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [adminReply, setAdminReply] = useState("");
   const [previewReceipt, setPreviewReceipt] = useState<string | null>(null);
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserPassword, setNewUserPassword] = useState("");
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserRole, setNewUserRole] = useState("customer");
+  const [addingUser, setAddingUser] = useState(false);
   const [riders, setRiders] = useState<Rider[]>([]);
   const [riderForm, setRiderForm] = useState<RiderForm>(emptyRider);
   const [editRider, setEditRider] = useState<Rider | null>(null);
@@ -262,6 +268,25 @@ export default function AdminDashboard() {
     const { error } = await supabase.from("riders").delete().eq("id", riderId);
     if (!error) setRiders(prev => prev.filter(r => r.id !== riderId));
     else alert("Failed to delete rider: " + error.message);
+  }
+
+  async function handleAddUser() {
+    if (!newUserEmail.trim() || !newUserPassword.trim()) {
+      alert("Email and password are required."); return;
+    }
+    setAddingUser(true);
+    const res = await fetch("/api/create-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: newUserEmail.trim(), password: newUserPassword, full_name: newUserName.trim(), role: newUserRole }),
+    });
+    const result = await res.json();
+    setAddingUser(false);
+    if (!res.ok) { alert("Failed to create user: " + result.error); return; }
+    setShowAddUser(false);
+    setNewUserEmail(""); setNewUserPassword(""); setNewUserName(""); setNewUserRole("customer");
+    supabase.from("profiles").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setUsers(data as User[]); });
   }
 
   async function handleDeleteUser(userId: string) {
@@ -686,36 +711,68 @@ export default function AdminDashboard() {
 
         {/* ===== USERS ===== */}
         {active === "Users" && (
-          <div className="admin-table-card">
-            <div className="table-header"><h2>All Users</h2><span className="table-badge">{users.length} users</span></div>
-            <table className="admin-table">
-              <thead><tr><th>Email</th><th>Full Name</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
-              <tbody>
-                {users.length === 0 ? <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
-                  users.map((u) => (
-                    <tr key={u.id}>
-                      <td>{u.email}</td>
-                      <td>{u.full_name || '—'}</td>
-                      <td>
-                        <select
-                          value={u.role || 'customer'}
-                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                          style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}
-                        >
-                          <option value="customer">Customer</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                      </td>
-                      <td>{new Date(u.created_at).toLocaleDateString()}</td>
-                      <td>
-                        <button onClick={() => handleDeleteUser(u.id)} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'#ffebee',color:'#c62828',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Delete</button>
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          <>
+            {showAddUser && (
+              <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={() => setShowAddUser(false)}>
+                <div style={{background:'white',borderRadius:'20px',padding:'32px',width:'100%',maxWidth:'440px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}} onClick={e => e.stopPropagation()}>
+                  <h3 style={{fontSize:'18px',fontWeight:'700',marginBottom:'20px',color:'#222'}}>Add New User</h3>
+                  <div className="settings-form">
+                    <div className="settings-group">
+                      <label>Email *</label>
+                      <input type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="user@email.com" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Password *</label>
+                      <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} placeholder="Min. 6 characters" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Full Name <span style={{fontWeight:'400',color:'#aaa',fontSize:'12px'}}>(optional)</span></label>
+                      <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Juan Dela Cruz" />
+                    </div>
+                    <div className="settings-group">
+                      <label>Role</label>
+                      <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                    <div style={{display:'flex',gap:'10px'}}>
+                      <button className="save-btn" onClick={handleAddUser} disabled={addingUser} style={{flex:1}}>{addingUser ? "Creating..." : "Create User"}</button>
+                      <button onClick={() => setShowAddUser(false)} style={{flex:1,padding:'13px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'white',color:'#888',fontWeight:'600',cursor:'pointer',fontSize:'14px'}}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="admin-table-card">
+              <div className="table-header">
+                <h2>All Users</h2>
+                <span className="table-badge">{users.length} users</span>
+                <button onClick={() => setShowAddUser(true)} style={{marginLeft:'auto',padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add User</button>
+              </div>
+              <table className="admin-table">
+                <thead><tr><th>Email</th><th>Full Name</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {users.length === 0 ? <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
+                    users.map((u) => (
+                      <tr key={u.id}>
+                        <td>{u.email}</td>
+                        <td>{u.full_name || '—'}</td>
+                        <td>
+                          <select value={u.role || 'customer'} onChange={(e) => handleRoleChange(u.id, e.target.value)} style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}>
+                            <option value="customer">Customer</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        </td>
+                        <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td><button onClick={() => handleDeleteUser(u.id)} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'#ffebee',color:'#c62828',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Delete</button></td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* ===== RIDERS ===== */}
