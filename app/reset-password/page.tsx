@@ -1,98 +1,105 @@
 "use client";
 
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import Image from "next/image";
 
-export default function ResetPassword() {
+function ResetPasswordForm() {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const token = searchParams.get("token");
+  const email = searchParams.get("email");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [ready, setReady] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-        setError("");
-      } else if (event === "SIGNED_IN" && session) {
-        setReady(true);
-        setError("");
-      }
-      // ignore initial INITIAL_SESSION / no-session events to avoid false errors
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+  async function handleUpdatePassword() {
+    setErrorMsg("");
+    if (!password || !confirmPassword) { setErrorMsg("Please fill in all fields."); return; }
+    if (password !== confirmPassword) { setErrorMsg("Passwords do not match."); return; }
+    if (password.length < 6) { setErrorMsg("Password must be at least 6 characters."); return; }
+    if (!token || !email) { setErrorMsg("Invalid or expired reset link."); return; }
 
-  async function handleUpdate() {
-    setError("");
-    if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
-    if (password !== confirm) { setError("Passwords do not match."); return; }
     setLoading(true);
-    const { error: updateError } = await supabase.auth.updateUser({ password });
-    if (updateError) {
-      setError(updateError.message || "Failed to update password. Please try again.");
-    } else {
+    try {
+      const { data: resetData, error: tokenError } = await supabase
+        .from("password_resets")
+        .select("*")
+        .eq("email", email)
+        .eq("token", token)
+        .eq("used", false)
+        .gte("expires_at", new Date().toISOString())
+        .single();
+
+      if (tokenError || !resetData) {
+        setErrorMsg("Invalid or expired reset link. Please request a new one.");
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) { setErrorMsg(updateError.message || "Failed to update password."); return; }
+
+      await supabase.from("password_resets").update({ used: true }).eq("id", resetData.id);
+
       setSuccess(true);
-      await supabase.auth.signOut();
-      setTimeout(() => router.push("/login?reset=success"), 2500);
+      setTimeout(() => router.push("/login"), 3000);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
     <main className="login-page">
-
       <div className="login-left">
         <Image src="/logo.png" alt="Mae Little Loops Studio" width={420} height={420} className="login-logo" priority />
         <h1>Mae Little Loops Studio</h1>
         <p>Handmade with love 🌸</p>
       </div>
-
       <div className="login-right">
         <div className="login-card">
-          <h2>Reset Password</h2>
-          <p className="login-sub">Enter your new password below.</p>
-          <div className="login-form">
-            {success ? (
-              <div style={{textAlign:'center'}}>
-                <p style={{fontSize:'40px',marginBottom:'12px'}}>✅</p>
-                <p style={{fontWeight:'700',color:'#e91e8c',fontSize:'16px'}}>Password updated!</p>
-                <p style={{color:'#888',fontSize:'14px',marginTop:'8px'}}>Redirecting to login...</p>
-              </div>
-            ) : !ready ? (
-              <>
-                <p style={{color:'#aaa',textAlign:'center',fontSize:'14px'}}>Verifying reset link...</p>
-                {error && <>
-                  <p className="error-msg">⚠️ {error}</p>
-                  <a href="/forgot-password" className="login-btn" style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:'8px'}}>Request New Link</a>
-                </>}
-              </>
-            ) : (
-              <>
+          {success ? (
+            <>
+              <h2>Password Reset Successful! ✅</h2>
+              <p className="login-sub">Your password has been updated. Redirecting to login...</p>
+            </>
+          ) : (
+            <>
+              <h2>Reset Password</h2>
+              <p className="login-sub">Enter your new password below.</p>
+              <div className="login-form">
                 <div className="input-group">
                   <label>New Password</label>
                   <input type="password" placeholder="Enter new password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <div className="input-group">
                   <label>Confirm Password</label>
-                  <input type="password" placeholder="Repeat new password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleUpdate(); }} />
+                  <input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleUpdatePassword(); }} />
                 </div>
-                {error ? <p className="error-msg">⚠️ {error}</p> : null}
-                <button className="login-btn" onClick={handleUpdate} disabled={loading || !ready}>
-                  {loading ? "Updating..." : "Update Password"}
+                {errorMsg && <p className="error-msg">⚠️ {errorMsg}</p>}
+                <button className="login-btn" onClick={handleUpdatePassword} disabled={loading}>
+                  {loading ? "Updating..." : "Reset Password"}
                 </button>
-              </>
-            )}
-          </div>
+                <div className="divider"><span>or</span></div>
+                <p className="signup-link"><a href="/login">← Back to Login</a></p>
+              </div>
+            </>
+          )}
         </div>
       </div>
-
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

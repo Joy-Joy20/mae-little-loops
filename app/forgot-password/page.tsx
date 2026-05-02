@@ -12,26 +12,49 @@ export default function ForgotPassword() {
 
   async function handleReset() {
     setErrorMsg("");
-    if (!email.trim()) {
-      setErrorMsg("Please enter your email.");
-      return;
-    }
+    if (!email.trim()) { setErrorMsg("Please enter your email."); return; }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+      const { error: insertError } = await supabase
+        .from("password_resets")
+        .insert([{
+          email: email.trim(),
+          token,
+          expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+        }]);
+
+      if (insertError) { setErrorMsg("Failed to process request. Please try again."); return; }
+
+      const resetLink = `${window.location.origin}/reset-password?token=${token}&email=${encodeURIComponent(email.trim())}`;
+
+      const emailRes = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email.trim(),
+          subject: "🔐 Reset Your Password — Mae Little Loops Studio",
+          html: `
+            <div style="font-family:Arial,sans-serif;padding:40px;max-width:600px;margin:0 auto;">
+              <h2 style="color:#e91e8c;">Reset Your Password 🔐</h2>
+              <p>Hi <strong>${email}</strong>,</p>
+              <p>Click the button below to reset your password. This link expires in 30 minutes.</p>
+              <div style="text-align:center;margin:30px 0;">
+                <a href="${resetLink}" style="background:linear-gradient(135deg,#e91e8c,#f06292);color:white;padding:14px 32px;border-radius:50px;text-decoration:none;font-weight:700;font-size:16px;">Reset Password</a>
+              </div>
+              <p style="color:#aaa;font-size:13px;">If you did not request this, ignore this email.</p>
+              <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
+            </div>
+          `,
+        }),
       });
-      if (error) {
-        const msg = error.message && error.message.trim() !== ""
-          ? error.message
-          : "Failed to send reset link. Please check your Supabase SMTP settings or try again later.";
-        setErrorMsg(msg);
-      } else {
-        setSuccess(true);
-      }
+
+      if (!emailRes.ok) { setErrorMsg("Failed to send reset email. Please try again."); return; }
+
+      setSuccess(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Network error. Please check your connection and try again.";
-      setErrorMsg(msg);
+      setErrorMsg(err instanceof Error ? err.message : "Network error. Please try again.");
     } finally {
       setLoading(false);
     }
