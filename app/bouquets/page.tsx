@@ -115,7 +115,7 @@ export default function Bouquets() {
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
-          <a href="/shop_now">Home</a>
+          
           <a href="/bouquets" className="active-link">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
