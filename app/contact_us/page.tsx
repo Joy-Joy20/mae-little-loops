@@ -6,14 +6,28 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 
 export default function ContactUs() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState("");
   const { cart } = useCart();
   const [sent, setSent] = useState(false);
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUserEmail(data.session?.user?.email ?? null);
-    });
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        setUserEmail(user.email);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        if (profile?.full_name) setName(profile.full_name);
+      }
+    };
+    getUser();
   }, []);
 
   async function handleLogout() {
@@ -21,25 +35,17 @@ export default function ContactUs() {
     window.location.href = "/login";
   }
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSending(true);
     try {
-      // Save to Supabase
-      await supabase.from("messages").insert([{ name, email, subject, message }]);
-      // Send email via Gmail SMTP
-      const res = await fetch("/api/send-email", {
+      const { error } = await supabase.from("messages").insert([{ name, email: userEmail, subject, message }]);
+      if (error) throw new Error(error.message);
+      await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ name, email: userEmail, subject, message }),
       });
-      if (!res.ok) throw new Error("Failed to send email");
       setSent(true);
     } catch {
       alert("Something went wrong. Please try again.");
@@ -125,7 +131,15 @@ export default function ContactUs() {
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  readOnly={!!userEmail}
+                  style={{ background: userEmail ? '#f9f9f9' : 'white', cursor: userEmail ? 'not-allowed' : 'text' }}
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Subject</label>
