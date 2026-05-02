@@ -18,20 +18,16 @@ export default function ForgotPassword() {
     }
     setLoading(true);
     try {
-      const result = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-      if (result.error) {
-        setErrorMsg(
-          typeof result.error.message === "string"
-            ? result.error.message
-            : "Something went wrong. Please try again."
-        );
+      if (error) {
+        setErrorMsg(error.message || "Something went wrong. Please try again.");
       } else {
         setSuccess(true);
       }
     } catch {
-      setErrorMsg("Failed to send reset link. Please try again.");
+      setErrorMsg("Network error. Please check your connection and try again.");
     }
     setLoading(false);
   }
