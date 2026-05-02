@@ -19,7 +19,12 @@ export default function ContactUs() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email) {
         setUserEmail(user.email);
-        // full_name column not available in users table — skip profile name prefill
+        const { data: profile } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        if (profile?.full_name) setName(profile.full_name);
       }
     };
     getUser();

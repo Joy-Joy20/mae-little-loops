@@ -735,6 +735,10 @@ export default function AdminDashboard() {
                       <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} placeholder="Min. 6 characters" />
                     </div>
                     <div className="settings-group">
+                      <label>Full Name <span style={{fontWeight:'400',color:'#aaa',fontSize:'12px'}}>(optional)</span></label>
+                      <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Juan Dela Cruz" />
+                    </div>
+                    <div className="settings-group">
                       <label>Role</label>
                       <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
                         <option value="customer">Customer</option>
