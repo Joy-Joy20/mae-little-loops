@@ -5,19 +5,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
-import BuyNowModal from "../../components/BuyNowModal";
 
 type Product = { id: string; name: string; price: string; img: string | null; };
 
 export default function ShopNow() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const { cart, addToCart } = useCart();
+  const { cart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
-  const [buyNowProduct, setBuyNowProduct] = useState<Product | null>(null);
   const router = useRouter();
 
   const fallback: Product[] = [
@@ -125,8 +123,6 @@ export default function ShopNow() {
   return (
     <main className="shop-page">
 
-      <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
-
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
@@ -194,10 +190,12 @@ export default function ShopNow() {
                   <div className="product-info">
                     <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
-                    <div className="btn-row">
-                      <button className="add-btn" onClick={() => { addToCart({ name: item.name, price: item.price, img: item.img }); alert(`${item.name} added to cart!`); }}>Add to Cart</button>
-                      <button className="buy-btn" onClick={() => setBuyNowProduct(item)}>Buy Now</button>
-                    </div>
+                    <button
+                      onClick={() => router.push('/bouquets')}
+                      style={{width:'100%',padding:'12px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease',marginTop:'8px'}}
+                    >
+                      Shop Now
+                    </button>
                   </div>
                 </div>
               ))}
