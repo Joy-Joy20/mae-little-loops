@@ -51,11 +51,6 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const [storeName, setStoreName] = useState("Mae Little Loops Studio");
-  const [storeEmail, setStoreEmail] = useState("masarquemae65@gmail.com");
-  const [storePhone, setStorePhone] = useState("09706383306");
-  const [settingsSaved, setSettingsSaved] = useState(false);
-
   async function fetchOrders() {
     const { data } = await supabase
       .from("orders")
@@ -467,7 +462,6 @@ export default function AdminDashboard() {
     { label: "Riders", icon: "🏍️" },
     { label: "Chats", icon: "💬" },
     { label: "Messages", icon: "✉️" },
-    { label: "Settings", icon: "⚙️" },
   ];
 
   return (
@@ -928,19 +922,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ===== SETTINGS ===== */}
-        {active === "Settings" && (
-          <div className="settings-card">
-            <h2>Store Settings</h2>
-            {settingsSaved && <div className="settings-saved">✅ Settings saved!</div>}
-            <div className="settings-form">
-              <div className="settings-group"><label>Store Name</label><input type="text" value={storeName} onChange={(e) => setStoreName(e.target.value)} /></div>
-              <div className="settings-group"><label>Email</label><input type="email" value={storeEmail} onChange={(e) => setStoreEmail(e.target.value)} /></div>
-              <div className="settings-group"><label>Phone Number</label><input type="text" value={storePhone} onChange={(e) => setStorePhone(e.target.value)} /></div>
-              <button className="save-btn" onClick={() => { setSettingsSaved(true); setTimeout(() => setSettingsSaved(false), 3000); }}>Save Changes</button>
-            </div>
-          </div>
-        )}
 
       </main>
     </div>
