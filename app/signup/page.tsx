@@ -73,7 +73,7 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error: signUpError } = await supabase.auth.signUp({ email, password });
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
     if (signUpError) {
       if (signUpError.message === "User already registered") {
         setError("This email is already registered. Please log in instead.");
@@ -82,6 +82,15 @@ export default function Signup() {
       }
       setLoading(false);
       return;
+    }
+
+    // Insert profile row so admin dashboard can see this user
+    if (signUpData.user) {
+      await supabase.from("profiles").insert([{
+        id: signUpData.user.id,
+        email,
+        role: "customer",
+      }]).select().single();
     }
 
     await sendOtp(email);
