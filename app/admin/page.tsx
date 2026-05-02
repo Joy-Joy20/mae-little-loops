@@ -270,6 +270,15 @@ export default function AdminDashboard() {
     else alert("Failed to delete rider: " + error.message);
   }
 
+  async function handleSyncUsers() {
+    const res = await fetch("/api/sync-users", { method: "POST" });
+    const result = await res.json();
+    if (!res.ok) { alert("Sync failed: " + result.error); return; }
+    alert(`Synced ${result.synced} new user(s). Total: ${result.total}`);
+    supabase.from("profiles").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setUsers(data as User[]); });
+  }
+
   async function handleAddUser() {
     if (!newUserEmail.trim() || !newUserPassword.trim()) {
       alert("Email and password are required."); return;
@@ -748,7 +757,8 @@ export default function AdminDashboard() {
               <div className="table-header">
                 <h2>All Users</h2>
                 <span className="table-badge">{users.length} users</span>
-                <button onClick={() => setShowAddUser(true)} style={{marginLeft:'auto',padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add User</button>
+                <button onClick={handleSyncUsers} style={{marginLeft:'auto',padding:'8px 20px',border:'1.5px solid #c44dff',borderRadius:'50px',background:'white',color:'#c44dff',fontWeight:'700',fontSize:'13px',cursor:'pointer'}}>🔄 Sync Users</button>
+                <button onClick={() => setShowAddUser(true)} style={{padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add User</button>
               </div>
               <table className="admin-table">
                 <thead><tr><th>Email</th><th>Full Name</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
