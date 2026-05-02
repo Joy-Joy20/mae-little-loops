@@ -35,10 +35,17 @@ async function requireAdminClient(request: NextRequest) {
 
 export async function GET() {
   const client = createSupabaseUserClient();
-  const { data, error } = await client.from("products").select("*").order("id");
+  const { data, error } = await client
+    .from("products")
+    .select("*")
+    .order("id");
 
   if (error) {
     console.error("GET /api/products failed:", error);
+    // If RLS blocks anon reads, return empty array gracefully instead of 500
+    if (error.code === "42501" || error.message?.includes("permission")) {
+      return NextResponse.json({ products: [] });
+    }
     return NextResponse.json(
       { error: "Failed to load products.", details: error.message },
       { status: 500 },

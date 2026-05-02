@@ -37,15 +37,16 @@ export default function AdminDashboard() {
 
   async function fetchProducts() {
     try {
-      console.log("Fetching product list from /api/products...");
-      const response = await fetch("/api/products", { cache: "no-store" });
-      const result = await response.json();
-      if (!response.ok) {
-        console.error("Failed to fetch products:", result);
-        alert(result.error || "Failed to load products.");
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("id");
+      if (error) {
+        console.error("Failed to fetch products:", error.message);
+        alert("Failed to load products: " + error.message);
         return;
       }
-      if (result.products) setProducts(result.products as Product[]);
+      setProducts((data ?? []) as Product[]);
     } catch (error) {
       console.error("Unexpected fetchProducts error:", error);
       alert("Unexpected error while loading products.");
@@ -371,13 +372,14 @@ export default function AdminDashboard() {
                 <button onClick={openCreate} style={{marginLeft:'auto',padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add Product</button>
               </div>
               <table className="admin-table">
-                <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
                 <tbody>
                   {products.length === 0 ? (
-                    <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No products yet.</td></tr>
+                    <tr><td colSpan={6} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No products yet.</td></tr>
                   ) : (
                     products.map((p) => (
                       <tr key={p.id}>
+                        <td><img src={p.image_url || '/Rainbow Tulip Charm.png'} alt={p.name} width={48} height={48} style={{objectFit:'contain',borderRadius:'8px'}} /></td>
                         <td>{p.name}</td>
                         <td><span className={`cat-badge ${p.category === "bouquet" ? "bouquet" : "keychain"}`}>{p.category}</span></td>
                         <td className="order-price">₱{parseFloat(String(p.price)).toFixed(2)}</td>

@@ -12,15 +12,18 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    // Handle the recovery token from the URL hash (Supabase sets session via PKCE/implicit flow)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
+      if (event === "PASSWORD_RECOVERY") {
         setReady(true);
-      } else if (!session) {
-        setError("Invalid or expired reset link. Please request a new one.");
+        setError("");
+      } else if (event === "SIGNED_IN" && session) {
+        setReady(true);
+        setError("");
       }
+      // ignore initial INITIAL_SESSION / no-session events to avoid false errors
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -34,8 +37,9 @@ export default function ResetPassword() {
     if (updateError) {
       setError(updateError.message || "Failed to update password. Please try again.");
     } else {
+      setSuccess(true);
       await supabase.auth.signOut();
-      router.push("/login?reset=success");
+      setTimeout(() => router.push("/login?reset=success"), 2500);
     }
     setLoading(false);
   }
@@ -54,10 +58,19 @@ export default function ResetPassword() {
           <h2>Reset Password</h2>
           <p className="login-sub">Enter your new password below.</p>
           <div className="login-form">
-            {!ready && error ? (
+            {success ? (
+              <div style={{textAlign:'center'}}>
+                <p style={{fontSize:'40px',marginBottom:'12px'}}>✅</p>
+                <p style={{fontWeight:'700',color:'#e91e8c',fontSize:'16px'}}>Password updated!</p>
+                <p style={{color:'#888',fontSize:'14px',marginTop:'8px'}}>Redirecting to login...</p>
+              </div>
+            ) : !ready ? (
               <>
-                <p className="error-msg">⚠️ {error}</p>
-                <a href="/forgot-password" className="login-btn" style={{display:'block', textAlign:'center', textDecoration:'none', marginTop:'8px'}}>Request New Link</a>
+                <p style={{color:'#aaa',textAlign:'center',fontSize:'14px'}}>Verifying reset link...</p>
+                {error && <>
+                  <p className="error-msg">⚠️ {error}</p>
+                  <a href="/forgot-password" className="login-btn" style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:'8px'}}>Request New Link</a>
+                </>}
               </>
             ) : (
               <>
