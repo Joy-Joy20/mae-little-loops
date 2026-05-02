@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
-type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; order_items?: { product_name: string; quantity: number }[]; };
+type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
@@ -42,6 +42,54 @@ export default function AdminDashboard() {
   const [storeEmail, setStoreEmail] = useState("maelittleloops@gmail.com");
   const [storePhone, setStorePhone] = useState("09XXXXXXXXX");
   const [settingsSaved, setSettingsSaved] = useState(false);
+
+  async function fetchOrders() {
+    const { data } = await supabase
+      .from("orders")
+      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, order_items ( product_name, quantity )`)
+      .order("created_at", { ascending: false });
+    if (data) setOrders(data as Order[]);
+  }
+
+  async function handleAssignRider(orderId: string, customerEmail: string, riderId: string) {
+    if (!riderId) return;
+    const { data: rider, error: riderError } = await supabase.from("riders").select("*").eq("id", riderId).single();
+    if (riderError || !rider) { alert("Rider not found."); return; }
+    const { error } = await supabase.from("orders").update({
+      rider_id: riderId,
+      rider_name: rider.full_name,
+      rider_phone: rider.phone,
+      status: "Shipped",
+    }).eq("id", orderId);
+    if (error) { alert("Failed to assign rider: " + error.message); return; }
+    await supabase.from("riders").update({ status: "busy" }).eq("id", riderId);
+    await fetchRiders();
+    await fetchOrders();
+    await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: customerEmail,
+        subject: "🏍️ Your Order is On the Way! — Mae Little Loops Studio",
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+            <h2 style="color:#e91e8c;">Your order is on the way! 🏍️</h2>
+            <p>Great news! Your order from <strong>Mae Little Loops Studio</strong> is now being delivered.</p>
+            <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:16px 0;">
+              <h3 style="color:#c2185b;margin-bottom:12px;">🏍️ Rider Details</h3>
+              <p><strong>Name:</strong> ${rider.full_name}</p>
+              <p><strong>Phone:</strong> ${rider.phone}</p>
+              ${rider.email ? `<p><strong>Email:</strong> ${rider.email}</p>` : ""}
+            </div>
+            <p>You can contact your rider directly if needed.</p>
+            <p style="color:#666;">Thank you for shopping with us! 🌸</p>
+            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
+          </div>
+        `,
+      }),
+    });
+    alert(`Rider ${rider.full_name} assigned! Customer has been notified.`);
+  }
 
   async function fetchProducts() {
     try {
@@ -82,7 +130,7 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
-        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, order_items ( product_name, quantity )`)
+        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
         supabase.from("profiles").select("id, email, full_name, created_at, role")
@@ -462,9 +510,9 @@ export default function AdminDashboard() {
           <div className="admin-table-card">
             <div className="table-header"><h2>All Orders</h2><span className="table-badge">{orders.length} orders</span></div>
             <table className="admin-table">
-              <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Rider</th><th>Date</th></tr></thead>
               <tbody>
-                {orders.length === 0 ? <tr><td colSpan={6} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
+                {orders.length === 0 ? <tr><td colSpan={7} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
                   orders.map((o) => (
                     <tr key={o.id}>
                       <td className="order-id">#{o.id.slice(0,8)}...</td>
@@ -475,6 +523,25 @@ export default function AdminDashboard() {
                         <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
                           <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
                         </select>
+                      </td>
+                      <td>
+                        {o.rider_name ? (
+                          <div>
+                            <p style={{fontWeight:'600',color:'#e91e8c',margin:0}}>{o.rider_name}</p>
+                            <p style={{fontSize:'12px',color:'#777',margin:0}}>{o.rider_phone}</p>
+                          </div>
+                        ) : (
+                          <select
+                            value={o.rider_id || ""}
+                            onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
+                            style={{padding:'6px 10px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'12px'}}
+                          >
+                            <option value="">— Assign Rider —</option>
+                            {riders.filter(r => r.status === 'available').map(r => (
+                              <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
+                            ))}
+                          </select>
+                        )}
                       </td>
                       <td>{new Date(o.created_at).toLocaleDateString()}</td>
                     </tr>
