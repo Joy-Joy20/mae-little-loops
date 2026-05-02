@@ -5,7 +5,7 @@ const supabaseUrl = "https://pafabwbjzjvkgatbirko.supabase.co";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, full_name, role } = await req.json();
+    const { email, password, role } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     await adminClient.from("users").insert([{
       id: user.id,
       email,
-      full_name: full_name || null,
       role: role || "customer",
     }]);
 

@@ -23,13 +23,12 @@ export async function POST() {
   const { data: existingProfiles } = await adminClient.from("users").select("id");
   const existingIds = new Set((existingProfiles ?? []).map((p: { id: string }) => p.id));
 
-  // Insert missing profiles
+  // Insert missing users
   const missing = users
     .filter(u => !existingIds.has(u.id))
     .map(u => ({
       id: u.id,
       email: u.email ?? "",
-      full_name: u.user_metadata?.full_name ?? null,
       role: "customer",
     }));
 

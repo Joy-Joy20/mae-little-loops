@@ -7,7 +7,7 @@ import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
 type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; receipt_url?: string; payment_verified?: boolean; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
-type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
+type User = { id: string; email: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
 type Conversation = { id: string; user_email: string; last_message?: string; last_message_at: string; };
 type ChatMessage = { id: string; message: string; is_admin: boolean; sender_email: string; created_at: string; };
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
         supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
-        supabase.from("users").select("id, email, full_name, created_at, role")
+        supabase.from("users").select("id, email, created_at, role")
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setUsers(data as User[]); });
         supabase.from("messages").select("*").order("created_at", { ascending: false })
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
     const result = await res.json();
     if (!res.ok) { alert("Sync failed: " + result.error); return; }
     alert(`Synced ${result.synced} new user(s). Total: ${result.total}`);
-    supabase.from("users").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+    supabase.from("users").select("id, email, created_at, role").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setUsers(data as User[]); });
   }
 
@@ -287,14 +287,14 @@ export default function AdminDashboard() {
     const res = await fetch("/api/create-user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: newUserEmail.trim(), password: newUserPassword, full_name: newUserName.trim(), role: newUserRole }),
+      body: JSON.stringify({ email: newUserEmail.trim(), password: newUserPassword, role: newUserRole }),
     });
     const result = await res.json();
     setAddingUser(false);
     if (!res.ok) { alert("Failed to create user: " + result.error); return; }
     setShowAddUser(false);
     setNewUserEmail(""); setNewUserPassword(""); setNewUserName(""); setNewUserRole("customer");
-    supabase.from("users").select("id, email, full_name, created_at, role").order("created_at", { ascending: false })
+    supabase.from("users").select("id, email, created_at, role").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setUsers(data as User[]); });
   }
 
@@ -735,10 +735,6 @@ export default function AdminDashboard() {
                       <input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} placeholder="Min. 6 characters" />
                     </div>
                     <div className="settings-group">
-                      <label>Full Name <span style={{fontWeight:'400',color:'#aaa',fontSize:'12px'}}>(optional)</span></label>
-                      <input type="text" value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Juan Dela Cruz" />
-                    </div>
-                    <div className="settings-group">
                       <label>Role</label>
                       <select value={newUserRole} onChange={e => setNewUserRole(e.target.value)} style={{padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none'}}>
                         <option value="customer">Customer</option>
@@ -761,9 +757,9 @@ export default function AdminDashboard() {
                 <button onClick={() => setShowAddUser(true)} style={{padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add User</button>
               </div>
               <table className="admin-table">
-                <thead><tr><th>Email</th><th>Full Name</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Email</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
                 <tbody>
-                  {users.length === 0 ? <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
+                  {users.length === 0 ? <tr><td colSpan={4} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
                     users.map((u) => (
                       <tr key={u.id}>
                         <td>{u.email}</td>
@@ -956,3 +952,6 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+
+
