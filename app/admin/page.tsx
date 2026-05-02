@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
-type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; order_items?: { product_name: string; quantity: number }[]; };
+type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; receipt_url?: string; payment_verified?: boolean; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [adminReply, setAdminReply] = useState("");
+  const [previewReceipt, setPreviewReceipt] = useState<string | null>(null);
   const [riders, setRiders] = useState<Rider[]>([]);
   const [riderForm, setRiderForm] = useState<RiderForm>(emptyRider);
   const [editRider, setEditRider] = useState<Rider | null>(null);
@@ -52,9 +53,15 @@ export default function AdminDashboard() {
   async function fetchOrders() {
     const { data } = await supabase
       .from("orders")
-      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, order_items ( product_name, quantity )`)
+      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
       .order("created_at", { ascending: false });
     if (data) setOrders(data as Order[]);
+  }
+
+  async function handleVerifyPayment(orderId: string) {
+    const { error } = await supabase.from("orders").update({ payment_verified: true, status: "Processing" }).eq("id", orderId);
+    if (!error) setOrders(prev => prev.map(o => o.id === orderId ? { ...o, payment_verified: true, status: "Processing" } : o));
+    else alert("Failed to verify payment: " + error.message);
   }
 
   async function handleUploadProof(orderId: string, customerEmail: string, file: File | undefined) {
@@ -181,7 +188,7 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
-        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, order_items ( product_name, quantity )`)
+        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
         supabase.from("profiles").select("id, email, full_name, created_at, role")
@@ -584,66 +591,97 @@ export default function AdminDashboard() {
 
         {/* ===== ORDERS ===== */}
         {active === "Orders" && (
-          <div className="admin-table-card">
-            <div className="table-header"><h2>All Orders</h2><span className="table-badge">{orders.length} orders</span></div>
-            <table className="admin-table">
-              <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Rider</th><th>Proof</th><th>Date</th></tr></thead>
-              <tbody>
-                {orders.length === 0 ? <tr><td colSpan={8} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
-                  orders.map((o) => (
-                    <tr key={o.id}>
-                      <td className="order-id">#{o.id.slice(0,8)}...</td>
-                      <td>{o.user_email}</td>
-                      <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
-                      <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
-                      <td>
-                        <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
-                          <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
-                        </select>
-                      </td>
-                      <td>
-                        {o.rider_name ? (
-                          <div>
-                            <p style={{fontWeight:'600',color:'#e91e8c',margin:0}}>{o.rider_name}</p>
-                            <p style={{fontSize:'12px',color:'#777',margin:0}}>{o.rider_phone}</p>
-                          </div>
-                        ) : (
-                          <select
-                            value={o.rider_id || ""}
-                            onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
-                            style={{padding:'6px 10px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'12px'}}
-                          >
-                            <option value="">— Assign Rider —</option>
-                            {riders.filter(r => r.status === 'available').map(r => (
-                              <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
-                            ))}
+          <>
+            {/* Receipt preview modal */}
+            {previewReceipt && (
+              <div onClick={() => setPreviewReceipt(null)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:2000,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <div style={{position:'relative'}} onClick={e => e.stopPropagation()}>
+                  <button onClick={() => setPreviewReceipt(null)} style={{position:'absolute',top:'-14px',right:'-14px',background:'#e91e8c',border:'none',borderRadius:'50%',width:'32px',height:'32px',color:'white',fontSize:'16px',cursor:'pointer',fontWeight:'700',zIndex:1}}>✕</button>
+                  <img src={previewReceipt} alt="GCash Receipt" style={{maxWidth:'90vw',maxHeight:'80vh',borderRadius:'16px',boxShadow:'0 20px 60px rgba(0,0,0,0.4)',display:'block'}} />
+                </div>
+              </div>
+            )}
+            <div className="admin-table-card">
+              <div className="table-header"><h2>All Orders</h2><span className="table-badge">{orders.length} orders</span></div>
+              <table className="admin-table">
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>GCash Receipt</th><th>Rider</th><th>Proof</th><th>Date</th></tr></thead>
+                <tbody>
+                  {orders.length === 0 ? <tr><td colSpan={9} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
+                    orders.map((o) => (
+                      <tr key={o.id}>
+                        <td className="order-id">#{o.id.slice(0,8)}...</td>
+                        <td>{o.user_email}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
+                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
+                        <td>
+                          <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
+                            <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
                           </select>
-                        )}
-                      </td>
-                      <td>
-                        {o.proof_of_delivery ? (
-                          <div>
-                            <a href={o.proof_of_delivery} target="_blank" rel="noopener noreferrer">
-                              <img src={o.proof_of_delivery} alt="Proof" width={56} height={56} style={{objectFit:'cover',borderRadius:'8px',border:'2px solid #fce4ec'}} />
-                            </a>
-                            {o.delivered_at && <p style={{fontSize:'11px',color:'#777',margin:'4px 0 0'}}>{new Date(o.delivered_at).toLocaleString()}</p>}
-                          </div>
-                        ) : o.status?.toLowerCase() === 'shipped' ? (
-                          <div>
-                            <input type="file" accept="image/*" id={`proof-${o.id}`} style={{display:'none'}} onChange={(e) => handleUploadProof(o.id, o.user_email, e.target.files?.[0])} />
-                            <label htmlFor={`proof-${o.id}`} style={{padding:'6px 10px',borderRadius:'8px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',cursor:'pointer',fontWeight:'600',fontSize:'12px',whiteSpace:'nowrap'}}>📷 Upload Proof</label>
-                          </div>
-                        ) : (
-                          <span style={{color:'#ccc',fontSize:'12px'}}>—</span>
-                        )}
-                      </td>
-                      <td>{new Date(o.created_at).toLocaleDateString()}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                        <td>
+                          {o.receipt_url ? (
+                            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
+                              <img
+                                src={o.receipt_url} alt="GCash Receipt"
+                                onClick={() => setPreviewReceipt(o.receipt_url!)}
+                                width={64} height={64}
+                                style={{objectFit:'cover',borderRadius:'8px',border:'2px solid #fce4ec',cursor:'pointer'}}
+                              />
+                              <button
+                                onClick={() => handleVerifyPayment(o.id)}
+                                style={{padding:'4px 8px',borderRadius:'6px',border:'none',background:o.payment_verified ? '#e8f5e9' : '#fce4ec',color:o.payment_verified ? '#2e7d32' : '#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'11px',whiteSpace:'nowrap'}}
+                              >
+                                {o.payment_verified ? '✅ Verified' : '⏳ Verify'}
+                              </button>
+                            </div>
+                          ) : (
+                            <span style={{color:'#aaa',fontSize:'12px'}}>No receipt</span>
+                          )}
+                        </td>
+                        <td>
+                          {o.rider_name ? (
+                            <div>
+                              <p style={{fontWeight:'600',color:'#e91e8c',margin:0}}>{o.rider_name}</p>
+                              <p style={{fontSize:'12px',color:'#777',margin:0}}>{o.rider_phone}</p>
+                            </div>
+                          ) : (
+                            <select
+                              value={o.rider_id || ""}
+                              onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
+                              style={{padding:'6px 10px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'12px'}}
+                            >
+                              <option value="">— Assign Rider —</option>
+                              {riders.filter(r => r.status === 'available').map(r => (
+                                <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
+                              ))}
+                            </select>
+                          )}
+                        </td>
+                        <td>
+                          {o.proof_of_delivery ? (
+                            <div>
+                              <a href={o.proof_of_delivery} target="_blank" rel="noopener noreferrer">
+                                <img src={o.proof_of_delivery} alt="Proof" width={56} height={56} style={{objectFit:'cover',borderRadius:'8px',border:'2px solid #fce4ec'}} />
+                              </a>
+                              {o.delivered_at && <p style={{fontSize:'11px',color:'#777',margin:'4px 0 0'}}>{new Date(o.delivered_at).toLocaleString()}</p>}
+                            </div>
+                          ) : o.status?.toLowerCase() === 'shipped' ? (
+                            <div>
+                              <input type="file" accept="image/*" id={`proof-${o.id}`} style={{display:'none'}} onChange={(e) => handleUploadProof(o.id, o.user_email, e.target.files?.[0])} />
+                              <label htmlFor={`proof-${o.id}`} style={{padding:'6px 10px',borderRadius:'8px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',cursor:'pointer',fontWeight:'600',fontSize:'12px',whiteSpace:'nowrap'}}>📷 Upload Proof</label>
+                            </div>
+                          ) : (
+                            <span style={{color:'#ccc',fontSize:'12px'}}>—</span>
+                          )}
+                        </td>
+                        <td>{new Date(o.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* ===== USERS ===== */}
