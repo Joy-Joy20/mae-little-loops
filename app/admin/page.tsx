@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
-type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; receipt_url?: string; payment_verified?: boolean; order_items?: { product_name: string; quantity: number }[]; };
+type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; receipt_url?: string; payment_verified?: boolean; delivery_method?: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   async function fetchOrders() {
     const { data } = await supabase
       .from("orders")
-      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
+      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
       .order("created_at", { ascending: false });
     if (data) setOrders(data as Order[]);
   }
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
-        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, order_items ( product_name, quantity )`)
+        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
         supabase.from("users").select("id, email, created_at, role")
@@ -623,9 +623,9 @@ export default function AdminDashboard() {
             <div className="admin-table-card">
               <div className="table-header"><h2>All Orders</h2><span className="table-badge">{orders.length} orders</span></div>
               <table className="admin-table">
-                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>GCash Receipt</th><th>Rider</th><th>Proof</th><th>Date</th></tr></thead>
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Delivery</th><th>GCash Receipt</th><th>Rider</th><th>Proof</th><th>Date</th></tr></thead>
                 <tbody>
-                  {orders.length === 0 ? <tr><td colSpan={9} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
+                  {orders.length === 0 ? <tr><td colSpan={10} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
                     orders.map((o) => (
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
@@ -636,6 +636,11 @@ export default function AdminDashboard() {
                           <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
                             <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
                           </select>
+                        </td>
+                        <td>
+                          <span style={{padding:'4px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600',background:o.delivery_method === 'pickup' ? '#fff3e0' : '#e8f5e9',color:o.delivery_method === 'pickup' ? '#e65100' : '#2e7d32'}}>
+                            {o.delivery_method === 'pickup' ? '🏪 Pick Up' : '🚚 Deliver'}
+                          </span>
                         </td>
                         <td>
                           {o.receipt_url ? (
