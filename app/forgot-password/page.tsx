@@ -22,7 +22,10 @@ export default function ForgotPassword() {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) {
-        setErrorMsg(typeof error.message === "string" && error.message ? error.message : "Something went wrong. Please try again.");
+        const msg = error.message && error.message.trim() !== ""
+          ? error.message
+          : "Failed to send reset link. Please check your Supabase SMTP settings or try again later.";
+        setErrorMsg(msg);
       } else {
         setSuccess(true);
       }

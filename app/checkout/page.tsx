@@ -141,7 +141,7 @@ export default function Checkout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          to: "masarquemae65@gmail.com",
+          to: "gulpanjoy@gmail.com",
           subject: "🛍️ New Order Received — Mae Little Loops Studio",
           html: `
             <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
