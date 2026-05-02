@@ -11,6 +11,7 @@ export default function Checkout() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [payment, setPayment] = useState("cod");
+  const [deliveryMethod, setDeliveryMethod] = useState("deliver");
   const [placed, setPlaced] = useState(false);
   const [refNumber, setRefNumber] = useState("");
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export default function Checkout() {
           address,
           phone,
           payment: payment === "gcash" ? `GCash (Ref: ${refNumber})` : "Cash on Delivery",
+          delivery_method: deliveryMethod,
           receipt_url: receiptUrl ?? null,
         }])
         .select()
@@ -208,13 +210,13 @@ export default function Checkout() {
 
             {/* STEP INDICATOR */}
             <div className="steps">
-              {["Order", "Delivery", "Payment", "Confirm"].map((label, i) => (
+              {["Order", "Delivery Method", "Delivery", "Payment", "Confirm"].map((label, i) => (
                 <div key={i} style={{display:'flex', alignItems:'center', gap:'8px'}}>
                   <div className={`step ${step >= i + 1 ? "active" : ""}`}>
                     <span className="step-num">{i + 1}</span>
                     <span className="step-label">{label}</span>
                   </div>
-                  {i < 3 && <div className="step-line" />}
+                  {i < 4 && <div className="step-line" />}
                 </div>
               ))}
             </div>
@@ -242,31 +244,67 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* STEP 2: DELIVERY */}
+            {/* STEP 2: DELIVERY METHOD */}
             {step === 2 && (
               <div className="checkout-card">
-                <h3>Delivery Information</h3>
+                <h3>Delivery Method</h3>
+                <div className="payment-options">
+                  <label className={`payment-option ${deliveryMethod === 'deliver' ? 'selected' : ''}`}>
+                    <input type="radio" name="delivery" value="deliver" checked={deliveryMethod === "deliver"} onChange={() => setDeliveryMethod("deliver")} />
+                    <div>
+                      <p className="payment-title">🚚 Deliver</p>
+                      <p className="payment-desc">We will deliver to your address</p>
+                    </div>
+                  </label>
+                  <label className={`payment-option ${deliveryMethod === 'pickup' ? 'selected' : ''}`}>
+                    <input type="radio" name="delivery" value="pickup" checked={deliveryMethod === "pickup"} onChange={() => setDeliveryMethod("pickup")} />
+                    <div>
+                      <p className="payment-title">🏪 Pick Up</p>
+                      <p className="payment-desc">Pick up your order at our location</p>
+                    </div>
+                  </label>
+                </div>
+                <div className="btn-row">
+                  <button className="back-btn" onClick={() => setStep(1)}>← Back</button>
+                  <button className="next-btn" onClick={() => setStep(3)}>Next →</button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: DELIVERY INFO */}
+            {step === 3 && (
+              <div className="checkout-card">
+                <h3>{deliveryMethod === "pickup" ? "Pick Up Details" : "Delivery Information"}</h3>
                 <div className="form-group">
                   <label htmlFor="checkout-name">Full Name</label>
                   <input id="checkout-name" name="name" type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="checkout-address">Address</label>
-                  <input id="checkout-address" name="address" type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                </div>
+                {deliveryMethod === "deliver" && (
+                  <div className="form-group">
+                    <label htmlFor="checkout-address">Address</label>
+                    <input id="checkout-address" name="address" type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                  </div>
+                )}
+                {deliveryMethod === "pickup" && (
+                  <div className="form-group">
+                    <p style={{background:'#fff0f5',borderRadius:'10px',padding:'12px',fontSize:'14px',color:'#e91e8c',margin:'0 0 8px'}}>
+                      📍 Pick up at: <strong>Masbate, Philippines</strong><br/>📱 Contact: <strong>09706383306</strong>
+                    </p>
+                  </div>
+                )}
                 <div className="form-group">
                   <label htmlFor="checkout-phone">Phone Number</label>
                   <input id="checkout-phone" name="phone" type="text" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 </div>
                 <div className="btn-row">
-                  <button className="back-btn" onClick={() => setStep(1)}>← Back</button>
-                  <button className="next-btn" onClick={() => setStep(3)} disabled={!name || !address || !phone}>Next →</button>
+                  <button className="back-btn" onClick={() => setStep(2)}>← Back</button>
+                  <button className="next-btn" onClick={() => setStep(4)} disabled={!name || !phone || (deliveryMethod === "deliver" && !address)}>Next →</button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: PAYMENT */}
-            {step === 3 && (
+            {/* STEP 4: PAYMENT */}
+            {step === 4 && (
               <div className="checkout-card">
                 <h3>Payment Method</h3>
                 <div className="payment-options">
@@ -289,12 +327,10 @@ export default function Checkout() {
                 {payment === "gcash" && (
                   <div className="gcash-steps">
                     <h4>📱 GCash Payment Steps</h4>
-
                     <div className="gcash-qr">
                       <img src="/gcash-qr.png" alt="GCash QR Code" className="qr-img" />
                       <p className="qr-label">Pay via GCash</p>
                     </div>
-
                     <ol>
                       <li>Scan the QR code using your <strong>GCash app</strong> to complete your payment.</li>
                       <li>Enter amount: <strong>₱{total.toFixed(2)}</strong></li>
@@ -302,17 +338,9 @@ export default function Checkout() {
                       <li>After payment, take a <strong>screenshot</strong> of your GCash receipt.</li>
                       <li>Upload your <strong>proof of payment</strong> below before confirming your order.</li>
                     </ol>
-
                     <div className="form-group" style={{marginTop:'16px'}}>
                       <label htmlFor="gcash-receipt">Upload GCash Receipt *</label>
-                      <input
-                        id="gcash-receipt"
-                        name="gcash-receipt"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleReceiptUpload}
-                        className="receipt-upload"
-                      />
+                      <input id="gcash-receipt" name="gcash-receipt" type="file" accept="image/*" onChange={handleReceiptUpload} className="receipt-upload" />
                       {uploading && <p className="upload-status">Uploading...</p>}
                       {receiptUrl && (
                         <div className="receipt-preview">
@@ -325,26 +353,27 @@ export default function Checkout() {
                 )}
 
                 <div className="btn-row">
-                  <button className="back-btn" onClick={() => setStep(2)}>← Back</button>
-                  <button className="next-btn" onClick={() => setStep(4)} disabled={payment === "gcash" && !receiptUrl}>Next →</button>
+                  <button className="back-btn" onClick={() => setStep(3)}>← Back</button>
+                  <button className="next-btn" onClick={() => setStep(5)} disabled={payment === "gcash" && !receiptUrl}>Next →</button>
                 </div>
               </div>
             )}
 
-            {/* STEP 4: CONFIRM */}
-            {step === 4 && (
+            {/* STEP 5: CONFIRM */}
+            {step === 5 && (
               <div className="checkout-card">
                 <h3>Confirm Order</h3>
                 <div className="confirm-list">
+                  <div className="confirm-row"><span>Delivery</span><span>{deliveryMethod === "pickup" ? "🏪 Pick Up" : "🚚 Deliver"}</span></div>
                   <div className="confirm-row"><span>Name</span><span>{name}</span></div>
-                  <div className="confirm-row"><span>Address</span><span>{address}</span></div>
+                  {deliveryMethod === "deliver" && <div className="confirm-row"><span>Address</span><span>{address}</span></div>}
                   <div className="confirm-row"><span>Phone</span><span>{phone}</span></div>
                   <div className="confirm-row"><span>Payment</span><span>{payment === "gcash" ? "GCash" : "Cash on Delivery"}</span></div>
                   {payment === "gcash" && <div className="confirm-row"><span>Ref #</span><span>{refNumber}</span></div>}
                   <div className="confirm-row total-row"><span>Total</span><strong>₱{total.toFixed(2)}</strong></div>
                 </div>
                 <div className="btn-row">
-                  <button className="back-btn" onClick={() => setStep(3)}>← Back</button>
+                  <button className="back-btn" onClick={() => setStep(4)}>← Back</button>
                   <button className="place-order-btn" onClick={handlePlaceOrder} disabled={loading}>{loading ? "Placing Order..." : "Place Order"}</button>
                 </div>
               </div>
