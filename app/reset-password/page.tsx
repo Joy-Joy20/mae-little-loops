@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase";
 import Image from "next/image";
 
 function ResetPasswordForm() {
@@ -25,25 +24,16 @@ function ResetPasswordForm() {
 
     setLoading(true);
     try {
-      const { data: resetData, error: tokenError } = await supabase
-        .from("password_resets")
-        .select("*")
-        .eq("email", email)
-        .eq("token", token)
-        .eq("used", false)
-        .gte("expires_at", new Date().toISOString())
-        .single();
-
-      if (tokenError || !resetData) {
-        setErrorMsg("Invalid or expired reset link. Please request a new one.");
+      const res = await fetch("/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, email, password }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        setErrorMsg(result.error || "Failed to update password.");
         return;
       }
-
-      const { error: updateError } = await supabase.auth.updateUser({ password });
-      if (updateError) { setErrorMsg(updateError.message || "Failed to update password."); return; }
-
-      await supabase.from("password_resets").update({ used: true }).eq("id", resetData.id);
-
       setSuccess(true);
       setTimeout(() => router.push("/login"), 3000);
     } catch (err: unknown) {
@@ -98,7 +88,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}>Loading...</div>}>
+    <Suspense fallback={<div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh"}}>Loading...</div>}>
       <ResetPasswordForm />
     </Suspense>
   );
