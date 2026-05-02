@@ -7,7 +7,7 @@ import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
 type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
-type User = { id: string; email: string; created_at: string; role: string; };
+type User = { id: string; email: string; full_name?: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
 type ProductFormState = { name: string; price: string; category: "bouquet" | "keychain"; stock: string; description: string; image_url: string; };
 
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
         supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
-        supabase.from("profiles").select("id, email, created_at, role")
+        supabase.from("profiles").select("id, email, full_name, created_at, role")
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setUsers(data as User[]); });
         supabase.from("messages").select("*").order("created_at", { ascending: false })
@@ -86,6 +86,16 @@ export default function AdminDashboard() {
       }
     });
   }, [router]);
+
+  async function handleDeleteUser(userId: string) {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    const { error } = await supabase.from("profiles").delete().eq("id", userId);
+    if (error) {
+      alert("Failed to delete user: " + error.message);
+    } else {
+      setUsers(prev => prev.filter(u => u.id !== userId));
+    }
+  }
 
   async function handleRoleChange(userId: string, newRole: string) {
     const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", userId);
@@ -432,13 +442,13 @@ export default function AdminDashboard() {
           <div className="admin-table-card">
             <div className="table-header"><h2>All Users</h2><span className="table-badge">{users.length} users</span></div>
             <table className="admin-table">
-              <thead><tr><th>Email</th><th>Joined</th><th>Role</th></tr></thead>
+              <thead><tr><th>Email</th><th>Full Name</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
               <tbody>
-                {users.length === 0 ? <tr><td colSpan={3} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
+                {users.length === 0 ? <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
                   users.map((u) => (
                     <tr key={u.id}>
                       <td>{u.email}</td>
-                      <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td>{u.full_name || '—'}</td>
                       <td>
                         <select
                           value={u.role || 'customer'}
@@ -448,6 +458,10 @@ export default function AdminDashboard() {
                           <option value="customer">Customer</option>
                           <option value="admin">Admin</option>
                         </select>
+                      </td>
+                      <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <button onClick={() => handleDeleteUser(u.id)} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'#ffebee',color:'#c62828',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Delete</button>
                       </td>
                     </tr>
                   ))
