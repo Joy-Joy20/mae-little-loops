@@ -7,7 +7,7 @@ import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
 type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
-type User = { id: string; email: string; created_at: string; };
+type User = { id: string; email: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
 type ProductFormState = { name: string; price: string; category: "bouquet" | "keychain"; stock: string; description: string; image_url: string; };
 
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
         supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
-        supabase.from("profiles").select("id, email, created_at")
+        supabase.from("profiles").select("id, email, created_at, role")
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setUsers(data as User[]); });
         supabase.from("messages").select("*").order("created_at", { ascending: false })
@@ -85,6 +85,15 @@ export default function AdminDashboard() {
       }
     });
   }, [router]);
+
+  async function handleRoleChange(userId: string, newRole: string) {
+    const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", userId);
+    if (error) {
+      alert("Failed to update role: " + error.message);
+    } else {
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+    }
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -428,7 +437,16 @@ export default function AdminDashboard() {
                     <tr key={u.id}>
                       <td>{u.email}</td>
                       <td>{new Date(u.created_at).toLocaleDateString()}</td>
-                      <td><span className="role-badge">Customer</span></td>
+                      <td>
+                        <select
+                          value={u.role || 'customer'}
+                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                          style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}
+                        >
+                          <option value="customer">Customer</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
                     </tr>
                   ))
                 }
