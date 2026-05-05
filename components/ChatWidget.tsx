@@ -15,11 +15,15 @@ export default function ChatWidget({ userEmail }: { userEmail: string | null }) 
   const bottomRef = useRef<HTMLDivElement>(null);
 
   async function fetchMessages(convId: string) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("chat_messages")
       .select("*")
       .eq("conversation_id", convId)
       .order("created_at", { ascending: true });
+    if (error) {
+      console.error("Error fetching messages:", error.message);
+      return [];
+    }
     const msgs = (data ?? []) as Message[];
     setMessages(msgs);
     return msgs;
@@ -57,15 +61,20 @@ export default function ChatWidget({ userEmail }: { userEmail: string | null }) 
   // Real-time subscription — always active
   useEffect(() => {
     if (!conversationId) return;
+    // Re-fetch on mount to catch any messages received while offline
+    fetchMessages(conversationId);
     const sub = supabase
-      .channel(`chat:${conversationId}`)
+      .channel(`chat-${conversationId}`)
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "chat_messages",
         filter: `conversation_id=eq.${conversationId}`,
       }, (payload) => {
         const msg = payload.new as Message;
-        setMessages(prev => [...prev, msg]);
-        // If chat is closed and message is from admin, increment unread
+        setMessages(prev => {
+          // Avoid duplicates if the message was already added optimistically
+          if (prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
         if (msg.is_admin) {
           setShowChat(prev => {
             if (!prev) setUnreadCount(c => c + 1);
@@ -128,7 +137,7 @@ export default function ChatWidget({ userEmail }: { userEmail: string | null }) 
 
       {/* Chat modal */}
       {showChat && (
-        <div style={{position:'fixed',bottom:'84px',right:'24px',zIndex:1000,width:'340px',height:'480px',background:'white',borderRadius:'24px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+        <div style={{position:'fixed',bottom:'84px',right:'24px',zIndex:9999,width:'340px',height:'480px',background:'white',borderRadius:'24px',boxShadow:'0 20px 60px rgba(0,0,0,0.3)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
           {/* Header */}
           <div style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',padding:'16px 20px',color:'white',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
             <div>
