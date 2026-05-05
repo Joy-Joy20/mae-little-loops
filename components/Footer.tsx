@@ -2,7 +2,13 @@
 
 export default function Footer() {
   return (
-    <footer>
+    <footer style={{
+      background: 'linear-gradient(135deg, #ff6b9d, #c44dff)',
+      padding: '48px 40px 32px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+    }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', gap: '30px', width: '100%' }}>
         <div className="footer-col">
           <h3>Mae Little Loops Studio</h3>
