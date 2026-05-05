@@ -22,10 +22,10 @@ export default function ContactUs() {
         setUserEmail(user.email);
         const { data: profile } = await supabase
           .from("users")
-          .select("full_name")
+          .select("username")
           .eq("id", user.id)
           .single();
-        if (profile?.full_name) setName(profile.full_name);
+        if (profile?.username) setName(profile.username);
       }
     };
     getUser();
@@ -128,7 +128,7 @@ export default function ContactUs() {
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-group">
                 <label>Your Name</label>
-                <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} readOnly={!!name && !!userEmail} style={{background: (!!name && !!userEmail) ? '#f9f9f9' : 'white', cursor: (!!name && !!userEmail) ? 'not-allowed' : 'text'}} required />
               </div>
               <div className="form-group">
                 <label>Email</label>
