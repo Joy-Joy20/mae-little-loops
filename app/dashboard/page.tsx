@@ -47,6 +47,22 @@ export default function Dashboard() {
     setLoadingMsgs(false);
   }
 
+  // Real-time subscription for new admin replies
+  useEffect(() => {
+    if (!userEmail) return;
+    const sub = supabase
+      .channel(`message-replies-${userEmail}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "message_replies" }, async (payload) => {
+        // Re-fetch messages with latest replies
+        await fetchUserMessages(userEmail);
+        // Auto-expand the message that received the reply
+        const messageId = (payload.new as { message_id: string }).message_id;
+        if (messageId) setExpandedMsg(messageId);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(sub); };
+  }, [userEmail]);
+
   async function fetchOrders(uid: string) {
     const { data } = await supabase
       .from("orders")
