@@ -82,45 +82,7 @@ export default function ShopNow() {
     </div>
   );
 
-  /* ===== GUEST LANDING PAGE ===== */
-  if (!userEmail) {
-    return (
-      <main className="guest-page">
-        <div className="guest-hero">
-          <Image src="/logo.png" alt="Mae Little Loops Studio" width={200} height={200} style={{borderRadius:'20px'}} priority />
-          <h1 className="guest-title">Mae Little Loops Studio</h1>
-          <p className="guest-desc">Handmade with love 🌸 — Beautiful crochet bouquets and adorable keychains, crafted with care for every occasion.</p>
-          <div className="guest-btns">
-            <a href="/login" className="guest-btn-primary">Login</a>
-            <a href="/signup" className="guest-btn-secondary">Sign Up</a>
-          </div>
-          <a href="/shop_now?browse=true" className="guest-browse" onClick={(e) => { e.preventDefault(); setUserEmail("guest"); }}>
-            Browse as Guest →
-          </a>
-        </div>
-
-        <div className="guest-features">
-          <div className="guest-feature">
-            <span>💐</span>
-            <h3>Handmade Bouquets</h3>
-            <p>Beautiful crochet bouquets for every occasion</p>
-          </div>
-          <div className="guest-feature">
-            <span>🔑</span>
-            <h3>Cute Keychains</h3>
-            <p>Adorable handmade keychains as gifts or accessories</p>
-          </div>
-          <div className="guest-feature">
-            <span>🌸</span>
-            <h3>Made with Love</h3>
-            <p>Every piece crafted with care and attention to detail</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  /* ===== LOGGED-IN HOME PAGE ===== */
+  /* ===== SHOP PAGE — same for all users ===== */
   return (
     <main className="shop-page">
 
@@ -134,8 +96,14 @@ export default function ShopNow() {
         </nav>
         <div className="nav-right">
           <input type="text" placeholder="Search..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleSearch} />
-          <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => router.push('/dashboard')}>👤 {userEmail?.split('@')[0]}</span>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
+          {userEmail ? (
+            <>
+              <span style={{fontSize:'12px', fontWeight:'bold', cursor:'pointer', color:'white', whiteSpace:'nowrap'}} onClick={() => router.push('/dashboard')}>👤 {userEmail.split('@')[0]}</span>
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
+            </>
+          ) : (
+            <a href="/login" className="login-icon">👤</a>
+          )}
           <span onClick={() => router.push('/cart')} style={{cursor:'pointer', color:'white'}}>
             🛒 {cart.length > 0 && <sup style={{background:'white', color:'#c44dff', borderRadius:'50%', padding:'1px 5px', fontSize:'10px', fontWeight:'bold'}}>{cart.length}</sup>}
           </span>
@@ -191,7 +159,7 @@ export default function ShopNow() {
                     <h3>{item.name}</h3>
                     <p className="product-price">{item.price}</p>
                     <button
-                      onClick={() => router.push('/bouquets')}
+                      onClick={() => userEmail ? router.push('/bouquets') : router.push('/login')}
                       style={{width:'100%',padding:'12px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease',marginTop:'8px'}}
                     >
                       Shop Now
