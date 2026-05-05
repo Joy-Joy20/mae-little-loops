@@ -135,6 +135,10 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    if (activeTab === "messages" && userEmail) fetchUserMessages(userEmail);
+  }, [activeTab]);
+
+  useEffect(() => {
     if (showProfilePrompt) {
       const timer = setTimeout(() => setShowProfilePrompt(false), 10000);
       return () => clearTimeout(timer);

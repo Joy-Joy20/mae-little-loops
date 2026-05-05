@@ -85,11 +85,17 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       await supabase.from("messages").update({ replied: true }).eq("id", replyTarget.id);
-      await supabase.from("message_replies").insert([{ message_id: replyTarget.id, reply: replyText.trim() }]);
+      const { error: replyInsertError } = await supabase.from("message_replies").insert([{ message_id: replyTarget.id, reply: replyText.trim() }]);
+      if (replyInsertError) console.error("message_replies insert error:", replyInsertError.message);
       setMessages(prev => prev.map(m => m.id === replyTarget.id ? { ...m, replied: true } : m));
       alert("Reply sent to " + replyTarget.email + "!");
     } else {
-      alert("Failed to send reply. Please try again.");
+      // Still save reply to DB even if email fails
+      await supabase.from("messages").update({ replied: true }).eq("id", replyTarget.id);
+      const { error: replyInsertError } = await supabase.from("message_replies").insert([{ message_id: replyTarget.id, reply: replyText.trim() }]);
+      if (replyInsertError) console.error("message_replies insert error:", replyInsertError.message);
+      setMessages(prev => prev.map(m => m.id === replyTarget.id ? { ...m, replied: true } : m));
+      alert("Reply saved! (Email delivery may have failed)");
     }
     setReplying(false);
     setReplyTarget(null);
