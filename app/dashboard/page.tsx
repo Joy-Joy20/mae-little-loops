@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "cart">("profile");
+  const [showProfilePrompt, setShowProfilePrompt] = useState(false);
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -47,6 +48,7 @@ export default function Dashboard() {
       if (profile?.username) { setFullName(profile.username); setEditName(profile.username); }
       if (profile?.phone) { setPhone(profile.phone); setEditPhone(profile.phone); }
       if (profile?.address) { setAddress(profile.address); setEditAddress(profile.address); }
+      if (!profile?.username) setShowProfilePrompt(true);
 
       await fetchOrders(user.id);
 
@@ -66,6 +68,7 @@ export default function Dashboard() {
     setAddress(editAddress);
     setEditing(false);
     setSavingName(false);
+    setShowProfilePrompt(false);
   }
 
   async function handleRemoveCartItem(cartId: string, index: number) {
@@ -90,6 +93,13 @@ export default function Dashboard() {
     await supabase.auth.signOut();
     router.push("/shop_now");
   }
+
+  useEffect(() => {
+    if (showProfilePrompt) {
+      const timer = setTimeout(() => setShowProfilePrompt(false), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [showProfilePrompt]);
 
   if (loading) return (
     <main className="dash-page">
@@ -126,6 +136,15 @@ export default function Dashboard() {
 
   return (
     <main className="dash-page">
+
+      {/* PROFILE PROMPT TOAST */}
+      {showProfilePrompt && (
+        <div style={{position:'fixed',top:'80px',left:'50%',transform:'translateX(-50%)',zIndex:999,background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',padding:'14px 24px',borderRadius:'50px',boxShadow:'0 6px 20px rgba(233,30,140,0.3)',display:'flex',alignItems:'center',gap:'12px',fontSize:'14px',fontWeight:'600',maxWidth:'90vw'}}>
+          <span>👋 Welcome! Please complete your profile first.</span>
+          <button onClick={() => { setActiveTab('profile'); setShowProfilePrompt(false); }} style={{background:'white',color:'#e91e8c',padding:'6px 16px',borderRadius:'50px',border:'none',fontWeight:'700',fontSize:'13px',cursor:'pointer',whiteSpace:'nowrap'}}>Edit Profile</button>
+          <button onClick={() => setShowProfilePrompt(false)} style={{background:'rgba(255,255,255,0.3)',border:'none',borderRadius:'50%',width:'24px',height:'24px',color:'white',cursor:'pointer',fontWeight:'700',fontSize:'14px'}}>✕</button>
+        </div>
+      )}
 
       <header>
         <h1>Mae Little Loops Studio</h1>

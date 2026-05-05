@@ -17,6 +17,7 @@ export default function ShopNow() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
+  const [showProfilePrompt, setShowProfilePrompt] = useState(false);
   const router = useRouter();
 
   const fallback: Product[] = [
@@ -59,6 +60,23 @@ export default function ShopNow() {
     });
   }, []);
 
+  useEffect(() => {
+    const checkProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+      if (!profile?.full_name) setShowProfilePrompt(true);
+    };
+    checkProfile();
+  }, []);
+
+  useEffect(() => {
+    if (showProfilePrompt) {
+      const timer = setTimeout(() => setShowProfilePrompt(false), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [showProfilePrompt]);
+
   async function handleLogout() {
     await supabase.auth.signOut();
     setUserEmail(null);
@@ -85,6 +103,15 @@ export default function ShopNow() {
   /* ===== SHOP PAGE — same for all users ===== */
   return (
     <main className="shop-page">
+
+      {/* PROFILE PROMPT TOAST */}
+      {showProfilePrompt && (
+        <div style={{position:'fixed',top:'80px',left:'50%',transform:'translateX(-50%)',zIndex:999,background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',padding:'14px 24px',borderRadius:'50px',boxShadow:'0 6px 20px rgba(233,30,140,0.3)',display:'flex',alignItems:'center',gap:'12px',fontSize:'14px',fontWeight:'600',maxWidth:'90vw'}}>
+          <span>👋 Welcome! Please complete your profile first.</span>
+          <a href="/dashboard" style={{background:'white',color:'#e91e8c',padding:'6px 16px',borderRadius:'50px',textDecoration:'none',fontWeight:'700',fontSize:'13px',whiteSpace:'nowrap'}}>Edit Profile</a>
+          <button onClick={() => setShowProfilePrompt(false)} style={{background:'rgba(255,255,255,0.3)',border:'none',borderRadius:'50%',width:'24px',height:'24px',color:'white',cursor:'pointer',fontWeight:'700',fontSize:'14px'}}>✕</button>
+        </div>
+      )}
 
       <header>
         <h1>Mae Little Loops Studio</h1>
