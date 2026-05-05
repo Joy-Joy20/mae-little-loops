@@ -121,6 +121,11 @@ export default function Keychain() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* NAVBAR */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
