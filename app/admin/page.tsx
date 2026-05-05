@@ -128,20 +128,20 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         to: customerEmail,
-        subject: "ðŸï¸ Your Order is On the Way! â€” Mae Little Loops Studio",
+        subject: "Your Order is On the Way! - Mae Little Loops Studio",
         html: `
           <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-            <h2 style="color:#e91e8c;">Your order is on the way! ðŸï¸</h2>
+            <h2 style="color:#e91e8c;">Your order is on the way!</h2>
             <p>Great news! Your order from <strong>Mae Little Loops Studio</strong> is now being delivered.</p>
             <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:16px 0;">
-              <h3 style="color:#c2185b;margin-bottom:12px;">ðŸï¸ Rider Details</h3>
+              <h3 style="color:#c2185b;margin-bottom:12px;">Rider Details</h3>
               <p><strong>Name:</strong> ${rider.full_name}</p>
               <p><strong>Phone:</strong> ${rider.phone}</p>
               ${rider.email ? `<p><strong>Email:</strong> ${rider.email}</p>` : ""}
             </div>
             <p>You can contact your rider directly if needed.</p>
-            <p style="color:#666;">Thank you for shopping with us! ðŸŒ¸</p>
-            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio ðŸŒ¸</p>
+            <p style="color:#666;">Thank you for shopping with us!</p>
+            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio</p>
           </div>
         `,
       }),
@@ -341,8 +341,8 @@ export default function AdminDashboard() {
     await fetch("/api/send-email", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: customerEmail, subject: `Your Order Status Updated â€” ${newStatus}`,
-        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;"><h2 style="color:#e91e8c;">Mae Little Loops Studio ðŸŒ¸</h2><p>Your order status has been updated.</p><div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;text-align:center;"><span style="background:${color}22;color:${color};padding:6px 20px;border-radius:50px;font-weight:700;font-size:16px;">${newStatus}</span></div><p style="color:#666;">Thank you for shopping with us! ðŸ’•</p></div>`,
+        to: customerEmail, subject: `Your Order Status Updated - ${newStatus}`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;"><h2 style="color:#e91e8c;">Mae Little Loops Studio</h2><p>Your order status has been updated.</p><div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;text-align:center;"><span style="background:${color}22;color:${color};padding:6px 20px;border-radius:50px;font-weight:700;font-size:16px;">${newStatus}</span></div><p style="color:#666;">Thank you for shopping with us!</p></div>`,
       }),
     });
   }
@@ -483,20 +483,20 @@ export default function AdminDashboard() {
   );
 
   const stats = [
-    { label: "Total Products", value: products.length.toString(), icon: "ðŸ›ï¸", color: "#f48fb1" },
-    { label: "Total Orders", value: orders.length.toString(), icon: "ðŸ“¦", color: "#81d4fa" },
-    { label: "Total Users", value: users.length.toString(), icon: "ðŸ‘¥", color: "#a5d6a7" },
-    { label: "Total Riders", value: riders.length.toString(), icon: "ðŸï¸", color: "#b39ddb" },
-    { label: "Revenue", value: "â‚±" + orders.filter(o => o.status?.toLowerCase() === "delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "ðŸ’°", color: "#ffcc80" },
+    { label: "Total Products", value: products.length.toString(), icon: "🛍️", color: "#f48fb1" },
+    { label: "Total Orders", value: orders.length.toString(), icon: "📦", color: "#81d4fa" },
+    { label: "Total Users", value: users.length.toString(), icon: "👥", color: "#a5d6a7" },
+    { label: "Total Riders", value: riders.length.toString(), icon: "🏍️", color: "#b39ddb" },
+    { label: "Revenue", value: "₱" + orders.filter(o => o.status?.toLowerCase() === "delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "💰", color: "#ffcc80" },
   ];
 
   const navItems = [
-    { label: "Dashboard", icon: "ðŸ“Š" },
-    { label: "Products", icon: "ðŸ›ï¸" },
-    { label: "Orders", icon: "ðŸ“¦" },
-    { label: "Users", icon: "ðŸ‘¥" },
-    { label: "Riders", icon: "ðŸï¸" },
-    { label: "Chats", icon: "ðŸ’¬" },
+    { label: "Dashboard", icon: "📊" },
+    { label: "Products", icon: "🛍️" },
+    { label: "Orders", icon: "📦" },
+    { label: "Users", icon: "👥" },
+    { label: "Riders", icon: "🏍️" },
+    { label: "Chats", icon: "💬" },
     { label: "Messages", icon: "âœ‰ï¸" },
   ];
 
@@ -506,7 +506,7 @@ export default function AdminDashboard() {
       {/* SIDEBAR */}
       <aside className="admin-sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">ðŸŒ¸</span>
+          <span className="logo-icon">🌸</span>
           <span className="logo-text">Mae Admin</span>
         </div>
         <nav className="sidebar-nav">
@@ -516,7 +516,7 @@ export default function AdminDashboard() {
             </button>
           ))}
         </nav>
-        <button className="logout-item" onClick={handleLogout}><span>ðŸšª</span> Logout</button>
+        <button className="logout-item" onClick={handleLogout}><span>🚪</span> Logout</button>
       </aside>
 
       {/* MAIN */}
@@ -525,9 +525,9 @@ export default function AdminDashboard() {
         <div className="admin-topbar">
           <div>
             <h1>{active}</h1>
-            <p className="topbar-sub">{active === "Dashboard" ? "Welcome back, Admin ðŸ‘‹" : `Manage your ${active.toLowerCase()}`}</p>
+            <p className="topbar-sub">{active === "Dashboard" ? "Welcome back, Admin 👋" : `Manage your ${active.toLowerCase()}`}</p>
           </div>
-          <span className="admin-avatar">ðŸ‘¤ Admin</span>
+          <span className="admin-avatar">👤 Admin</span>
         </div>
 
         {/* ===== DASHBOARD ===== */}
@@ -551,7 +551,7 @@ export default function AdminDashboard() {
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
-                        <td>{o.order_items?.[0]?.product_name ?? "â€”"}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
                         <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
                         <td><span className={`status-badge ${o.status?.toLowerCase() === "delivered" ? "done" : o.status?.toLowerCase() === "shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
                       </tr>
@@ -670,7 +670,7 @@ export default function AdminDashboard() {
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
-                        <td>{o.order_items?.[0]?.product_name ?? "â€”"}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
                         <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
                         <td>
                           <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
@@ -709,7 +709,7 @@ export default function AdminDashboard() {
                               onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
                               className="status-select"
                             >
-                              <option value="">â€” Assign Rider â€”</option>
+                              <option value="">— Assign Rider —</option>
                               {riders.filter(r => r.status === 'available').map(r => (
                                 <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
                               ))}
@@ -836,7 +836,7 @@ export default function AdminDashboard() {
                     riders.map((r) => (
                       <tr key={r.id}>
                         <td>{r.full_name}</td>
-                        <td>{r.email || 'â€”'}</td>
+                        <td>{r.email || '—'}</td>
                         <td>{r.phone}</td>
                         <td>
                           <select
@@ -884,7 +884,7 @@ export default function AdminDashboard() {
             <div className="admin-table-card" style={{flex:1,display:'flex',flexDirection:'column',padding:0,overflow:'hidden'}}>
               {!activeConv ? (
                 <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'#aaa',flexDirection:'column',gap:'8px'}}>
-                  <span style={{fontSize:'40px'}}>ðŸ’¬</span>
+                  <span style={{fontSize:'40px'}}>💬</span>
                   <p>Select a conversation to view messages</p>
                 </div>
               ) : (
