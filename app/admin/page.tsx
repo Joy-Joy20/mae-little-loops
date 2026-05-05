@@ -909,7 +909,7 @@ export default function AdminDashboard() {
                       placeholder="Type a reply..."
                       style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
                     />
-                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>âž¤</button>
+                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>➤</button>
                   </div>
                 </>
               )}
@@ -940,7 +940,7 @@ export default function AdminDashboard() {
                     style={{width:'100%',padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none',resize:'vertical',fontFamily:'inherit',boxSizing:'border-box'}}
                   />
                   <div style={{display:'flex',gap:'10px',marginTop:'12px'}}>
-                    <button onClick={handleMessageReply} disabled={replying || !replyText.trim()} style={{flex:1,padding:'13px',border:'none',borderRadius:'12px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer'}}>{replying ? 'Sending...' : 'âœ‰ï¸ Send Reply'}</button>
+                    <button onClick={handleMessageReply} disabled={replying || !replyText.trim()} style={{flex:1,padding:'13px',border:'none',borderRadius:'12px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer'}}>{replying ? 'Sending...' : 'Send Reply'}</button>
                     <button onClick={() => { setReplyTarget(null); setReplyText(""); }} style={{flex:1,padding:'13px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'white',color:'#888',fontWeight:'600',cursor:'pointer',fontSize:'14px'}}>Cancel</button>
                   </div>
                 </div>
@@ -960,7 +960,7 @@ export default function AdminDashboard() {
                       <td style={{maxWidth:'200px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.message}</td>
                       <td>{new Date(m.created_at).toLocaleDateString()}</td>
                       <td>
-                        <button onClick={() => { setReplyTarget(m); setReplyText(""); }} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>âœ‰ï¸ Reply</button>
+                        <button onClick={() => { setReplyTarget(m); setReplyText(""); }} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Reply</button>
                       </td>
                     </tr>
                   ))
