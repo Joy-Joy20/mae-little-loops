@@ -497,7 +497,7 @@ export default function AdminDashboard() {
     { label: "Users", icon: "👥" },
     { label: "Riders", icon: "🏍️" },
     { label: "Chats", icon: "💬" },
-    { label: "Messages", icon: "âœ‰ï¸" },
+    { label: "Messages", icon: "✉️" },
   ];
 
   return (
