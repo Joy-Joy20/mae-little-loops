@@ -35,9 +35,9 @@ function BouquetCard({ item, onAddToCart, onBuyNow, onSelect }: {
           <span style={{fontWeight:'600',fontSize:'16px',minWidth:'24px',textAlign:'center'}}>{quantity}</span>
           <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
         </div>
-        <div className="btn-row">
-          <button className="add-btn" onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }}>Add to Cart</button>
-          <button className="buy-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }}>Buy Now</button>
+        <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
+          <button onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }} title="Add to Cart" style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'42px',height:'42px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'18px',boxShadow:'0 4px 12px rgba(233,30,140,0.3)',transition:'all 0.3s ease',flexShrink:0}} onMouseEnter={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform='scale(1)'}>🛒</button>
+          <button onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }} style={{flex:1,padding:'10px 16px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease'}}>Buy Now</button>
         </div>
       </div>
     </div>

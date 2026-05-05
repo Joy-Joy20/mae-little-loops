@@ -118,9 +118,9 @@ function SearchResults() {
                     <div className="product-info">
                       <h3>{item.name}</h3>
                       <p className="product-price">{price}</p>
-                      <div className="btn-row">
-                        <button className="add-btn" onClick={() => handleAddToCart(item.name, price, img)}>Add to Cart</button>
-                        <button className="buy-btn" onClick={() => handleBuyNow(item.name, price, img)}>Buy Now</button>
+                      <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
+                        <button onClick={() => handleAddToCart(item.name, price, img)} title="Add to Cart" style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'42px',height:'42px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'18px',boxShadow:'0 4px 12px rgba(233,30,140,0.3)',transition:'all 0.3s ease',flexShrink:0}} onMouseEnter={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform='scale(1)'}>🛒</button>
+                        <button onClick={() => handleBuyNow(item.name, price, img)} style={{flex:1,padding:'10px 16px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease'}}>Buy Now</button>
                       </div>
                     </div>
                   </div>
