@@ -35,7 +35,10 @@ async function requireAdminClient(request: NextRequest) {
 
 function parseProductId(rawId: string) {
   const id = Number(rawId);
-  return Number.isInteger(id) && id > 0 ? id : null;
+  if (Number.isFinite(id) && id > 0) return id;
+  // fallback: try as string id (UUID or non-numeric)
+  const trimmed = rawId?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
 }
 
 export async function PUT(

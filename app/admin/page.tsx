@@ -312,7 +312,14 @@ export default function AdminDashboard() {
 
   function openEdit(p: Product) {
     setEditProduct(p);
-    setFormData({ name: p.name, price: String(p.price ?? ""), category: p.category as "bouquet" | "keychain", stock: String(p.stock ?? 0), description: p.description ?? "", image_url: p.image_url ?? "" });
+    setFormData({
+      name: p.name ?? "",
+      price: p.price != null ? String(p.price) : "",
+      category: (p.category === "bouquet" || p.category === "keychain") ? p.category : "bouquet",
+      stock: p.stock != null ? String(p.stock) : "0",
+      description: p.description ?? "",
+      image_url: p.image_url ?? "",
+    });
     setShowForm(true);
   }
 
@@ -325,6 +332,11 @@ export default function AdminDashboard() {
     if (!payload) {
       console.error("Product form validation failed:", { formData, errors });
       alert(errors.join("\n"));
+      return;
+    }
+
+    if (editProduct && (editProduct.id == null || String(editProduct.id).trim() === "")) {
+      alert("Cannot save: product id is missing. Please close and reopen the edit form.");
       return;
     }
 
