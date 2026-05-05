@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -59,28 +59,40 @@ export default function AdminDashboard() {
   async function handleMessageReply() {
     if (!replyText.trim() || !replyTarget) return;
     setReplying(true);
-    await fetch("/api/send-email", {
+    const res = await fetch("/api/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         to: replyTarget.email,
-        subject: `Re: ${replyTarget.subject}`,
+        subject: `Re: ${replyTarget.subject || "Your message to Mae Little Loops Studio"}`,
         html: `
-          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-            <h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2>
+          <div style="font-family:Arial,sans-serif;padding:40px;max-width:600px;margin:0 auto;">
+            <h2 style="color:#e91e8c;">Mae Little Loops Studio</h2>
             <p>Hi <strong>${replyTarget.name}</strong>,</p>
-            <div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;font-size:14px;line-height:1.7;">${replyText.trim().replace(/
-/g, '<br/>')}</div>
-            <p style="color:#aaa;font-size:12px;margin-top:16px;">This is a reply to your message: &quot;${replyTarget.message}&quot;</p>
-            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
+            <p>Thank you for reaching out! Here is our reply:</p>
+            <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:20px 0;">
+              <p style="margin:0;font-size:15px;color:#333;">${replyText.trim().replace(/\n/g, "<br/>")}</p>
+            </div>
+            <hr style="border:1px solid #fce4ec;margin:20px 0;" />
+            <p style="color:#aaa;font-size:12px;">Your original message:</p>
+            <p style="color:#aaa;font-size:12px;font-style:italic;">"${replyTarget.message}"</p>
+            <br/>
+            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio</p>
+            <p style="color:#777;font-size:12px;">masarquemae65@gmail.com</p>
           </div>
         `,
       }),
     });
+    if (res.ok) {
+      await supabase.from("messages").update({ replied: true }).eq("id", replyTarget.id);
+      setMessages(prev => prev.map(m => m.id === replyTarget.id ? { ...m, replied: true } : m));
+      alert("Reply sent to " + replyTarget.email + "!");
+    } else {
+      alert("Failed to send reply. Please try again.");
+    }
     setReplying(false);
     setReplyTarget(null);
     setReplyText("");
-    alert(`Reply sent to ${replyTarget.email}!`);
   }
 
   async function fetchOrders() {
@@ -116,20 +128,20 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         to: customerEmail,
-        subject: "🏍️ Your Order is On the Way! — Mae Little Loops Studio",
+        subject: "ðŸï¸ Your Order is On the Way! â€” Mae Little Loops Studio",
         html: `
           <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-            <h2 style="color:#e91e8c;">Your order is on the way! 🏍️</h2>
+            <h2 style="color:#e91e8c;">Your order is on the way! ðŸï¸</h2>
             <p>Great news! Your order from <strong>Mae Little Loops Studio</strong> is now being delivered.</p>
             <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:16px 0;">
-              <h3 style="color:#c2185b;margin-bottom:12px;">🏍️ Rider Details</h3>
+              <h3 style="color:#c2185b;margin-bottom:12px;">ðŸï¸ Rider Details</h3>
               <p><strong>Name:</strong> ${rider.full_name}</p>
               <p><strong>Phone:</strong> ${rider.phone}</p>
               ${rider.email ? `<p><strong>Email:</strong> ${rider.email}</p>` : ""}
             </div>
             <p>You can contact your rider directly if needed.</p>
-            <p style="color:#666;">Thank you for shopping with us! 🌸</p>
-            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
+            <p style="color:#666;">Thank you for shopping with us! ðŸŒ¸</p>
+            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio ðŸŒ¸</p>
           </div>
         `,
       }),
@@ -329,8 +341,8 @@ export default function AdminDashboard() {
     await fetch("/api/send-email", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: customerEmail, subject: `Your Order Status Updated — ${newStatus}`,
-        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;"><h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2><p>Your order status has been updated.</p><div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;text-align:center;"><span style="background:${color}22;color:${color};padding:6px 20px;border-radius:50px;font-weight:700;font-size:16px;">${newStatus}</span></div><p style="color:#666;">Thank you for shopping with us! 💕</p></div>`,
+        to: customerEmail, subject: `Your Order Status Updated â€” ${newStatus}`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;"><h2 style="color:#e91e8c;">Mae Little Loops Studio ðŸŒ¸</h2><p>Your order status has been updated.</p><div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;text-align:center;"><span style="background:${color}22;color:${color};padding:6px 20px;border-radius:50px;font-weight:700;font-size:16px;">${newStatus}</span></div><p style="color:#666;">Thank you for shopping with us! ðŸ’•</p></div>`,
       }),
     });
   }
@@ -471,21 +483,21 @@ export default function AdminDashboard() {
   );
 
   const stats = [
-    { label: "Total Products", value: products.length.toString(), icon: "🛍️", color: "#f48fb1" },
-    { label: "Total Orders", value: orders.length.toString(), icon: "📦", color: "#81d4fa" },
-    { label: "Total Users", value: users.length.toString(), icon: "👥", color: "#a5d6a7" },
-    { label: "Total Riders", value: riders.length.toString(), icon: "🏍️", color: "#b39ddb" },
-    { label: "Revenue", value: "₱" + orders.filter(o => o.status?.toLowerCase() === "delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "💰", color: "#ffcc80" },
+    { label: "Total Products", value: products.length.toString(), icon: "ðŸ›ï¸", color: "#f48fb1" },
+    { label: "Total Orders", value: orders.length.toString(), icon: "ðŸ“¦", color: "#81d4fa" },
+    { label: "Total Users", value: users.length.toString(), icon: "ðŸ‘¥", color: "#a5d6a7" },
+    { label: "Total Riders", value: riders.length.toString(), icon: "ðŸï¸", color: "#b39ddb" },
+    { label: "Revenue", value: "â‚±" + orders.filter(o => o.status?.toLowerCase() === "delivered").reduce((s, o) => s + (o.total_amount ?? 0), 0).toLocaleString(), icon: "ðŸ’°", color: "#ffcc80" },
   ];
 
   const navItems = [
-    { label: "Dashboard", icon: "📊" },
-    { label: "Products", icon: "🛍️" },
-    { label: "Orders", icon: "📦" },
-    { label: "Users", icon: "👥" },
-    { label: "Riders", icon: "🏍️" },
-    { label: "Chats", icon: "💬" },
-    { label: "Messages", icon: "✉️" },
+    { label: "Dashboard", icon: "ðŸ“Š" },
+    { label: "Products", icon: "ðŸ›ï¸" },
+    { label: "Orders", icon: "ðŸ“¦" },
+    { label: "Users", icon: "ðŸ‘¥" },
+    { label: "Riders", icon: "ðŸï¸" },
+    { label: "Chats", icon: "ðŸ’¬" },
+    { label: "Messages", icon: "âœ‰ï¸" },
   ];
 
   return (
@@ -494,7 +506,7 @@ export default function AdminDashboard() {
       {/* SIDEBAR */}
       <aside className="admin-sidebar">
         <div className="sidebar-logo">
-          <span className="logo-icon">🌸</span>
+          <span className="logo-icon">ðŸŒ¸</span>
           <span className="logo-text">Mae Admin</span>
         </div>
         <nav className="sidebar-nav">
@@ -504,7 +516,7 @@ export default function AdminDashboard() {
             </button>
           ))}
         </nav>
-        <button className="logout-item" onClick={handleLogout}><span>🚪</span> Logout</button>
+        <button className="logout-item" onClick={handleLogout}><span>ðŸšª</span> Logout</button>
       </aside>
 
       {/* MAIN */}
@@ -513,9 +525,9 @@ export default function AdminDashboard() {
         <div className="admin-topbar">
           <div>
             <h1>{active}</h1>
-            <p className="topbar-sub">{active === "Dashboard" ? "Welcome back, Admin 👋" : `Manage your ${active.toLowerCase()}`}</p>
+            <p className="topbar-sub">{active === "Dashboard" ? "Welcome back, Admin ðŸ‘‹" : `Manage your ${active.toLowerCase()}`}</p>
           </div>
-          <span className="admin-avatar">👤 Admin</span>
+          <span className="admin-avatar">ðŸ‘¤ Admin</span>
         </div>
 
         {/* ===== DASHBOARD ===== */}
@@ -539,8 +551,8 @@ export default function AdminDashboard() {
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
-                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
-                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "â€”"}</td>
+                        <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
                         <td><span className={`status-badge ${o.status?.toLowerCase() === "delivered" ? "done" : o.status?.toLowerCase() === "shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
                       </tr>
                     ))
@@ -566,7 +578,7 @@ export default function AdminDashboard() {
                     </div>
                     <div style={{display:'flex',gap:'12px'}}>
                       <div className="settings-group" style={{flex:1}}>
-                        <label>Price (₱) *</label>
+                        <label>Price (â‚±) *</label>
                         <input type="number" min="0" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="0.00" />
                       </div>
                       <div className="settings-group" style={{flex:1}}>
@@ -615,7 +627,7 @@ export default function AdminDashboard() {
                         <td><img src={p.image_url || '/Rainbow Tulip Charm.png'} alt={p.name} width={48} height={48} style={{objectFit:'contain',borderRadius:'8px'}} /></td>
                         <td>{p.name}</td>
                         <td><span className={`cat-badge ${p.category === "bouquet" ? "bouquet" : "keychain"}`}>{p.category}</span></td>
-                        <td className="order-price">₱{parseFloat(String(p.price)).toFixed(2)}</td>
+                        <td className="order-price">â‚±{parseFloat(String(p.price)).toFixed(2)}</td>
                         <td>
                           <span style={{background: p.stock > 5 ? '#e8f5e9' : p.stock > 0 ? '#fff3cd' : '#ffebee', color: p.stock > 5 ? '#2e7d32' : p.stock > 0 ? '#f57f17' : '#c62828', padding:'4px 10px', borderRadius:'50px', fontSize:'13px', fontWeight:'600'}}>
                             {p.stock > 0 ? `${p.stock} in stock` : 'Out of Stock'}
@@ -643,7 +655,7 @@ export default function AdminDashboard() {
             {previewReceipt && (
               <div onClick={() => setPreviewReceipt(null)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:2000,display:'flex',alignItems:'center',justifyContent:'center'}}>
                 <div style={{position:'relative'}} onClick={e => e.stopPropagation()}>
-                  <button onClick={() => setPreviewReceipt(null)} style={{position:'absolute',top:'-14px',right:'-14px',background:'#e91e8c',border:'none',borderRadius:'50%',width:'32px',height:'32px',color:'white',fontSize:'16px',cursor:'pointer',fontWeight:'700',zIndex:1}}>✕</button>
+                  <button onClick={() => setPreviewReceipt(null)} style={{position:'absolute',top:'-14px',right:'-14px',background:'#e91e8c',border:'none',borderRadius:'50%',width:'32px',height:'32px',color:'white',fontSize:'16px',cursor:'pointer',fontWeight:'700',zIndex:1}}>âœ•</button>
                   <img src={previewReceipt} alt="GCash Receipt" style={{maxWidth:'90vw',maxHeight:'80vh',borderRadius:'16px',boxShadow:'0 20px 60px rgba(0,0,0,0.4)',display:'block'}} />
                 </div>
               </div>
@@ -658,8 +670,8 @@ export default function AdminDashboard() {
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
-                        <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
-                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
+                        <td>{o.order_items?.[0]?.product_name ?? "â€”"}</td>
+                        <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
                         <td>
                           <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
                             <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
@@ -678,7 +690,7 @@ export default function AdminDashboard() {
                                 onClick={() => handleVerifyPayment(o.id)}
                                 style={{padding:'4px 8px',borderRadius:'6px',border:'none',background:o.payment_verified ? '#e8f5e9' : '#fce4ec',color:o.payment_verified ? '#2e7d32' : '#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'11px',whiteSpace:'nowrap'}}
                               >
-                                {o.payment_verified ? '✅ Verified' : '⏳ Verify'}
+                                {o.payment_verified ? 'âœ… Verified' : 'â³ Verify'}
                               </button>
                             </div>
                           ) : (
@@ -697,7 +709,7 @@ export default function AdminDashboard() {
                               onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
                               className="status-select"
                             >
-                              <option value="">— Assign Rider —</option>
+                              <option value="">â€” Assign Rider â€”</option>
                               {riders.filter(r => r.status === 'available').map(r => (
                                 <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
                               ))}
@@ -824,7 +836,7 @@ export default function AdminDashboard() {
                     riders.map((r) => (
                       <tr key={r.id}>
                         <td>{r.full_name}</td>
-                        <td>{r.email || '—'}</td>
+                        <td>{r.email || 'â€”'}</td>
                         <td>{r.phone}</td>
                         <td>
                           <select
@@ -872,7 +884,7 @@ export default function AdminDashboard() {
             <div className="admin-table-card" style={{flex:1,display:'flex',flexDirection:'column',padding:0,overflow:'hidden'}}>
               {!activeConv ? (
                 <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'#aaa',flexDirection:'column',gap:'8px'}}>
-                  <span style={{fontSize:'40px'}}>💬</span>
+                  <span style={{fontSize:'40px'}}>ðŸ’¬</span>
                   <p>Select a conversation to view messages</p>
                 </div>
               ) : (
@@ -885,7 +897,7 @@ export default function AdminDashboard() {
                     {chatMessages.map(msg => (
                       <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-end' : 'flex-start',background:msg.is_admin ? 'linear-gradient(135deg,#e91e8c,#f06292)' : '#fce4ec',color:msg.is_admin ? 'white' : '#333',padding:'10px 14px',borderRadius:msg.is_admin ? '12px 4px 12px 12px' : '4px 12px 12px 12px',maxWidth:'75%',fontSize:'14px'}}>
                         <p style={{margin:0}}>{msg.message}</p>
-                        <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{msg.is_admin ? 'Admin' : msg.sender_email} · {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</p>
+                        <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{msg.is_admin ? 'Admin' : msg.sender_email} Â· {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</p>
                       </div>
                     ))}
                   </div>
@@ -897,7 +909,7 @@ export default function AdminDashboard() {
                       placeholder="Type a reply..."
                       style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
                     />
-                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>➤</button>
+                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>âž¤</button>
                   </div>
                 </>
               )}
@@ -928,7 +940,7 @@ export default function AdminDashboard() {
                     style={{width:'100%',padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none',resize:'vertical',fontFamily:'inherit',boxSizing:'border-box'}}
                   />
                   <div style={{display:'flex',gap:'10px',marginTop:'12px'}}>
-                    <button onClick={handleMessageReply} disabled={replying || !replyText.trim()} style={{flex:1,padding:'13px',border:'none',borderRadius:'12px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer'}}>{replying ? 'Sending...' : '✉️ Send Reply'}</button>
+                    <button onClick={handleMessageReply} disabled={replying || !replyText.trim()} style={{flex:1,padding:'13px',border:'none',borderRadius:'12px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer'}}>{replying ? 'Sending...' : 'âœ‰ï¸ Send Reply'}</button>
                     <button onClick={() => { setReplyTarget(null); setReplyText(""); }} style={{flex:1,padding:'13px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'white',color:'#888',fontWeight:'600',cursor:'pointer',fontSize:'14px'}}>Cancel</button>
                   </div>
                 </div>
@@ -948,7 +960,7 @@ export default function AdminDashboard() {
                       <td style={{maxWidth:'200px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.message}</td>
                       <td>{new Date(m.created_at).toLocaleDateString()}</td>
                       <td>
-                        <button onClick={() => { setReplyTarget(m); setReplyText(""); }} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>✉️ Reply</button>
+                        <button onClick={() => { setReplyTarget(m); setReplyText(""); }} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>âœ‰ï¸ Reply</button>
                       </td>
                     </tr>
                   ))
