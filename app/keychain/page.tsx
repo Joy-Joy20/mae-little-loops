@@ -10,6 +10,19 @@ import BuyNowModal from "../../components/BuyNowModal";
 
 type Keychain = { id: string; name: string; price: string; img: string; description?: string; stock: number; };
 
+const FALLBACK_KEYCHAINS: Keychain[] = [
+  { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", stock: 10, description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
+  { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png", stock: 10, description: "A cute crochet frog keychain wearing a tiny hat. A fun and quirky accessory for bags and keys." },
+  { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png", stock: 10, description: "A charming little crochet creature wearing a strawberry hat. Unique and handmade with love." },
+  { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png", stock: 10, description: "A pretty purple crochet bow keychain. Simple, elegant, and perfect as an everyday accessory." },
+  { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png", stock: 10, description: "A handmade crochet Monkey D. Luffy keychain inspired by One Piece. A must-have for anime fans!" },
+  { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png", stock: 10, description: "A classic and cuddly crochet teddy bear keychain. Sweet and simple — perfect for all ages." },
+  { id: "15", name: "Strawberry", price: "₱88.00", img: "/Strawberry.png", stock: 10, description: "A cute crochet strawberry keychain with vibrant red color and green leaves. Fresh and adorable!" },
+  { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png", stock: 10, description: "A handmade crochet Kuromi head keychain. Perfect for Sanrio fans who love the edgy little bunny." },
+  { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png", stock: 10, description: "A full-body crochet Kuromi keychain with detailed craftsmanship. A collector's item for Sanrio lovers." },
+  { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png", stock: 10, description: "A warm brown crochet teddy bear keychain. Soft, cute, and handmade with care." },
+];
+
 function KeychainCard({ item, onAddToCart, onBuyNow, onSelect }: {
   item: Keychain;
   onAddToCart: (p: Keychain, qty: number) => void;
@@ -52,27 +65,42 @@ export default function Keychain() {
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Keychain | null>(null);
   const [buyNowProduct, setBuyNowProduct] = useState<{ id?: string; name: string; price: string; img: string | null; quantity?: number } | null>(null);
+  const [keychains, setKeychains] = useState<Keychain[]>(FALLBACK_KEYCHAINS);
 
-  const keychains: Keychain[] = [
-    { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", stock: 10, description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
-    { id: "10", name: "Frog-Hat", price: "₱90.00", img: "/Frog-Hat.png", stock: 10, description: "A cute crochet frog keychain wearing a tiny hat. A fun and quirky accessory for bags and keys." },
-    { id: "11", name: "Strawberry-Hat Creature", price: "₱100.00", img: "/Strawberry-Hat Creature.png", stock: 10, description: "A charming little crochet creature wearing a strawberry hat. Unique and handmade with love." },
-    { id: "12", name: "Purple Bow", price: "₱95.00", img: "/Purple Bow.png", stock: 10, description: "A pretty purple crochet bow keychain. Simple, elegant, and perfect as an everyday accessory." },
-    { id: "13", name: "Monkey D. Luffy", price: "₱110.00", img: "/Monkey D. Luffy.png", stock: 10, description: "A handmade crochet Monkey D. Luffy keychain inspired by One Piece. A must-have for anime fans!" },
-    { id: "14", name: "Teddy Bear", price: "₱75.00", img: "/Teddy Bear.png", stock: 10, description: "A classic and cuddly crochet teddy bear keychain. Sweet and simple — perfect for all ages." },
-    { id: "15", name: "Strawberry", price: "₱88.00", img: "/Strawberry.png", stock: 10, description: "A cute crochet strawberry keychain with vibrant red color and green leaves. Fresh and adorable!" },
-    { id: "16", name: "Kuromi (Head Only)", price: "₱88.00", img: "/Kuromi (Head Only).png", stock: 10, description: "A handmade crochet Kuromi head keychain. Perfect for Sanrio fans who love the edgy little bunny." },
-    { id: "17", name: "Kuromi (Full Body)", price: "₱88.00", img: "/Kuromi (Full Body).png", stock: 10, description: "A full-body crochet Kuromi keychain with detailed craftsmanship. A collector's item for Sanrio lovers." },
-    { id: "18", name: "Brown Teddy Bear", price: "₱75.00", img: "/Brown Teddy Bear.png", stock: 10, description: "A warm brown crochet teddy bear keychain. Soft, cute, and handmade with care." },
-  ];
+  async function fetchKeychains() {
+    const { data } = await supabase
+      .from("products")
+      .select("id, name, price, image_url, stock, description")
+      .eq("category", "keychain")
+      .order("id");
+    if (data && data.length > 0) {
+      setKeychains(data.map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        price: `₱${parseFloat(p.price).toFixed(2)}`,
+        img: p.image_url?.trim() || (FALLBACK_KEYCHAINS.find(f => f.name === p.name)?.img ?? "/Graduation Penguin.png"),
+        stock: p.stock ?? 0,
+        description: p.description ?? "",
+      })));
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
+    fetchKeychains();
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedProduct(null); };
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    const sub = supabase
+      .channel("keychains-stock")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products", filter: "category=eq.keychain" }, (payload) => {
+        setKeychains(prev => prev.map(p => p.id === String(payload.new.id) ? { ...p, stock: payload.new.stock } : p));
+      })
+      .subscribe();
+
+    return () => { window.removeEventListener("keydown", handleKey); supabase.removeChannel(sub); };
   }, []);
 
   function handleAddToCart(product: Keychain | undefined, quantity: number) {

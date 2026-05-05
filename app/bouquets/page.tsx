@@ -11,6 +11,17 @@ import ChatWidget from "../../components/ChatWidget";
 
 type Product = { id: string; name: string; price: string; img: string | null; description?: string; stock: number; };
 
+const FALLBACK_BOUQUETS: Product[] = [
+  { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", stock: 10, description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
+  { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png", stock: 10, description: "A lovely pastel-colored crochet flower bouquet with soft pink and blue blossoms. Great for birthdays and special occasions." },
+  { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png", stock: 10, description: "An elegant bouquet of handcrafted lavender bell-shaped flowers wrapped in premium tissue paper with a pink ribbon." },
+  { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png", stock: 10, description: "A delicate mini bouquet of white pastel crochet flowers, perfect as a small gift or desk decoration." },
+  { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png", stock: 10, description: "A bold and beautiful crimson crochet bouquet that makes a striking statement for any occasion." },
+  { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png", stock: 10, description: "A luxurious lavender crochet bouquet with rich purple tones, perfect for anniversaries and special events." },
+  { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png", stock: 10, description: "A dreamy blue-toned crochet bouquet inspired by the sky. A unique and calming gift for loved ones." },
+  { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png", stock: 10, description: "A cheerful pastel rainbow crochet bouquet bursting with soft colors. Brings joy to any room or occasion." },
+];
+
 function BouquetCard({ item, onAddToCart, onBuyNow, onSelect }: {
   item: Product;
   onAddToCart: (p: Product, qty: number) => void;
@@ -57,25 +68,42 @@ export default function Bouquets() {
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [buyNowProduct, setBuyNowProduct] = useState<{ id?: string; name: string; price: string; img: string | null; quantity?: number } | null>(null);
+  const [bouquets, setBouquets] = useState<Product[]>(FALLBACK_BOUQUETS);
 
-  const bouquets: Product[] = [
-    { id: "1", name: "Rainbow Tulip Charm", price: "₱200.00", img: "/Rainbow Tulip Charm.png", stock: 10, description: "A vibrant handmade crochet bouquet featuring colorful tulips in red, yellow, blue, and purple. Perfect as a gift or home decoration." },
-    { id: "2", name: "Pastel Blossom Bouquet", price: "₱250.00", img: "/Pastel Blossom Bouquet.png", stock: 10, description: "A lovely pastel-colored crochet flower bouquet with soft pink and blue blossoms. Great for birthdays and special occasions." },
-    { id: "3", name: "Lavender Bell Flowers", price: "₱300.00", img: "/Lavender Bell Flowers.png", stock: 10, description: "An elegant bouquet of handcrafted lavender bell-shaped flowers wrapped in premium tissue paper with a pink ribbon." },
-    { id: "4", name: "Mini White Pastel Flower Bouquet", price: "₱150.00", img: "/Mini White Pastel Flower Bouquet.png", stock: 10, description: "A delicate mini bouquet of white pastel crochet flowers, perfect as a small gift or desk decoration." },
-    { id: "5", name: "Crimson Charm", price: "₱200.00", img: "/Crimson Charm.png", stock: 10, description: "A bold and beautiful crimson crochet bouquet that makes a striking statement for any occasion." },
-    { id: "6", name: "Lavender Luxe", price: "₱250.00", img: "/Lavender Luxe.png", stock: 10, description: "A luxurious lavender crochet bouquet with rich purple tones, perfect for anniversaries and special events." },
-    { id: "7", name: "Skyline Serenade", price: "₱300.00", img: "/Skyline Serenade.png", stock: 10, description: "A dreamy blue-toned crochet bouquet inspired by the sky. A unique and calming gift for loved ones." },
-    { id: "8", name: "Pastel Rainbow", price: "₱150.00", img: "/Pastel Rainbow.png", stock: 10, description: "A cheerful pastel rainbow crochet bouquet bursting with soft colors. Brings joy to any room or occasion." },
-  ];
+  async function fetchBouquets() {
+    const { data } = await supabase
+      .from("products")
+      .select("id, name, price, image_url, stock, description")
+      .eq("category", "bouquet")
+      .order("id");
+    if (data && data.length > 0) {
+      setBouquets(data.map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        price: `₱${parseFloat(p.price).toFixed(2)}`,
+        img: p.image_url?.trim() || (FALLBACK_BOUQUETS.find(f => f.name === p.name)?.img ?? null),
+        stock: p.stock ?? 0,
+        description: p.description ?? "",
+      })));
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user?.email ?? null);
     });
+    fetchBouquets();
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedProduct(null); };
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    const sub = supabase
+      .channel("bouquets-stock")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products", filter: "category=eq.bouquet" }, (payload) => {
+        setBouquets(prev => prev.map(p => p.id === String(payload.new.id) ? { ...p, stock: payload.new.stock } : p));
+      })
+      .subscribe();
+
+    return () => { window.removeEventListener("keydown", handleKey); supabase.removeChannel(sub); };
   }, []);
 
   function handleAddToCart(product: Product | undefined, quantity: number) {
