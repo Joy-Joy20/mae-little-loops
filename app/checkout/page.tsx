@@ -33,6 +33,7 @@ export default function Checkout() {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -276,13 +277,15 @@ export default function Checkout() {
               <div className="checkout-card">
                 <h3>{deliveryMethod === "pickup" ? "Pick Up Details" : "Delivery Information"}</h3>
                 <div className="form-group">
-                  <label htmlFor="checkout-name">Full Name</label>
-                  <input id="checkout-name" name="name" type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} />
+                  <label htmlFor="checkout-name">Full Name <span style={{color:'#e91e8c'}}>*</span></label>
+                  <input id="checkout-name" name="name" type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} onBlur={() => setTouched(t => ({...t, name: true}))} style={touched.name && !name.trim() ? {borderColor:'#e91e8c'} : {}} />
+                  {touched.name && !name.trim() && <p style={{color:'#e91e8c',fontSize:'12px',margin:'4px 0 0'}}>Full name is required.</p>}
                 </div>
                 {deliveryMethod === "deliver" && (
                   <div className="form-group">
-                    <label htmlFor="checkout-address">Address</label>
-                    <input id="checkout-address" name="address" type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                    <label htmlFor="checkout-address">Address <span style={{color:'#e91e8c'}}>*</span></label>
+                    <input id="checkout-address" name="address" type="text" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} onBlur={() => setTouched(t => ({...t, address: true}))} style={touched.address && !address.trim() ? {borderColor:'#e91e8c'} : {}} />
+                    {touched.address && !address.trim() && <p style={{color:'#e91e8c',fontSize:'12px',margin:'4px 0 0'}}>Address is required.</p>}
                   </div>
                 )}
                 {deliveryMethod === "pickup" && (
@@ -293,12 +296,17 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="form-group">
-                  <label htmlFor="checkout-phone">Phone Number</label>
-                  <input id="checkout-phone" name="phone" type="text" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <label htmlFor="checkout-phone">Phone Number <span style={{color:'#e91e8c'}}>*</span></label>
+                  <input id="checkout-phone" name="phone" type="text" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} onBlur={() => setTouched(t => ({...t, phone: true}))} style={touched.phone && !phone.trim() ? {borderColor:'#e91e8c'} : {}} />
+                  {touched.phone && !phone.trim() && <p style={{color:'#e91e8c',fontSize:'12px',margin:'4px 0 0'}}>Phone number is required.</p>}
                 </div>
                 <div className="btn-row">
                   <button className="back-btn" onClick={() => setStep(2)}>← Back</button>
-                  <button className="next-btn" onClick={() => setStep(4)} disabled={!name || !phone || (deliveryMethod === "deliver" && !address)}>Next →</button>
+                  <button className="next-btn" onClick={() => {
+                    setTouched({ name: true, address: true, phone: true });
+                    if (!name.trim() || !phone.trim() || (deliveryMethod === "deliver" && !address.trim())) return;
+                    setStep(4);
+                  }}>Next →</button>
                 </div>
               </div>
             )}
