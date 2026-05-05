@@ -25,21 +25,22 @@ function KeychainCard({ item, onAddToCart, onBuyNow, onSelect }: {
       <div className="product-info">
         <h3 className="product-name">{item.name}</h3>
         <p className="product-price">{item.price}</p>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',margin:'8px 0'}}>
-          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.max(1, q - 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'1.5px solid #e91e8c',background:'white',color:'#e91e8c',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>−</button>
-          <span style={{fontWeight:'600',fontSize:'16px',minWidth:'24px',textAlign:'center'}}>{quantity}</span>
-          <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
-          {item.stock === 0 ? (
-            <div style={{background:'#ffebee',color:'#c62828',padding:'10px',borderRadius:'8px',textAlign:'center',fontWeight:'600',fontSize:'14px',width:'100%'}}>Out of Stock</div>
-          ) : (
-            <>
+        {item.stock === 0 ? (
+          <div style={{background:'#ffebee',color:'#c62828',padding:'10px 16px',borderRadius:'50px',textAlign:'center',fontWeight:'700',fontSize:'14px',marginTop:'12px',border:'1.5px solid #ef9a9a'}}>❌ Out of Stock</div>
+        ) : (
+          <>
+            {item.stock <= 5 && <p style={{color:'#f57f17',fontSize:'12px',textAlign:'center',margin:'4px 0',fontWeight:'600'}}>⚠️ Only {item.stock} left in stock!</p>}
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'12px',margin:'8px 0'}}>
+              <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.max(1, q - 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'1.5px solid #e91e8c',background:'white',color:'#e91e8c',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>−</button>
+              <span style={{fontWeight:'600',fontSize:'16px',minWidth:'24px',textAlign:'center'}}>{quantity}</span>
+              <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
               <button onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }} title="Add to Cart" style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'42px',height:'42px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'18px',boxShadow:'0 4px 12px rgba(233,30,140,0.3)',transition:'all 0.3s ease',flexShrink:0}} onMouseEnter={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform='scale(1)'}>🛒</button>
               <button onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }} style={{flex:1,padding:'10px 16px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease'}}>Buy Now</button>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -109,15 +110,17 @@ export default function Keychain() {
             <h2 style={{fontSize:'20px',fontWeight:'700',color:'#333',margin:'12px 0 6px'}}>{selectedProduct.name}</h2>
             <p style={{fontSize:'22px',fontWeight:'700',color:'#e91e8c',marginBottom:'12px'}}>{selectedProduct.price}</p>
             <p style={{fontSize:'14px',fontFamily:'inherit',fontWeight:'400',fontStyle:'normal',color:'#666',lineHeight:'1.7',marginBottom:'20px'}}>{selectedProduct.description}</p>
-            <div style={{display:'flex',gap:'12px'}}>
-              <button onClick={() => handleAddToCart(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
-              <button onClick={() => handleBuyNow(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* NAVBAR */}
+            {selectedProduct.stock === 0 ? (
+              <div style={{background:'#ffebee',color:'#c62828',padding:'10px 16px',borderRadius:'50px',textAlign:'center',fontWeight:'700',fontSize:'14px',border:'1.5px solid #ef9a9a'}}>❌ Out of Stock</div>
+            ) : (
+              <>
+                {selectedProduct.stock <= 5 && <p style={{color:'#f57f17',fontSize:'12px',textAlign:'center',margin:'0 0 8px',fontWeight:'600'}}>⚠️ Only {selectedProduct.stock} left in stock!</p>}
+                <div style={{display:'flex',gap:'12px'}}>
+                  <button onClick={() => handleAddToCart(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'2px solid #e91e8c',background:'white',color:'#e91e8c',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit'}}>Add to Cart</button>
+                  <button onClick={() => handleBuyNow(selectedProduct, 1)} style={{flex:1,padding:'7px 16px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',fontFamily:'inherit',boxShadow:'0 3px 10px rgba(196,77,255,0.3)'}}>Buy Now</button>
+                </div>
+              </>
+            )}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>

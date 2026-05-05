@@ -8,7 +8,7 @@ import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
 import BuyNowModal from "../../components/BuyNowModal";
 
-type Product = { id: string; name: string; price: number; image_url: string | null; category: string; };
+type Product = { id: string; name: string; price: number; image_url: string | null; category: string; stock: number; };
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -28,7 +28,7 @@ function SearchResults() {
     setLoading(true);
     supabase
       .from("products")
-      .select("id, name, price, image_url, category")
+      .select("id, name, price, image_url, category, stock")
       .ilike("name", `%${query}%`)
       .then(({ data, error }) => {
         if (error) console.error("Search error:", error);
@@ -118,10 +118,17 @@ function SearchResults() {
                     <div className="product-info">
                       <h3>{item.name}</h3>
                       <p className="product-price">{price}</p>
-                      <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
-                        <button onClick={() => handleAddToCart(item.name, price, img)} title="Add to Cart" style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'42px',height:'42px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'18px',boxShadow:'0 4px 12px rgba(233,30,140,0.3)',transition:'all 0.3s ease',flexShrink:0}} onMouseEnter={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform='scale(1)'}>🛒</button>
-                        <button onClick={() => handleBuyNow(item.name, price, img)} style={{flex:1,padding:'10px 16px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease'}}>Buy Now</button>
-                      </div>
+                      {item.stock === 0 ? (
+                        <div style={{background:'#ffebee',color:'#c62828',padding:'10px 16px',borderRadius:'50px',textAlign:'center',fontWeight:'700',fontSize:'14px',marginTop:'12px',border:'1.5px solid #ef9a9a'}}>❌ Out of Stock</div>
+                      ) : (
+                        <>
+                          {item.stock <= 5 && <p style={{color:'#f57f17',fontSize:'12px',textAlign:'center',margin:'4px 0',fontWeight:'600'}}>⚠️ Only {item.stock} left in stock!</p>}
+                          <div style={{display:'flex',alignItems:'center',gap:'8px',justifyContent:'center',marginTop:'12px'}}>
+                            <button onClick={() => handleAddToCart(item.name, price, img)} title="Add to Cart" style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'42px',height:'42px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'18px',boxShadow:'0 4px 12px rgba(233,30,140,0.3)',transition:'all 0.3s ease',flexShrink:0}} onMouseEnter={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform='scale(1)'}>🛒</button>
+                            <button onClick={() => handleBuyNow(item.name, price, img)} style={{flex:1,padding:'10px 16px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer',transition:'all 0.3s ease'}}>Buy Now</button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
