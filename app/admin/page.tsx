@@ -85,6 +85,7 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       await supabase.from("messages").update({ replied: true }).eq("id", replyTarget.id);
+      await supabase.from("message_replies").insert([{ message_id: replyTarget.id, reply: replyText.trim() }]);
       setMessages(prev => prev.map(m => m.id === replyTarget.id ? { ...m, replied: true } : m));
       alert("Reply sent to " + replyTarget.email + "!");
     } else {

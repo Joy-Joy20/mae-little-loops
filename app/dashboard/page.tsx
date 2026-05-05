@@ -8,6 +8,7 @@ import { useCart } from "../../context/CartContext";
 type OrderItem = { product_name: string; quantity: number; };
 type Order = { id: string; created_at: string; total_amount: number; status: string; order_items: OrderItem[]; };
 type CartItem = { id: string; product_name: string; price: string; quantity: number; img: string | null; };
+type UserMessage = { id: string; name: string; email: string; subject: string; message: string; created_at: string; replied?: boolean; replies?: { id: string; reply: string; created_at: string }[]; };
 
 export default function Dashboard() {
   const router = useRouter();
@@ -31,7 +32,8 @@ export default function Dashboard() {
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
 
   // Messages state
-  const [userMessages, setUserMessages] = useState<{id:string;name:string;email:string;subject:string;message:string;created_at:string;replied?:boolean}[]>([]);
+  const [userMessages, setUserMessages] = useState<UserMessage[]>([]);
+  const [expandedMsg, setExpandedMsg] = useState<string | null>(null);
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -60,9 +62,13 @@ export default function Dashboard() {
       const { data: cartData } = await supabase.from("cart").select("*").eq("user_id", user.id);
       if (cartData) setCartItems(cartData);
 
-      // Fetch user's contact messages
-      const { data: msgs } = await supabase.from("messages").select("*").eq("email", user.email).order("created_at", { ascending: false });
-      if (msgs) setUserMessages(msgs);
+      // Fetch user's contact messages with replies
+      const { data: msgs } = await supabase
+        .from("messages")
+        .select("*, message_replies(id, reply, created_at)")
+        .eq("email", user.email)
+        .order("created_at", { ascending: false });
+      if (msgs) setUserMessages(msgs as UserMessage[]);
 
       setLoading(false);
     });
@@ -359,27 +365,54 @@ export default function Dashboard() {
                 <button onClick={() => router.push("/contact_us")}>Send a Message</button>
               </div>
             ) : (
-              <div className="dash-table-wrapper">
-                <table className="dash-table">
-                  <thead>
-                    <tr><th>Subject</th><th>Message</th><th>Date</th><th>Status</th></tr>
-                  </thead>
-                  <tbody>
-                    {userMessages.map((m) => (
-                      <tr key={m.id}>
-                        <td style={{fontWeight:'600'}}>{m.subject}</td>
-                        <td style={{maxWidth:'240px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.message}</td>
-                        <td>{new Date(m.created_at).toLocaleDateString()}</td>
-                        <td>
-                          {m.replied
-                            ? <span style={{background:'#e8f5e9',color:'#2e7d32',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Replied</span>
-                            : <span style={{background:'#fff3cd',color:'#f57f17',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Pending</span>
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
+                {userMessages.map((m) => (
+                  <div key={m.id} style={{border:'1.5px solid #fce4ec',borderRadius:'16px',overflow:'hidden'}}>
+                    {/* Message header */}
+                    <div
+                      onClick={() => setExpandedMsg(expandedMsg === m.id ? null : m.id)}
+                      style={{padding:'14px 18px',background:'#fff9fb',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center'}}
+                    >
+                      <div>
+                        <p style={{fontWeight:'700',margin:'0 0 2px',fontSize:'14px',color:'#333'}}>{m.subject}</p>
+                        <p style={{margin:0,fontSize:'12px',color:'#aaa'}}>{new Date(m.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                        {m.replied
+                          ? <span style={{background:'#e8f5e9',color:'#2e7d32',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Replied</span>
+                          : <span style={{background:'#fff3cd',color:'#f57f17',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Pending</span>
+                        }
+                        <span style={{color:'#e91e8c',fontSize:'12px'}}>{expandedMsg === m.id ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+                    {/* Expanded thread */}
+                    {expandedMsg === m.id && (
+                      <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px',background:'white'}}>
+                        {/* User's original message */}
+                        <div style={{alignSelf:'flex-end',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',padding:'10px 14px',borderRadius:'12px 4px 12px 12px',maxWidth:'80%',fontSize:'14px'}}>
+                          <p style={{margin:'0 0 4px',fontSize:'11px',opacity:0.8}}>You</p>
+                          <p style={{margin:0}}>{m.message}</p>
+                          <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.7}}>{new Date(m.created_at).toLocaleString()}</p>
+                        </div>
+                        {/* Admin replies */}
+                        {m.replies && m.replies.length > 0 ? (
+                          m.replies
+                            .slice()
+                            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                            .map(r => (
+                              <div key={r.id} style={{alignSelf:'flex-start',background:'#fce4ec',color:'#333',padding:'10px 14px',borderRadius:'4px 12px 12px 12px',maxWidth:'80%',fontSize:'14px'}}>
+                                <p style={{margin:'0 0 4px',fontSize:'11px',fontWeight:'700',color:'#e91e8c'}}>Mae Little Loops Studio</p>
+                                <p style={{margin:0}}>{r.reply}</p>
+                                <p style={{margin:'4px 0 0',fontSize:'11px',color:'#aaa'}}>{new Date(r.created_at).toLocaleString()}</p>
+                              </div>
+                            ))
+                        ) : (
+                          <p style={{color:'#aaa',fontSize:'13px',textAlign:'center',margin:'4px 0'}}>No reply yet. We will get back to you soon! 🌸</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
