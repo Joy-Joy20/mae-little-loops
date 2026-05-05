@@ -34,6 +34,18 @@ export default function Dashboard() {
   // Messages state
   const [userMessages, setUserMessages] = useState<UserMessage[]>([]);
   const [expandedMsg, setExpandedMsg] = useState<string | null>(null);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+
+  async function fetchUserMessages(email: string) {
+    setLoadingMsgs(true);
+    const { data } = await supabase
+      .from("messages")
+      .select("*, message_replies(id, reply, created_at)")
+      .eq("email", email)
+      .order("created_at", { ascending: false });
+    if (data) setUserMessages(data as UserMessage[]);
+    setLoadingMsgs(false);
+  }
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -63,12 +75,7 @@ export default function Dashboard() {
       if (cartData) setCartItems(cartData);
 
       // Fetch user's contact messages with replies
-      const { data: msgs } = await supabase
-        .from("messages")
-        .select("*, message_replies(id, reply, created_at)")
-        .eq("email", user.email)
-        .order("created_at", { ascending: false });
-      if (msgs) setUserMessages(msgs as UserMessage[]);
+      if (user.email) fetchUserMessages(user.email);
 
       setLoading(false);
     });
@@ -358,7 +365,9 @@ export default function Dashboard() {
         {/* MESSAGES TAB */}
         {activeTab === "messages" && (
           <div className="dash-card">
-            <h3 className="dash-card-title">My Messages</h3>
+            <h3 className="dash-card-title">My Messages
+              <button onClick={() => userEmail && fetchUserMessages(userEmail)} disabled={loadingMsgs} style={{marginLeft:'12px',padding:'4px 12px',borderRadius:'50px',border:'1.5px solid #e91e8c',background:'white',color:'#e91e8c',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>{loadingMsgs ? 'Refreshing...' : 'Refresh'}</button>
+            </h3>
             {userMessages.length === 0 ? (
               <div className="dash-empty">
                 <p>No messages sent yet.</p>
