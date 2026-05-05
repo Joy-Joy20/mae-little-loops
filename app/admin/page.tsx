@@ -107,9 +107,11 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const subscription = supabase
-      .channel("products-stock")
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products" }, () => {
-        fetchProducts();
+      .channel("products-realtime")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products" }, (payload) => {
+        setProducts(prev =>
+          prev.map((p) => p.id === payload.new.id ? { ...p, stock: payload.new.stock } : p)
+        );
       })
       .subscribe();
     return () => { supabase.removeChannel(subscription); };

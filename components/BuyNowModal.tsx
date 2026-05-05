@@ -79,7 +79,7 @@ export default function BuyNowModal({ product, onClose }: Props) {
     const userId = session.session?.user?.id;
     const userEmail = session.session?.user?.email;
 
-    const { data: order } = await supabase.from("orders").insert([{
+    const { data: order, error: orderError } = await supabase.from("orders").insert([{
       user_id: userId,
       user_email: userEmail,
       total_amount: totalPrice,
@@ -91,14 +91,31 @@ export default function BuyNowModal({ product, onClose }: Props) {
       receipt_url: receiptUrl ?? null,
     }]).select().single();
 
-    if (order) {
-      await supabase.from("order_items").insert([{
-        order_id: order.id,
-        product_name: product.name,
-        price: product.price,
-        quantity,
-        img: product.img ?? null,
-      }]);
+    if (orderError || !order) {
+      console.error("Order insert failed:", orderError);
+      setPlacing(false);
+      return;
+    }
+
+    await supabase.from("order_items").insert([{
+      order_id: order.id,
+      product_name: product.name,
+      price: product.price,
+      quantity,
+      img: product.img ?? null,
+    }]);
+
+    // Deduct stock by product name
+    const { data: currentProduct } = await supabase
+      .from("products")
+      .select("id, stock")
+      .eq("name", product.name)
+      .single();
+    if (currentProduct) {
+      await supabase
+        .from("products")
+        .update({ stock: Math.max(0, currentProduct.stock - quantity) })
+        .eq("id", currentProduct.id);
     }
 
     setPlacing(false);
