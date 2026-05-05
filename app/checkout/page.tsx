@@ -35,6 +35,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [profileComplete, setProfileComplete] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -42,6 +43,19 @@ export default function Checkout() {
       setUserId(data.session?.user?.id ?? null);
     });
   }, []);
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).single();
+      if (!(profile?.full_name && profile?.phone)) {
+        setProfileComplete(false);
+        router.push("/dashboard");
+      }
+    };
+    checkProfile();
+  }, [router]);
 
   const total = cart.reduce((sum, item) => {
     const price = parseFloat(item.price.replace("₱", "").replace(",", ""));

@@ -45,6 +45,8 @@ export default function Keychain() {
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Keychain | null>(null);
   const [buyNowProduct, setBuyNowProduct] = useState<{ id?: string; name: string; price: string; img: string | null; quantity?: number } | null>(null);
+  const [profileComplete, setProfileComplete] = useState(false);
+  const [showIncompleteModal, setShowIncompleteModal] = useState(false);
 
   const keychains: Keychain[] = [
     { id: "9", name: "Graduation Penguin", price: "₱80.00", img: "/Graduation Penguin.png", stock: 10, description: "An adorable handmade crochet penguin keychain wearing a graduation cap. Perfect graduation gift for friends and classmates." },
@@ -68,8 +70,19 @@ export default function Keychain() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  useEffect(() => {
+    const checkProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).single();
+      setProfileComplete(!!(profile?.full_name && profile?.phone));
+    };
+    checkProfile();
+  }, []);
+
   function handleAddToCart(product: Keychain | undefined, quantity: number) {
     if (!userEmail) return router.push("/login");
+    if (!profileComplete) { setShowIncompleteModal(true); return; }
     if (!product) return;
     addToCart({ name: product.name, price: product.price, img: product.img, quantity });
     setSelectedProduct(null);
@@ -78,6 +91,7 @@ export default function Keychain() {
 
   function handleBuyNow(product: Keychain | undefined, quantity: number) {
     if (!userEmail) return router.push("/login");
+    if (!profileComplete) { setShowIncompleteModal(true); return; }
     if (!product) return;
     setSelectedProduct(null);
     setBuyNowProduct({ id: product.id, name: product.name, price: product.price, img: product.img, quantity });
@@ -87,6 +101,21 @@ export default function Keychain() {
     <main className="keychain-page">
 
       <BuyNowModal product={buyNowProduct} onClose={() => setBuyNowProduct(null)} />
+
+      {/* INCOMPLETE PROFILE MODAL */}
+      {showIncompleteModal && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}} onClick={() => setShowIncompleteModal(false)}>
+          <div style={{background:'white',borderRadius:'24px',padding:'32px',maxWidth:'400px',width:'90%',textAlign:'center',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}} onClick={e => e.stopPropagation()}>
+            <div style={{fontSize:'48px',marginBottom:'16px'}}>⚠️</div>
+            <h2 style={{color:'#e91e8c',marginBottom:'8px'}}>Complete Your Profile First!</h2>
+            <p style={{color:'#777',marginBottom:'24px',fontSize:'14px'}}>Please complete your profile before placing an order. We need your full name and phone number to process your delivery.</p>
+            <div style={{display:'flex',gap:'12px',justifyContent:'center'}}>
+              <button onClick={() => setShowIncompleteModal(false)} style={{padding:'12px 24px',borderRadius:'50px',border:'1.5px solid #f48fb1',background:'white',color:'#e91e8c',fontWeight:'700',cursor:'pointer',fontFamily:'inherit'}}>Cancel</button>
+              <button onClick={() => { setShowIncompleteModal(false); router.push('/dashboard'); }} style={{padding:'12px 24px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',cursor:'pointer',fontFamily:'inherit'}}>Complete Profile</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
