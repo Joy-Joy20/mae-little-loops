@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [editAddress, setEditAddress] = useState("");
   const [editing, setEditing] = useState(false);
   const [savingName, setSavingName] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,14 +63,24 @@ export default function Dashboard() {
 
   async function handleSaveName() {
     if (!userId) return;
+    setProfileError("");
+    setProfileSuccess("");
+    if (!editName.trim()) { setProfileError("Full Name is required."); return; }
+    if (!editPhone.trim()) { setProfileError("Phone Number is required."); return; }
+    if (!editAddress.trim()) { setProfileError("Delivery Address is required."); return; }
     setSavingName(true);
-    await supabase.from("users").upsert({ id: userId, username: editName, email: userEmail, phone: editPhone, address: editAddress });
-    setFullName(editName);
-    setPhone(editPhone);
-    setAddress(editAddress);
-    setEditing(false);
+    const { error } = await supabase.from("users").upsert({ id: userId, username: editName.trim(), email: userEmail, phone: editPhone.trim(), address: editAddress.trim() });
+    if (error) {
+      setProfileError(error.message);
+    } else {
+      setFullName(editName.trim());
+      setPhone(editPhone.trim());
+      setAddress(editAddress.trim());
+      setEditing(false);
+      setShowProfilePrompt(false);
+      setProfileSuccess("Profile saved successfully! 🌸");
+    }
     setSavingName(false);
-    setShowProfilePrompt(false);
   }
 
   async function handleRemoveCartItem(cartId: string, index: number) {
@@ -188,46 +200,61 @@ export default function Dashboard() {
         {activeTab === "profile" && (
           <div className="dash-card">
             <h3 className="dash-card-title">Profile Information</h3>
+
+            {/* Warning banner when fields are incomplete */}
+            {(!fullName.trim() || !phone.trim() || !address.trim()) && !editing && (
+              <div style={{background:'#fff3cd',border:'1px solid #fce4ec',borderRadius:'8px',padding:'10px 14px',color:'#c2185b',fontSize:'13px',marginBottom:'12px'}}>
+                ⚠️ Please fill in all required fields: Full Name, Phone Number, and Delivery Address to enable ordering.
+              </div>
+            )}
+
+            {profileError && (
+              <div style={{background:'#fce4ec',border:'1px solid #f48fb1',borderRadius:'8px',padding:'10px 14px',color:'#c2185b',fontSize:'13px',marginBottom:'12px'}}>
+                ❌ {profileError}
+              </div>
+            )}
+            {profileSuccess && (
+              <div style={{background:'#e8f5e9',border:'1px solid #a5d6a7',borderRadius:'8px',padding:'10px 14px',color:'#2e7d32',fontSize:'13px',marginBottom:'12px'}}>
+                {profileSuccess}
+              </div>
+            )}
+
             <div className="dash-field">
               <label>Email</label>
               <p>{userEmail}</p>
             </div>
             <div className="dash-field">
-              <label>Full Name</label>
+              <label>Full Name <span style={{color:'#e91e8c'}}>*</span></label>
               {editing ? (
-                <div style={{display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap'}}>
-                  <input className="dash-input" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Enter your full name" />
-                </div>
+                <input className="dash-input" value={editName} onChange={(e) => { setEditName(e.target.value); setProfileError(""); }} placeholder="Enter your full name" style={{border: !editName.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec'}} />
               ) : (
-                <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-                  <p>{fullName || "Not set"}</p>
-                </div>
+                <p>{fullName || <span style={{color:'#f48fb1'}}>Not set</span>}</p>
               )}
             </div>
             <div className="dash-field">
-              <label>Phone Number</label>
+              <label>Phone Number <span style={{color:'#e91e8c'}}>*</span></label>
               {editing ? (
-                <input className="dash-input" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Enter your phone number" />
+                <input className="dash-input" value={editPhone} onChange={(e) => { setEditPhone(e.target.value); setProfileError(""); }} placeholder="Enter your phone number" style={{border: !editPhone.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec'}} />
               ) : (
-                <p>{phone || "Not set"}</p>
+                <p>{phone || <span style={{color:'#f48fb1'}}>Not set</span>}</p>
               )}
             </div>
             <div className="dash-field">
-              <label>Address</label>
+              <label>Delivery Address <span style={{color:'#e91e8c'}}>*</span></label>
               {editing ? (
-                <input className="dash-input" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Enter your address" />
+                <input className="dash-input" value={editAddress} onChange={(e) => { setEditAddress(e.target.value); setProfileError(""); }} placeholder="Enter your complete delivery address" style={{border: !editAddress.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec'}} />
               ) : (
-                <p>{address || "Not set"}</p>
+                <p>{address || <span style={{color:'#f48fb1'}}>Not set</span>}</p>
               )}
             </div>
             <div style={{display:'flex', gap:'10px', marginTop:'8px'}}>
               {editing ? (
                 <>
                   <button className="dash-save-btn" onClick={handleSaveName} disabled={savingName}>{savingName ? "Saving..." : "Save Changes"}</button>
-                  <button className="dash-cancel-btn" onClick={() => { setEditing(false); setEditName(fullName); setEditPhone(phone); setEditAddress(address); }}>Cancel</button>
+                  <button className="dash-cancel-btn" onClick={() => { setEditing(false); setEditName(fullName); setEditPhone(phone); setEditAddress(address); setProfileError(""); setProfileSuccess(""); }}>Cancel</button>
                 </>
               ) : (
-                <button className="dash-edit-btn" onClick={() => setEditing(true)}>Edit Profile</button>
+                <button className="dash-edit-btn" onClick={() => { setEditing(true); setProfileSuccess(""); }}>Edit Profile</button>
               )}
             </div>
           </div>
