@@ -31,8 +31,16 @@ export default function Footer() {
         <p>09706383306</p>
         <p>Masbate, Philippines</p>
       </div>
-      <div className="footer-bottom">
-        <p>&copy; {year} Mae Little Loops Studio. All rights reserved.</p>
+      <div style={{
+        borderTop: '1px solid rgba(255,255,255,0.2)',
+        marginTop: '2rem',
+        paddingTop: '1rem',
+        textAlign: 'center',
+        fontSize: '13px',
+        color: 'rgba(255,255,255,0.8)',
+        width: '100%',
+      }}>
+        &copy; {year} Mae Little Loops Studio. All Rights Reserved.
       </div>
     </footer>
   );
