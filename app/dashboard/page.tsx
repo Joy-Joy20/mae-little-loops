@@ -28,7 +28,7 @@ export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"profile" | "orders" | "cart" | "messages">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "orders" | "tracking" | "cart" | "messages">("profile");
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
 
   // Messages state
@@ -163,6 +163,7 @@ export default function Dashboard() {
   const tabs = [
     { key: "profile", label: "👤 Profile" },
     { key: "orders", label: "📦 My Orders" },
+    { key: "tracking", label: "🚚 Order Tracking" },
     { key: "cart", label: "🛒 My Cart" },
     { key: "messages", label: "💬 Messages" },
   ];
@@ -318,6 +319,82 @@ export default function Dashboard() {
                     })}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ORDER TRACKING TAB */}
+        {activeTab === "tracking" && (
+          <div className="dash-card">
+            <h3 className="dash-card-title">Order Tracking</h3>
+            {orders.length === 0 ? (
+              <div className="dash-empty">
+                <p>No orders to track yet.</p>
+                <button onClick={() => router.push("/bouquets")}>Start Shopping</button>
+              </div>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',gap:'24px'}}>
+                {orders.map((order) => {
+                  const steps = [
+                    { key: 'pending',    label: 'Order Placed',  desc: 'Your order has been received.' },
+                    { key: 'processing', label: 'Processing',    desc: 'We are preparing your order.' },
+                    { key: 'shipped',    label: 'Shipped',       desc: 'Your order is on the way.' },
+                    { key: 'delivered',  label: 'Delivered',     desc: 'Order delivered successfully.' },
+                  ];
+                  const statusLower = order.status?.toLowerCase();
+                  const isCancelled = statusLower === 'cancelled';
+                  const currentStep = steps.findIndex(s => s.key === statusLower);
+                  const activeStep = currentStep === -1 ? 0 : currentStep;
+                  return (
+                    <div key={order.id} style={{border:'1.5px solid #fce4ec',borderRadius:'16px',overflow:'hidden'}}>
+                      {/* Order header */}
+                      <div style={{background:'#fff9fb',padding:'14px 18px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+                        <div>
+                          <p style={{fontWeight:'700',margin:'0 0 2px',fontSize:'14px',color:'#333'}}>Order #{order.id.slice(0,8)}...</p>
+                          <p style={{margin:0,fontSize:'12px',color:'#aaa'}}>{new Date(order.created_at).toLocaleDateString()} &mdash; {order.order_items?.[0]?.product_name ?? '—'}</p>
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                          <span style={{fontWeight:'700',color:'#e91e8c',fontSize:'14px'}}>₱{order.total_amount?.toFixed(2)}</span>
+                          {isCancelled
+                            ? <span style={{background:'#ffebee',color:'#c62828',padding:'3px 12px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Cancelled</span>
+                            : <span style={{background:'#e8f5e9',color:'#2e7d32',padding:'3px 12px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>{order.status}</span>
+                          }
+                        </div>
+                      </div>
+                      {/* Tracker */}
+                      <div style={{padding:'20px 18px'}}>
+                        {isCancelled ? (
+                          <div style={{textAlign:'center',padding:'16px',background:'#ffebee',borderRadius:'12px',color:'#c62828',fontWeight:'600',fontSize:'14px'}}>
+                            This order has been cancelled.
+                          </div>
+                        ) : (
+                          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',position:'relative'}}>
+                            {/* Progress line */}
+                            <div style={{position:'absolute',top:'16px',left:'calc(12.5%)',right:'calc(12.5%)',height:'3px',background:'#fce4ec',zIndex:0}} />
+                            <div style={{position:'absolute',top:'16px',left:'calc(12.5%)',height:'3px',background:'linear-gradient(90deg,#e91e8c,#f06292)',zIndex:1,width:`${(activeStep / (steps.length - 1)) * 100}%`,transition:'width 0.5s ease'}} />
+                            {steps.map((step, i) => {
+                              const done = i <= activeStep;
+                              const active = i === activeStep;
+                              return (
+                                <div key={step.key} style={{display:'flex',flexDirection:'column',alignItems:'center',flex:1,zIndex:2}}>
+                                  <div style={{width:'32px',height:'32px',borderRadius:'50%',background:done ? 'linear-gradient(135deg,#e91e8c,#f06292)' : '#fce4ec',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'8px',boxShadow:active ? '0 0 0 4px rgba(233,30,140,0.2)' : 'none',transition:'all 0.3s'}}>
+                                    {done
+                                      ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                      : <div style={{width:'10px',height:'10px',borderRadius:'50%',background:'#f48fb1'}} />
+                                    }
+                                  </div>
+                                  <p style={{margin:0,fontSize:'12px',fontWeight:active ? '700' : '500',color:done ? '#e91e8c' : '#aaa',textAlign:'center'}}>{step.label}</p>
+                                  {active && <p style={{margin:'2px 0 0',fontSize:'11px',color:'#888',textAlign:'center',maxWidth:'80px'}}>{step.desc}</p>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
