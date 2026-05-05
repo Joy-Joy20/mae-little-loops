@@ -105,6 +105,16 @@ export default function AdminDashboard() {
     alert(`Rider ${rider.full_name} assigned! Customer has been notified.`);
   }
 
+  useEffect(() => {
+    const subscription = supabase
+      .channel("products-stock")
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products" }, () => {
+        fetchProducts();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(subscription); };
+  }, []);
+
   async function fetchProducts() {
     try {
       const { data, error } = await supabase
@@ -560,7 +570,11 @@ export default function AdminDashboard() {
                         <td>{p.name}</td>
                         <td><span className={`cat-badge ${p.category === "bouquet" ? "bouquet" : "keychain"}`}>{p.category}</span></td>
                         <td className="order-price">₱{parseFloat(String(p.price)).toFixed(2)}</td>
-                        <td>{p.stock}</td>
+                        <td>
+                          <span style={{background: p.stock > 5 ? '#e8f5e9' : p.stock > 0 ? '#fff3cd' : '#ffebee', color: p.stock > 5 ? '#2e7d32' : p.stock > 0 ? '#f57f17' : '#c62828', padding:'4px 10px', borderRadius:'50px', fontSize:'13px', fontWeight:'600'}}>
+                            {p.stock > 0 ? `${p.stock} in stock` : 'Out of Stock'}
+                          </span>
+                        </td>
                         <td>
                           <div style={{display:'flex',gap:'8px'}}>
                             <button onClick={() => openEdit(p)} style={{padding:'5px 14px',borderRadius:'20px',border:'1.5px solid #c44dff',background:'white',color:'#c44dff',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Edit</button>
