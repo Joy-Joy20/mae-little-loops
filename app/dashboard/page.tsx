@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { useCart } from "../../context/CartContext";
@@ -8,7 +8,6 @@ import { useCart } from "../../context/CartContext";
 type OrderItem = { product_name: string; quantity: number; };
 type Order = { id: string; created_at: string; total_amount: number; status: string; order_items: OrderItem[]; };
 type CartItem = { id: string; product_name: string; price: string; quantity: number; img: string | null; };
-type ChatMsg = { id: string; message: string; is_admin: boolean; created_at: string; };
 
 export default function Dashboard() {
   const router = useRouter();
@@ -32,11 +31,7 @@ export default function Dashboard() {
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
 
   // Messages state
-  const [convId, setConvId] = useState<string | null>(null);
-  const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([]);
-  const [newMsg, setNewMsg] = useState("");
-  const [sending, setSending] = useState(false);
-  const msgBottomRef = useRef<HTMLDivElement>(null);
+  const [userMessages, setUserMessages] = useState<{id:string;name:string;email:string;subject:string;message:string;created_at:string;replied?:boolean}[]>([]);
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -65,56 +60,13 @@ export default function Dashboard() {
       const { data: cartData } = await supabase.from("cart").select("*").eq("user_id", user.id);
       if (cartData) setCartItems(cartData);
 
-      // Init conversation for messages tab
-      let { data: conv } = await supabase.from("conversations").select("id").eq("user_id", user.id).single();
-      if (!conv) {
-        const { data: newConv } = await supabase.from("conversations").insert([{ user_id: user.id, user_email: user.email }]).select("id").single();
-        conv = newConv;
-      }
-      if (conv) {
-        setConvId(conv.id);
-        const { data: msgs } = await supabase.from("chat_messages").select("*").eq("conversation_id", conv.id).order("created_at", { ascending: true });
-        if (msgs) setChatMsgs(msgs as ChatMsg[]);
-      }
+      // Fetch user's contact messages
+      const { data: msgs } = await supabase.from("messages").select("*").eq("email", user.email).order("created_at", { ascending: false });
+      if (msgs) setUserMessages(msgs);
 
       setLoading(false);
     });
   }, [router]);
-
-  // Real-time subscription for messages
-  useEffect(() => {
-    if (!convId) return;
-    const sub = supabase
-      .channel(`chat-${convId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `conversation_id=eq.${convId}` }, (payload) => {
-        const msg = payload.new as ChatMsg;
-        setChatMsgs(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
-        setTimeout(() => msgBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(sub); };
-  }, [convId]);
-
-  useEffect(() => {
-    if (activeTab === "messages") setTimeout(() => msgBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-  }, [activeTab, chatMsgs]);
-
-  async function handleSendMsg() {
-    if (!newMsg.trim() || !convId) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const text = newMsg.trim();
-    setNewMsg("");
-    setSending(true);
-    const tempId = `temp-${Date.now()}`;
-    setChatMsgs(prev => [...prev, { id: tempId, message: text, is_admin: false, created_at: new Date().toISOString() }]);
-    const { data: inserted } = await supabase.from("chat_messages").insert([{
-      conversation_id: convId, sender_id: user.id, sender_email: userEmail, message: text, is_admin: false,
-    }]).select().single();
-    if (inserted) setChatMsgs(prev => prev.map(m => m.id === tempId ? (inserted as ChatMsg) : m));
-    await supabase.from("conversations").update({ last_message: text, last_message_at: new Date().toISOString() }).eq("id", convId);
-    setSending(false);
-  }
 
   async function handleSaveName() {
     if (!userId) return;
@@ -399,43 +351,37 @@ export default function Dashboard() {
 
         {/* MESSAGES TAB */}
         {activeTab === "messages" && (
-          <div className="dash-card" style={{padding:0,overflow:'hidden',display:'flex',flexDirection:'column',height:'500px'}}>
-            <div style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',padding:'16px 20px',color:'white',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                <span style={{fontSize:'20px'}}>💬</span>
-                <div>
-                  <p style={{fontWeight:'700',margin:0,fontSize:'15px'}}>Mae Little Loops Studio</p>
-                  <p style={{fontSize:'12px',margin:0,opacity:0.85}}>🟢 Online — We reply quickly!</p>
-                </div>
+          <div className="dash-card">
+            <h3 className="dash-card-title">My Messages</h3>
+            {userMessages.length === 0 ? (
+              <div className="dash-empty">
+                <p>No messages sent yet.</p>
+                <button onClick={() => router.push("/contact_us")}>Send a Message</button>
               </div>
-            </div>
-            <div style={{flex:1,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:'8px'}}>
-              {chatMsgs.length === 0 && (
-                <div style={{textAlign:'center',color:'#aaa',fontSize:'13px',marginTop:'40px'}}>
-                  <p style={{fontSize:'32px',marginBottom:'8px'}}>🌸</p>
-                  <p>Hi! How can we help you today?</p>
-                  <p style={{fontSize:'12px'}}>Send us a message and we will reply shortly.</p>
-                </div>
-              )}
-              {chatMsgs.map(msg => (
-                <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-start' : 'flex-end',background:msg.is_admin ? '#fce4ec' : 'linear-gradient(135deg,#e91e8c,#f06292)',color:msg.is_admin ? '#333' : 'white',padding:'10px 14px',borderRadius:msg.is_admin ? '4px 12px 12px 12px' : '12px 4px 12px 12px',maxWidth:'75%',fontSize:'14px',wordBreak:'break-word'}}>
-                  {msg.is_admin && <p style={{margin:'0 0 2px',fontSize:'11px',fontWeight:'700',color:'#e91e8c'}}>Mae Little Loops</p>}
-                  <p style={{margin:0}}>{msg.message}</p>
-                  <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
-                </div>
-              ))}
-              <div ref={msgBottomRef} />
-            </div>
-            <div style={{padding:'12px 16px',borderTop:'1px solid #fce4ec',display:'flex',gap:'8px',alignItems:'center'}}>
-              <input
-                type="text" value={newMsg}
-                onChange={e => setNewMsg(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') handleSendMsg(); }}
-                placeholder="Type a message..."
-                style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
-              />
-              <button onClick={handleSendMsg} disabled={sending || !newMsg.trim()} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0,opacity:sending || !newMsg.trim() ? 0.6 : 1}}>➤</button>
-            </div>
+            ) : (
+              <div className="dash-table-wrapper">
+                <table className="dash-table">
+                  <thead>
+                    <tr><th>Subject</th><th>Message</th><th>Date</th><th>Status</th></tr>
+                  </thead>
+                  <tbody>
+                    {userMessages.map((m) => (
+                      <tr key={m.id}>
+                        <td style={{fontWeight:'600'}}>{m.subject}</td>
+                        <td style={{maxWidth:'240px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.message}</td>
+                        <td>{new Date(m.created_at).toLocaleDateString()}</td>
+                        <td>
+                          {m.replied
+                            ? <span style={{background:'#e8f5e9',color:'#2e7d32',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Replied</span>
+                            : <span style={{background:'#fff3cd',color:'#f57f17',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Pending</span>
+                          }
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
