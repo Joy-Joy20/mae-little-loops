@@ -105,19 +105,6 @@ export default function BuyNowModal({ product, onClose }: Props) {
       img: product.img ?? null,
     }]);
 
-    // Deduct stock by product name
-    const { data: currentProduct } = await supabase
-      .from("products")
-      .select("id, stock")
-      .eq("name", product.name)
-      .single();
-    if (currentProduct) {
-      await supabase
-        .from("products")
-        .update({ stock: Math.max(0, currentProduct.stock - quantity) })
-        .eq("id", currentProduct.id);
-    }
-
     setPlacing(false);
     setPlaced(true);
     setTimeout(() => { onClose(); }, 3000);

@@ -84,22 +84,6 @@ export default function Checkout() {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
-      // Decrement stock for each ordered item
-      for (const item of cart) {
-        const qty = item.quantity ?? 1;
-        const { data: product } = await supabase
-          .from("products")
-          .select("id, stock")
-          .eq("name", item.name)
-          .single();
-        if (product && product.stock > 0) {
-          await supabase
-            .from("products")
-            .update({ stock: Math.max(0, product.stock - qty) })
-            .eq("id", product.id);
-        }
-      }
-
       // Clear cart
       await clearCart();
 
