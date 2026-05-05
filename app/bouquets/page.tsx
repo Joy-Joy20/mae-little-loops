@@ -124,6 +124,11 @@ export default function Bouquets() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* NAVBAR - same as home */}
       <header>
         <h1>Mae Little Loops Studio</h1>
         <nav>
