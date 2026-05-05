@@ -137,12 +137,12 @@ function SearchResults() {
           </>
         )}
       </section>
-
       <footer>
-        <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love 🌸</p></div>
+        <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love</p></div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
-        <div className="footer-col"><h3>Contact</h3><p>📧 masarquemae65@gmail.com</p><p>📱 09706383306</p><p>📍 Masbate, Philippines</p></div>
+        <div className="footer-col"><h3>Contact</h3><p>masarquemae65@gmail.com</p><p>09706383306</p><p>Masbate, Philippines</p></div>
       </footer>
+
 
     </main>
   );
