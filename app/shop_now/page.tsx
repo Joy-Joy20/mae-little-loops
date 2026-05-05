@@ -203,7 +203,11 @@ export default function ShopNow() {
         <div className="footer-col"><h3>Mae Little Loops Studio</h3><p>Handmade with love</p></div>
         <div className="footer-col"><h3>Categories</h3><a href="/bouquets">Bouquets</a><a href="/keychain">Keychains</a></div>
         <div className="footer-col"><h3>Contact</h3><p>masarquemae65@gmail.com</p><p>09706383306</p><p>Masbate, Philippines</p></div>
+        <div className="footer-bottom" style={{gridColumn:'1/-1',textAlign:'center',borderTop:'1px solid rgba(255,255,255,0.2)',paddingTop:'16px',fontSize:'13px',opacity:0.8}}>
+          &copy; {new Date().getFullYear()} Mae Little Loops Studio. All Rights Reserved.
+        </div>
       </footer>
+
 
 
       <ChatWidget userEmail={userEmail} />
