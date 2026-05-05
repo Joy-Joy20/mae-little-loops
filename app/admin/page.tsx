@@ -552,7 +552,7 @@ export default function AdminDashboard() {
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
                         <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
-                        <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
+                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
                         <td><span className={`status-badge ${o.status?.toLowerCase() === "delivered" ? "done" : o.status?.toLowerCase() === "shipped" ? "shipped" : "pending"}`}>{o.status}</span></td>
                       </tr>
                     ))
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
                         <td><img src={p.image_url || '/Rainbow Tulip Charm.png'} alt={p.name} width={48} height={48} style={{objectFit:'contain',borderRadius:'8px'}} /></td>
                         <td>{p.name}</td>
                         <td><span className={`cat-badge ${p.category === "bouquet" ? "bouquet" : "keychain"}`}>{p.category}</span></td>
-                        <td className="order-price">â‚±{parseFloat(String(p.price)).toFixed(2)}</td>
+                        <td className="order-price">₱{parseFloat(String(p.price)).toFixed(2)}</td>
                         <td>
                           <span style={{background: p.stock > 5 ? '#e8f5e9' : p.stock > 0 ? '#fff3cd' : '#ffebee', color: p.stock > 5 ? '#2e7d32' : p.stock > 0 ? '#f57f17' : '#c62828', padding:'4px 10px', borderRadius:'50px', fontSize:'13px', fontWeight:'600'}}>
                             {p.stock > 0 ? `${p.stock} in stock` : 'Out of Stock'}
@@ -671,7 +671,7 @@ export default function AdminDashboard() {
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
                         <td>{o.user_email}</td>
                         <td>{o.order_items?.[0]?.product_name ?? "—"}</td>
-                        <td className="order-price">â‚±{o.total_amount?.toFixed(2)}</td>
+                        <td className="order-price">₱{o.total_amount?.toFixed(2)}</td>
                         <td>
                           <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
                             <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
