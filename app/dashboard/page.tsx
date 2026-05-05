@@ -8,7 +8,6 @@ import { useCart } from "../../context/CartContext";
 type OrderItem = { product_name: string; quantity: number; };
 type Order = { id: string; created_at: string; total_amount: number; status: string; order_items: OrderItem[]; };
 type CartItem = { id: string; product_name: string; price: string; quantity: number; img: string | null; };
-type UserMessage = { id: string; name: string; email: string; subject: string; message: string; created_at: string; replied?: boolean; replies?: { id: string; reply: string; created_at: string }[]; };
 
 export default function Dashboard() {
   const router = useRouter();
@@ -28,40 +27,8 @@ export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"profile" | "orders" | "tracking" | "cart" | "messages">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "orders" | "tracking" | "cart">("profile");
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
-
-  // Messages state
-  const [userMessages, setUserMessages] = useState<UserMessage[]>([]);
-  const [expandedMsg, setExpandedMsg] = useState<string | null>(null);
-  const [loadingMsgs, setLoadingMsgs] = useState(false);
-
-  async function fetchUserMessages(email: string) {
-    setLoadingMsgs(true);
-    const { data } = await supabase
-      .from("messages")
-      .select("*, message_replies(id, reply, created_at)")
-      .eq("email", email)
-      .order("created_at", { ascending: false });
-    if (data) setUserMessages(data as UserMessage[]);
-    setLoadingMsgs(false);
-  }
-
-  // Real-time subscription for new admin replies
-  useEffect(() => {
-    if (!userEmail) return;
-    const sub = supabase
-      .channel(`message-replies-${userEmail}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "message_replies" }, async (payload) => {
-        // Re-fetch messages with latest replies
-        await fetchUserMessages(userEmail);
-        // Auto-expand the message that received the reply
-        const messageId = (payload.new as { message_id: string }).message_id;
-        if (messageId) setExpandedMsg(messageId);
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(sub); };
-  }, [userEmail]);
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -89,9 +56,6 @@ export default function Dashboard() {
 
       const { data: cartData } = await supabase.from("cart").select("*").eq("user_id", user.id);
       if (cartData) setCartItems(cartData);
-
-      // Fetch user's contact messages with replies
-      if (user.email) fetchUserMessages(user.email);
 
       setLoading(false);
     });
@@ -181,7 +145,6 @@ export default function Dashboard() {
     { key: "orders", label: "📦 My Orders" },
     { key: "tracking", label: "🚚 Order Tracking" },
     { key: "cart", label: "🛒 My Cart" },
-    { key: "messages", label: "💬 Messages" },
   ];
 
   return (
@@ -450,71 +413,6 @@ export default function Dashboard() {
                 <div style={{textAlign:'right', marginTop:'16px'}}>
                   <button className="dash-checkout-btn" onClick={() => router.push('/checkout')}>Proceed to Checkout</button>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* MESSAGES TAB */}
-        {activeTab === "messages" && (
-          <div className="dash-card">
-            <h3 className="dash-card-title">My Messages
-              <button onClick={() => userEmail && fetchUserMessages(userEmail)} disabled={loadingMsgs} style={{marginLeft:'12px',padding:'4px 14px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer',boxShadow:'0 2px 8px rgba(233,30,140,0.3)'}}>{loadingMsgs ? 'Refreshing...' : 'Refresh'}</button>
-            </h3>
-            {userMessages.length === 0 ? (
-              <div className="dash-empty">
-                <p>No messages sent yet.</p>
-                <button onClick={() => router.push("/contact_us")}>Send a Message</button>
-              </div>
-            ) : (
-              <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
-                {userMessages.map((m) => (
-                  <div key={m.id} style={{border:'1.5px solid #fce4ec',borderRadius:'16px',overflow:'hidden'}}>
-                    {/* Message header */}
-                    <div
-                      onClick={() => setExpandedMsg(expandedMsg === m.id ? null : m.id)}
-                      style={{padding:'14px 18px',background:'#fff9fb',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center'}}
-                    >
-                      <div>
-                        <p style={{fontWeight:'700',margin:'0 0 2px',fontSize:'14px',color:'#333'}}>{m.subject}</p>
-                        <p style={{margin:0,fontSize:'12px',color:'#aaa'}}>{new Date(m.created_at).toLocaleDateString()}</p>
-                      </div>
-                      <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                        {m.replied
-                          ? <span style={{background:'#e8f5e9',color:'#2e7d32',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Replied</span>
-                          : <span style={{background:'#fff3cd',color:'#f57f17',padding:'3px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600'}}>Pending</span>
-                        }
-                        <span style={{color:'#e91e8c',fontSize:'12px'}}>{expandedMsg === m.id ? '▲' : '▼'}</span>
-                      </div>
-                    </div>
-                    {/* Expanded thread */}
-                    {expandedMsg === m.id && (
-                      <div style={{padding:'16px 18px',display:'flex',flexDirection:'column',gap:'10px',background:'white'}}>
-                        {/* User's original message */}
-                        <div style={{alignSelf:'flex-end',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',padding:'10px 14px',borderRadius:'12px 4px 12px 12px',maxWidth:'80%',fontSize:'14px'}}>
-                          <p style={{margin:'0 0 4px',fontSize:'11px',opacity:0.8}}>You</p>
-                          <p style={{margin:0}}>{m.message}</p>
-                          <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.7}}>{new Date(m.created_at).toLocaleString()}</p>
-                        </div>
-                        {/* Admin replies */}
-                        {m.replies && m.replies.length > 0 ? (
-                          m.replies
-                            .slice()
-                            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-                            .map(r => (
-                              <div key={r.id} style={{alignSelf:'flex-start',background:'#fce4ec',color:'#333',padding:'10px 14px',borderRadius:'4px 12px 12px 12px',maxWidth:'80%',fontSize:'14px'}}>
-                                <p style={{margin:'0 0 4px',fontSize:'11px',fontWeight:'700',color:'#e91e8c'}}>Mae Little Loops Studio</p>
-                                <p style={{margin:0}}>{r.reply}</p>
-                                <p style={{margin:'4px 0 0',fontSize:'11px',color:'#aaa'}}>{new Date(r.created_at).toLocaleString()}</p>
-                              </div>
-                            ))
-                        ) : (
-                          <p style={{color:'#aaa',fontSize:'13px',textAlign:'center',margin:'4px 0'}}>No reply yet. We will get back to you soon! 🌸</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
               </div>
             )}
           </div>
