@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import Footer from "../../components/Footer";
 import { useCart } from "../../context/CartContext";
 
 export default function ContactUs() {

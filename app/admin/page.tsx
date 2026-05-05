@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { validateAndNormalizeProductInput } from "../../lib/product-validation";
 
-type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; proof_of_delivery?: string; delivered_at?: string; receipt_url?: string; payment_verified?: boolean; delivery_method?: string; order_items?: { product_name: string; quantity: number }[]; };
+type Order = { id: string; user_email: string; total_amount: number; status: string; created_at: string; name: string; rider_id?: string; rider_name?: string; rider_phone?: string; receipt_url?: string; payment_verified?: boolean; delivery_method?: string; order_items?: { product_name: string; quantity: number }[]; };
 type Product = { id: number; name: string; price: number; category: string; stock: number; description: string; image_url: string; };
 type User = { id: string; email: string; created_at: string; role: string; };
 type Message = { id: string; name: string; email: string; subject: string; message: string; created_at: string; };
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   async function fetchOrders() {
     const { data } = await supabase
       .from("orders")
-      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
+      .select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
       .order("created_at", { ascending: false });
     if (data) setOrders(data as Order[]);
   }
@@ -63,51 +63,6 @@ export default function AdminDashboard() {
     const { error } = await supabase.from("orders").update({ payment_verified: true, status: "Processing" }).eq("id", orderId);
     if (!error) setOrders(prev => prev.map(o => o.id === orderId ? { ...o, payment_verified: true, status: "Processing" } : o));
     else alert("Failed to verify payment: " + error.message);
-  }
-
-  async function handleUploadProof(orderId: string, customerEmail: string, file: File | undefined) {
-    if (!file) return;
-    const ext = file.name.split(".").pop();
-    const fileName = `proof_${orderId}_${Date.now()}.${ext}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage.from("delivery-proofs").upload(fileName, file);
-    if (uploadError) { alert("Failed to upload proof: " + uploadError.message); return; }
-    const { data: urlData } = supabase.storage.from("delivery-proofs").getPublicUrl(uploadData.path);
-    const proofUrl = urlData.publicUrl;
-    const deliveredAt = new Date().toISOString();
-    const { error: updateError } = await supabase.from("orders").update({
-      proof_of_delivery: proofUrl,
-      status: "Delivered",
-      delivered_at: deliveredAt,
-    }).eq("id", orderId);
-    if (updateError) { alert("Failed to update order: " + updateError.message); return; }
-    const order = orders.find(o => o.id === orderId);
-    if (order?.rider_id) {
-      await supabase.from("riders").update({ status: "available" }).eq("id", order.rider_id);
-      await fetchRiders();
-    }
-    await fetchOrders();
-    await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: customerEmail,
-        subject: "✅ Order Delivered — Mae Little Loops Studio",
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
-            <h2 style="color:#e91e8c;">Your order has been delivered! ✅</h2>
-            <p>Your order from <strong>Mae Little Loops Studio</strong> has been successfully delivered.</p>
-            <div style="background:#fce4ec;border-radius:12px;padding:20px;margin:16px 0;">
-              <p><strong>Delivered at:</strong> ${new Date(deliveredAt).toLocaleString()}</p>
-              <p><strong>Proof of Delivery:</strong></p>
-              <img src="${proofUrl}" alt="Proof of Delivery" style="width:100%;border-radius:8px;margin-top:8px;" />
-            </div>
-            <p style="color:#666;">Thank you for shopping with us! 🌸</p>
-            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
-          </div>
-        `,
-      }),
-    });
-    alert("Proof uploaded! Order marked as Delivered. Customer has been notified.");
   }
 
   async function handleAssignRider(orderId: string, customerEmail: string, riderId: string) {
@@ -189,7 +144,7 @@ export default function AdminDashboard() {
         router.push("/login");
       } else {
         setLoading(false);
-        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, proof_of_delivery, delivered_at, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
+        supabase.from("orders").select(`id, user_email, total_amount, status, created_at, name, rider_id, rider_name, rider_phone, receipt_url, payment_verified, delivery_method, order_items ( product_name, quantity )`)
           .order("created_at", { ascending: false })
           .then(({ data }) => { if (data) setOrders(data as Order[]); });
         supabase.from("users").select("id, email, created_at, role")
@@ -636,9 +591,9 @@ export default function AdminDashboard() {
             <div className="admin-table-card">
               <div className="table-header"><h2>All Orders</h2><span className="table-badge">{orders.length} orders</span></div>
               <table className="admin-table">
-                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Delivery</th><th>GCash Receipt</th><th>Rider</th><th>Proof</th><th>Date</th></tr></thead>
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>GCash Receipt</th><th>Rider</th><th>Date</th></tr></thead>
                 <tbody>
-                  {orders.length === 0 ? <tr><td colSpan={10} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
+                  {orders.length === 0 ? <tr><td colSpan={8} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No orders yet.</td></tr> :
                     orders.map((o) => (
                       <tr key={o.id}>
                         <td className="order-id">#{o.id.slice(0,8)}...</td>
@@ -649,11 +604,6 @@ export default function AdminDashboard() {
                           <select className="status-select" value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value, o.user_email)}>
                             <option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
                           </select>
-                        </td>
-                        <td>
-                          <span style={{padding:'4px 10px',borderRadius:'50px',fontSize:'12px',fontWeight:'600',background:o.delivery_method === 'pickup' ? '#fff3e0' : '#e8f5e9',color:o.delivery_method === 'pickup' ? '#e65100' : '#2e7d32'}}>
-                            {o.delivery_method === 'pickup' ? '🏪 Pick Up' : '🚚 Deliver'}
-                          </span>
                         </td>
                         <td>
                           {o.receipt_url ? (
@@ -677,38 +627,21 @@ export default function AdminDashboard() {
                         </td>
                         <td>
                           {o.rider_name ? (
-                            <div>
-                              <p style={{fontWeight:'600',color:'#e91e8c',margin:0}}>{o.rider_name}</p>
-                              <p style={{fontSize:'12px',color:'#777',margin:0}}>{o.rider_phone}</p>
+                            <div style={{textAlign:'center'}}>
+                              <p style={{fontWeight:'600',color:'#c44dff',margin:0,fontSize:'13px'}}>{o.rider_name}</p>
+                              <p style={{fontSize:'12px',color:'#888',margin:'2px 0 0'}}>{o.rider_phone}</p>
                             </div>
                           ) : (
                             <select
                               value={o.rider_id || ""}
                               onChange={(e) => handleAssignRider(o.id, o.user_email, e.target.value)}
-                              style={{padding:'6px 10px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'12px'}}
+                              className="status-select"
                             >
                               <option value="">— Assign Rider —</option>
                               {riders.filter(r => r.status === 'available').map(r => (
                                 <option key={r.id} value={r.id}>{r.full_name} ({r.phone})</option>
                               ))}
                             </select>
-                          )}
-                        </td>
-                        <td>
-                          {o.proof_of_delivery ? (
-                            <div>
-                              <a href={o.proof_of_delivery} target="_blank" rel="noopener noreferrer">
-                                <img src={o.proof_of_delivery} alt="Proof" width={56} height={56} style={{objectFit:'cover',borderRadius:'8px',border:'2px solid #fce4ec'}} />
-                              </a>
-                              {o.delivered_at && <p style={{fontSize:'11px',color:'#777',margin:'4px 0 0'}}>{new Date(o.delivered_at).toLocaleString()}</p>}
-                            </div>
-                          ) : o.status?.toLowerCase() === 'shipped' ? (
-                            <div>
-                              <input type="file" accept="image/*" id={`proof-${o.id}`} style={{display:'none'}} onChange={(e) => handleUploadProof(o.id, o.user_email, e.target.files?.[0])} />
-                              <label htmlFor={`proof-${o.id}`} style={{padding:'6px 10px',borderRadius:'8px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',cursor:'pointer',fontWeight:'600',fontSize:'12px',whiteSpace:'nowrap'}}>📷 Upload Proof</label>
-                            </div>
-                          ) : (
-                            <span style={{color:'#ccc',fontSize:'12px'}}>—</span>
                           )}
                         </td>
                         <td>{new Date(o.created_at).toLocaleDateString()}</td>
@@ -763,19 +696,12 @@ export default function AdminDashboard() {
                 <button onClick={() => setShowAddUser(true)} style={{marginLeft:'auto',padding:'8px 20px',border:'none',borderRadius:'50px',background:'linear-gradient(135deg,#ff6b9d,#c44dff)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer',boxShadow:'0 4px 12px rgba(196,77,255,0.3)'}}>+ Add User</button>
               </div>
               <table className="admin-table">
-                <thead><tr><th>Email</th><th>Role</th><th>Date Joined</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Email</th><th>Date Joined</th><th>Actions</th></tr></thead>
                 <tbody>
-                  {users.length === 0 ? <tr><td colSpan={4} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
+                  {users.length === 0 ? <tr><td colSpan={3} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No users yet.</td></tr> :
                     users.map((u) => (
                       <tr key={u.id}>
                         <td>{u.email}</td>
-                        
-                        <td>
-                          <select value={u.role || 'customer'} onChange={(e) => handleRoleChange(u.id, e.target.value)} style={{padding:'6px 12px',borderRadius:'8px',border:'1.5px solid #fce4ec',color:'#e91e8c',fontWeight:'600',cursor:'pointer',fontSize:'13px'}}>
-                            <option value="customer">Customer</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                        </td>
                         <td>{new Date(u.created_at).toLocaleDateString()}</td>
                         <td><button onClick={() => handleDeleteUser(u.id)} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'#ffebee',color:'#c62828',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>Delete</button></td>
                       </tr>
