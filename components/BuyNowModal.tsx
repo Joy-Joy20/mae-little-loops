@@ -21,20 +21,38 @@ export default function BuyNowModal({ product, onClose }: Props) {
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [modalError, setModalError] = useState("");
 
   useEffect(() => {
     if (!product) return;
     setStep(1);
     setPayment("cod");
-    setName("");
-    setAddress("");
-    setPhone("");
     setReceiptUrl(null);
     setUploading(false);
     setPlacing(false);
     setPlaced(false);
+    setModalError("");
     setQuantity(Math.max(1, product.quantity ?? 1));
+
+    // Pre-fill delivery fields from user profile
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from("users").select("username, phone, address").eq("id", user.id).single();
+      if (profile) {
+        setName(profile.username || "");
+        setPhone(profile.phone || "");
+        setAddress(profile.address || "");
+      }
+    });
   }, [product]);
+
+  function handleNextStep() {
+    if (!name.trim()) { setModalError("Please enter your Full Name."); return; }
+    if (!address.trim()) { setModalError("Please enter your Address."); return; }
+    if (!phone.trim()) { setModalError("Please enter your Phone Number."); return; }
+    setModalError("");
+    setStep(2);
+  }
 
   if (!product) return null;
 
@@ -126,10 +144,18 @@ export default function BuyNowModal({ product, onClose }: Props) {
 
             {step === 1 && (
               <div className="modal-form">
-                <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
-                <input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                <button className="modal-btn" onClick={() => setStep(2)} disabled={!name || !address || !phone}>Next →</button>
+                {modalError && (
+                  <div style={{background:'#fff3cd',border:'1px solid #fce4ec',borderRadius:'8px',padding:'10px 14px',color:'#c2185b',fontSize:'13px',marginBottom:'8px'}}>
+                    ⚠️ {modalError}
+                  </div>
+                )}
+                <label style={{fontSize:'13px',fontWeight:'600',color:'#555',marginBottom:'2px'}}>Full Name <span style={{color:'#e91e8c'}}>*</span></label>
+                <input type="text" placeholder="Full Name" value={name} onChange={(e) => { setName(e.target.value); setModalError(""); }} style={{border: !name.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec', width:'100%', padding:'12px 16px', borderRadius:'12px', fontSize:'14px', background:'#fff9fb'}} />
+                <label style={{fontSize:'13px',fontWeight:'600',color:'#555',marginBottom:'2px'}}>Address <span style={{color:'#e91e8c'}}>*</span></label>
+                <input type="text" placeholder="Address" value={address} onChange={(e) => { setAddress(e.target.value); setModalError(""); }} style={{border: !address.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec', width:'100%', padding:'12px 16px', borderRadius:'12px', fontSize:'14px', background:'#fff9fb'}} />
+                <label style={{fontSize:'13px',fontWeight:'600',color:'#555',marginBottom:'2px'}}>Phone Number <span style={{color:'#e91e8c'}}>*</span></label>
+                <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => { setPhone(e.target.value); setModalError(""); }} style={{border: !phone.trim() ? '1.5px solid #f48fb1' : '1.5px solid #fce4ec', width:'100%', padding:'12px 16px', borderRadius:'12px', fontSize:'14px', background:'#fff9fb'}} />
+                <button className="modal-btn" onClick={handleNextStep}>Next →</button>
               </div>
             )}
 
