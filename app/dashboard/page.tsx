@@ -366,7 +366,7 @@ export default function Dashboard() {
         {activeTab === "messages" && (
           <div className="dash-card">
             <h3 className="dash-card-title">My Messages
-              <button onClick={() => userEmail && fetchUserMessages(userEmail)} disabled={loadingMsgs} style={{marginLeft:'12px',padding:'4px 14px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer',boxShadow:'0 2px 8px rgba(233,30,140,0.3)'}}>{loadingMsgs ? 'Refreshing...' : '🔄 Refresh'}</button>
+              <button onClick={() => userEmail && fetchUserMessages(userEmail)} disabled={loadingMsgs} style={{marginLeft:'12px',padding:'4px 14px',borderRadius:'50px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer',boxShadow:'0 2px 8px rgba(233,30,140,0.3)'}}>{loadingMsgs ? 'Refreshing...' : 'Refresh'}</button>
             </h3>
             {userMessages.length === 0 ? (
               <div className="dash-empty">
