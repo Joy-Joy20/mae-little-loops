@@ -75,8 +75,8 @@ export default function Keychain() {
     const checkProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: profile } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).single();
-      setProfileComplete(!!(profile?.full_name && profile?.phone));
+      const { data: profile } = await supabase.from("users").select("username, phone").eq("id", user.id).single();
+      setProfileComplete(!!(profile?.username?.trim() && profile?.phone?.trim()));
     };
     checkProfile();
   }, []);

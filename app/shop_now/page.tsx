@@ -64,8 +64,8 @@ export default function ShopNow() {
     const checkProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
-      if (!profile?.full_name) setShowProfilePrompt(true);
+      const { data: profile } = await supabase.from("users").select("username, phone").eq("id", user.id).single();
+      if (!profile?.username?.trim()) setShowProfilePrompt(true);
     };
     checkProfile();
   }, []);
