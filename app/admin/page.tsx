@@ -51,6 +51,38 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  // Message reply state
+  const [replyTarget, setReplyTarget] = useState<Message | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replying, setReplying] = useState(false);
+
+  async function handleMessageReply() {
+    if (!replyText.trim() || !replyTarget) return;
+    setReplying(true);
+    await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: replyTarget.email,
+        subject: `Re: ${replyTarget.subject}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+            <h2 style="color:#e91e8c;">Mae Little Loops Studio 🌸</h2>
+            <p>Hi <strong>${replyTarget.name}</strong>,</p>
+            <div style="background:#f9f0ff;border-radius:12px;padding:20px;margin:16px 0;font-size:14px;line-height:1.7;">${replyText.trim().replace(/
+/g, '<br/>')}</div>
+            <p style="color:#aaa;font-size:12px;margin-top:16px;">This is a reply to your message: &quot;${replyTarget.message}&quot;</p>
+            <p style="color:#e91e8c;font-weight:bold;">Mae Little Loops Studio 🌸</p>
+          </div>
+        `,
+      }),
+    });
+    setReplying(false);
+    setReplyTarget(null);
+    setReplyText("");
+    alert(`Reply sent to ${replyTarget.email}!`);
+  }
+
   async function fetchOrders() {
     const { data } = await supabase
       .from("orders")
@@ -876,16 +908,48 @@ export default function AdminDashboard() {
         {/* ===== MESSAGES ===== */}
         {active === "Messages" && (
           <div className="admin-table-card">
+
+            {/* REPLY MODAL */}
+            {replyTarget && (
+              <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={() => { setReplyTarget(null); setReplyText(""); }}>
+                <div style={{background:'white',borderRadius:'20px',padding:'32px',width:'100%',maxWidth:'500px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}} onClick={e => e.stopPropagation()}>
+                  <h3 style={{fontSize:'18px',fontWeight:'700',marginBottom:'4px',color:'#222'}}>Reply to {replyTarget.name}</h3>
+                  <p style={{fontSize:'13px',color:'#aaa',marginBottom:'16px'}}>{replyTarget.email}</p>
+                  <div style={{background:'#f9f0ff',borderRadius:'12px',padding:'14px',marginBottom:'16px',fontSize:'13px',color:'#555'}}>
+                    <p style={{margin:'0 0 4px',fontWeight:'600',color:'#c44dff'}}>Original message:</p>
+                    <p style={{margin:'0 0 4px',fontWeight:'600'}}>{replyTarget.subject}</p>
+                    <p style={{margin:0}}>{replyTarget.message}</p>
+                  </div>
+                  <textarea
+                    value={replyText}
+                    onChange={e => setReplyText(e.target.value)}
+                    placeholder="Type your reply..."
+                    rows={5}
+                    style={{width:'100%',padding:'12px 16px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'#fff9fb',fontSize:'14px',outline:'none',resize:'vertical',fontFamily:'inherit',boxSizing:'border-box'}}
+                  />
+                  <div style={{display:'flex',gap:'10px',marginTop:'12px'}}>
+                    <button onClick={handleMessageReply} disabled={replying || !replyText.trim()} style={{flex:1,padding:'13px',border:'none',borderRadius:'12px',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontWeight:'700',fontSize:'14px',cursor:'pointer'}}>{replying ? 'Sending...' : '✉️ Send Reply'}</button>
+                    <button onClick={() => { setReplyTarget(null); setReplyText(""); }} style={{flex:1,padding:'13px',border:'1.5px solid #fce4ec',borderRadius:'12px',background:'white',color:'#888',fontWeight:'600',cursor:'pointer',fontSize:'14px'}}>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="table-header"><h2>Messages</h2><span className="table-badge">{messages.length} messages</span></div>
             <table className="admin-table">
-              <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th></tr></thead>
+              <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>
               <tbody>
-                {messages.length === 0 ? <tr><td colSpan={5} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No messages yet.</td></tr> :
+                {messages.length === 0 ? <tr><td colSpan={6} style={{textAlign:'center',color:'#aaa',padding:'24px'}}>No messages yet.</td></tr> :
                   messages.map((m, i) => (
                     <tr key={i}>
-                      <td>{m.name}</td><td>{m.email}</td><td>{m.subject}</td>
+                      <td>{m.name}</td>
+                      <td>{m.email}</td>
+                      <td>{m.subject}</td>
                       <td style={{maxWidth:'200px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.message}</td>
                       <td>{new Date(m.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <button onClick={() => { setReplyTarget(m); setReplyText(""); }} style={{padding:'5px 14px',borderRadius:'20px',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>✉️ Reply</button>
+                      </td>
                     </tr>
                   ))
                 }
