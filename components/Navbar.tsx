@@ -57,7 +57,11 @@ export default function Navbar({ activePage }: NavbarProps) {
 
         <a href="/about_us" className={activePage === "about" ? "nav-link active" : "nav-link"}>About Us</a>
         <a href="/contact_us" className={activePage === "contact" ? "nav-link active" : "nav-link"}>Contact Us</a>
-        <a href="/dashboard" className={activePage === "dashboard" ? "nav-link active" : "nav-link"}>Dashboard</a>
+        {userEmail ? (
+          <a href="/dashboard" className={activePage === "dashboard" ? "nav-link active" : "nav-link">Profile</a>
+        ) : (
+          <a href="/login" className="nav-link">Sign In</a>
+        )}
       </nav>
 
       {/* RIGHT: Search + User + Cart */}
