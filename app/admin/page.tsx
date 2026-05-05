@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import { validateAndNormalizeProductInput } from "../../lib/product-validation";
@@ -18,81 +18,6 @@ type ProductFormState = { name: string; price: string; category: "bouquet" | "ke
 
 const emptyProduct: ProductFormState = { name: "", price: "", category: "bouquet", stock: "0", description: "", image_url: "" };
 
-function AdminChatWindow({ conv, chatMessages, setChatMessages, adminReply, setAdminReply, handleAdminReply, chatBottomRef, setConversations }: {
-  conv: Conversation;
-  chatMessages: ChatMessage[];
-  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  adminReply: string;
-  setAdminReply: (v: string) => void;
-  handleAdminReply: () => void;
-  chatBottomRef: React.RefObject<HTMLDivElement>;
-  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
-}) {
-  useEffect(() => {
-    const sub = supabase
-      .channel(`admin-chat-${conv.id}`)
-      .on("postgres_changes", {
-        event: "INSERT", schema: "public", table: "chat_messages",
-        filter: `conversation_id=eq.${conv.id}`,
-      }, (payload) => {
-        const msg = payload.new as ChatMessage;
-        setChatMessages(prev => {
-          if (prev.some(m => m.id === msg.id)) return prev;
-          return [...prev, msg];
-        });
-        setConversations(prev => prev.map(c =>
-          c.id === conv.id ? { ...c, last_message: msg.message, last_message_at: msg.created_at } : c
-        ));
-        setTimeout(() => chatBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(sub); };
-  }, [conv.id]);
-
-  return (
-    <>
-      <div style={{padding:'16px 20px',borderBottom:'1px solid #fce4ec',background:'#fff9fb'}}>
-        <p style={{fontWeight:'700',margin:0,color:'#e91e8c'}}>{conv.user_email}</p>
-        <p style={{fontSize:'12px',color:'#aaa',margin:'2px 0 0'}}>Conversation</p>
-      </div>
-      <div style={{flex:1,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:'8px'}}>
-        {chatMessages.length === 0 && (
-          <p style={{color:'#aaa',fontSize:'13px',textAlign:'center',marginTop:'20px'}}>No messages yet.</p>
-        )}
-        {chatMessages.map(msg => (
-          <div key={msg.id} style={{
-            alignSelf: msg.is_admin ? 'flex-end' : 'flex-start',
-            background: msg.is_admin ? 'linear-gradient(135deg,#e91e8c,#f06292)' : '#f3f4f6',
-            color: msg.is_admin ? 'white' : '#222',
-            padding: '10px 14px',
-            borderRadius: msg.is_admin ? '12px 4px 12px 12px' : '4px 12px 12px 12px',
-            maxWidth: '75%',
-            fontSize: '14px',
-            wordBreak: 'break-word',
-          }}>
-            {!msg.is_admin && <p style={{margin:'0 0 2px',fontSize:'11px',fontWeight:'700',color:'#e91e8c'}}>{msg.sender_email}</p>}
-            <p style={{margin:0}}>{msg.message}</p>
-            <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.6}}>
-              {msg.is_admin ? 'You (Admin)' : 'User'} · {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-            </p>
-          </div>
-        ))}
-        <div ref={chatBottomRef} />
-      </div>
-      <div style={{padding:'12px 16px',borderTop:'1px solid #fce4ec',display:'flex',gap:'8px'}}>
-        <input
-          type="text" value={adminReply}
-          onChange={e => setAdminReply(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') handleAdminReply(); }}
-          placeholder="Type a reply..."
-          style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
-        />
-        <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>➤</button>
-      </div>
-    </>
-  );
-}
-
 export default function AdminDashboard() {
   const [active, setActive] = useState("Dashboard");
   const [loading, setLoading] = useState(true);
@@ -106,7 +31,6 @@ export default function AdminDashboard() {
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [adminReply, setAdminReply] = useState("");
-  const chatBottomRef = useRef<HTMLDivElement>(null);
   const [previewReceipt, setPreviewReceipt] = useState<string | null>(null);
   const [showAddUser, setShowAddUser] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState("");
@@ -250,14 +174,8 @@ export default function AdminDashboard() {
   }, [router]);
 
   async function fetchChatMessages(convId: string) {
-    const { data, error } = await supabase
-      .from("chat_messages")
-      .select("*")
-      .eq("conversation_id", convId)
-      .order("created_at", { ascending: true });
-    if (error) { console.error("fetchChatMessages error:", error.message); return; }
+    const { data } = await supabase.from("chat_messages").select("*").eq("conversation_id", convId).order("created_at", { ascending: true });
     setChatMessages((data ?? []) as ChatMessage[]);
-    setTimeout(() => chatBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
   }
 
   async function handleAdminReply() {
@@ -266,26 +184,15 @@ export default function AdminDashboard() {
     if (!user) return;
     const text = adminReply.trim();
     setAdminReply("");
-
-    // Optimistic update
-    const tempId = `temp-${Date.now()}`;
-    const optimistic: ChatMessage = { id: tempId, message: text, is_admin: true, sender_email: user.email ?? "", created_at: new Date().toISOString() };
-    setChatMessages(prev => [...prev, optimistic]);
-    setTimeout(() => chatBottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
-
-    const { data: inserted } = await supabase.from("chat_messages").insert([{
+    await supabase.from("chat_messages").insert([{
       conversation_id: activeConv.id,
       sender_id: user.id,
       sender_email: user.email,
       message: text,
       is_admin: true,
-    }]).select().single();
-
-    if (inserted) {
-      setChatMessages(prev => prev.map(m => m.id === tempId ? (inserted as ChatMessage) : m));
-    }
-
+    }]);
     await supabase.from("conversations").update({ last_message: text, last_message_at: new Date().toISOString() }).eq("id", activeConv.id);
+    fetchChatMessages(activeConv.id);
     setConversations(prev => prev.map(c => c.id === activeConv.id ? { ...c, last_message: text, last_message_at: new Date().toISOString() } : c));
   }
 
@@ -937,16 +844,30 @@ export default function AdminDashboard() {
                   <p>Select a conversation to view messages</p>
                 </div>
               ) : (
-                <AdminChatWindow
-                  conv={activeConv}
-                  chatMessages={chatMessages}
-                  setChatMessages={setChatMessages}
-                  adminReply={adminReply}
-                  setAdminReply={setAdminReply}
-                  handleAdminReply={handleAdminReply}
-                  chatBottomRef={chatBottomRef}
-                  setConversations={setConversations}
-                />
+                <>
+                  <div style={{padding:'16px 20px',borderBottom:'1px solid #fce4ec',background:'#fff9fb'}}>
+                    <p style={{fontWeight:'700',margin:0,color:'#e91e8c'}}>{activeConv.user_email}</p>
+                  </div>
+                  <div style={{flex:1,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:'8px'}}>
+                    {chatMessages.length === 0 && <p style={{color:'#aaa',fontSize:'13px',textAlign:'center',marginTop:'20px'}}>No messages yet.</p>}
+                    {chatMessages.map(msg => (
+                      <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-end' : 'flex-start',background:msg.is_admin ? 'linear-gradient(135deg,#e91e8c,#f06292)' : '#fce4ec',color:msg.is_admin ? 'white' : '#333',padding:'10px 14px',borderRadius:msg.is_admin ? '12px 4px 12px 12px' : '4px 12px 12px 12px',maxWidth:'75%',fontSize:'14px'}}>
+                        <p style={{margin:0}}>{msg.message}</p>
+                        <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{msg.is_admin ? 'Admin' : msg.sender_email} · {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{padding:'12px 16px',borderTop:'1px solid #fce4ec',display:'flex',gap:'8px'}}>
+                    <input
+                      type="text" value={adminReply}
+                      onChange={e => setAdminReply(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleAdminReply(); }}
+                      placeholder="Type a reply..."
+                      style={{flex:1,padding:'10px 14px',borderRadius:'50px',border:'1.5px solid #fce4ec',outline:'none',fontSize:'14px',fontFamily:'inherit'}}
+                    />
+                    <button onClick={handleAdminReply} style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',border:'none',borderRadius:'50%',width:'40px',height:'40px',color:'white',cursor:'pointer',fontSize:'16px',flexShrink:0}}>➤</button>
+                  </div>
+                </>
               )}
             </div>
           </div>
