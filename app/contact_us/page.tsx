@@ -64,7 +64,7 @@ export default function ContactUs() {
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us" className="active-link">Contact Us</a>
-          <a href="/dashboard">Dashboard</a>
+          {userEmail ? <a href="/dashboard">Dashboard</a> : <a href="/login">Sign In</a>}
         </nav>
         <div className="nav-right">
           <input name="q" type="text" placeholder="Search..." className="search-input" onKeyDown={(e) => { if(e.key === 'Enter') { const q = (e.target as HTMLInputElement).value.trim().replace(/[<>"']/g, ""); if(q) window.location.href = `/search?q=${encodeURIComponent(q)}`; }}} />
