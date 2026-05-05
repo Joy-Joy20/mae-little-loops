@@ -105,13 +105,30 @@ export default function ChatWidget({ userEmail }: { userEmail: string | null }) 
     if (!user) return;
     const text = newMessage.trim();
     setNewMessage("");
-    await supabase.from("chat_messages").insert([{
+
+    // Optimistically add to UI immediately so user sees it right away
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: Message = {
+      id: tempId,
+      message: text,
+      is_admin: false,
+      created_at: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, optimistic]);
+
+    const { data: inserted } = await supabase.from("chat_messages").insert([{
       conversation_id: conversationId,
       sender_id: user.id,
       sender_email: userEmail,
       message: text,
       is_admin: false,
-    }]);
+    }]).select().single();
+
+    // Replace the temp message with the real one from DB
+    if (inserted) {
+      setMessages(prev => prev.map(m => m.id === tempId ? (inserted as Message) : m));
+    }
+
     await supabase.from("conversations").update({
       last_message: text,
       last_message_at: new Date().toISOString(),
