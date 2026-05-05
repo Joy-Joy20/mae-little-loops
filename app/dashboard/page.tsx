@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "cart">("profile");
   const [showProfilePrompt, setShowProfilePrompt] = useState(false);
+  const [showProfileJustCompleted, setShowProfileJustCompleted] = useState(false);
 
   async function fetchOrders(uid: string) {
     const { data } = await supabase
@@ -69,6 +70,10 @@ export default function Dashboard() {
     setEditing(false);
     setSavingName(false);
     setShowProfilePrompt(false);
+    if (editName && editPhone) {
+      setShowProfileJustCompleted(true);
+      setTimeout(() => setShowProfileJustCompleted(false), 5000);
+    }
   }
 
   async function handleRemoveCartItem(cartId: string, index: number) {
@@ -143,6 +148,13 @@ export default function Dashboard() {
           <span>👋 Welcome! Please complete your profile first.</span>
           <button onClick={() => { setActiveTab('profile'); setShowProfilePrompt(false); }} style={{background:'white',color:'#e91e8c',padding:'6px 16px',borderRadius:'50px',border:'none',fontWeight:'700',fontSize:'13px',cursor:'pointer',whiteSpace:'nowrap'}}>Edit Profile</button>
           <button onClick={() => setShowProfilePrompt(false)} style={{background:'rgba(255,255,255,0.3)',border:'none',borderRadius:'50%',width:'24px',height:'24px',color:'white',cursor:'pointer',fontWeight:'700',fontSize:'14px'}}>✕</button>
+        </div>
+      )}
+
+      {/* PROFILE COMPLETE SUCCESS TOAST */}
+      {showProfileJustCompleted && (
+        <div style={{position:'fixed',top:'80px',left:'50%',transform:'translateX(-50%)',zIndex:999,background:'#e8f5e9',color:'#2e7d32',padding:'14px 24px',borderRadius:'50px',boxShadow:'0 6px 20px rgba(0,0,0,0.1)',fontWeight:'600',fontSize:'14px',maxWidth:'90vw',textAlign:'center'}}>
+          ✅ Profile complete! You can now add to cart and place orders. 🌸
         </div>
       )}
 

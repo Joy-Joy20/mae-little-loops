@@ -11,11 +11,12 @@ import ChatWidget from "../../components/ChatWidget";
 
 type Product = { id: string; name: string; price: string; img: string | null; description?: string; stock: number; };
 
-function BouquetCard({ item, onAddToCart, onBuyNow, onSelect }: {
+function BouquetCard({ item, onAddToCart, onBuyNow, onSelect, profileComplete }: {
   item: Product;
   onAddToCart: (p: Product, qty: number) => void;
   onBuyNow: (p: Product, qty: number) => void;
   onSelect: (p: Product) => void;
+  profileComplete: boolean;
 }) {
   const [quantity, setQuantity] = useState(1);
   return (
@@ -36,8 +37,8 @@ function BouquetCard({ item, onAddToCart, onBuyNow, onSelect }: {
           <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.min(item.stock, q + 1)); }} style={{width:'32px',height:'32px',borderRadius:'50%',border:'none',background:'linear-gradient(135deg,#e91e8c,#f06292)',color:'white',fontSize:'18px',cursor:'pointer',fontWeight:'bold'}}>+</button>
         </div>
         <div className="btn-row">
-          <button className="add-btn" onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }}>Add to Cart</button>
-          <button className="buy-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }}>Buy Now</button>
+          <button className="add-btn" onClick={(e) => { e.stopPropagation(); onAddToCart(item, quantity); setQuantity(1); }} style={{opacity: profileComplete ? 1 : 0.6, cursor: profileComplete ? 'pointer' : 'not-allowed'}}>Add to Cart</button>
+          <button className="buy-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(item, quantity); }} style={{opacity: profileComplete ? 1 : 0.6, cursor: profileComplete ? 'pointer' : 'not-allowed'}}>Buy Now</button>
         </div>
       </div>
     </div>
@@ -182,7 +183,7 @@ export default function Bouquets() {
         <h2 className="section-title">Our Bouquets</h2>
         <div className="products-grid">
           {bouquets.map((item, index) => (
-            <BouquetCard key={index} item={item} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} onSelect={setSelectedProduct} />
+            <BouquetCard key={index} item={item} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} onSelect={setSelectedProduct} profileComplete={profileComplete} />
           ))}
         </div>
       </section>
