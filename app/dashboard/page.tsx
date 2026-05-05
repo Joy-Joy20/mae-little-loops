@@ -85,7 +85,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!convId) return;
     const sub = supabase
-      .channel(`dash-chat-${convId}`)
+      .channel(`chat-${convId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `conversation_id=eq.${convId}` }, (payload) => {
         const msg = payload.new as ChatMsg;
         setChatMsgs(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
@@ -400,25 +400,28 @@ export default function Dashboard() {
         {/* MESSAGES TAB */}
         {activeTab === "messages" && (
           <div className="dash-card" style={{padding:0,overflow:'hidden',display:'flex',flexDirection:'column',height:'500px'}}>
-            <div style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',padding:'16px 20px',color:'white',display:'flex',alignItems:'center',gap:'10px'}}>
-              <span style={{fontSize:'20px'}}>💬</span>
-              <div>
-                <p style={{fontWeight:'700',margin:0,fontSize:'15px'}}>Mae Little Loops Studio</p>
-                <p style={{fontSize:'12px',margin:0,opacity:0.85}}>🟢 We reply quickly!</p>
+            <div style={{background:'linear-gradient(135deg,#e91e8c,#f06292)',padding:'16px 20px',color:'white',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                <span style={{fontSize:'20px'}}>💬</span>
+                <div>
+                  <p style={{fontWeight:'700',margin:0,fontSize:'15px'}}>Mae Little Loops Studio</p>
+                  <p style={{fontSize:'12px',margin:0,opacity:0.85}}>🟢 Online — We reply quickly!</p>
+                </div>
               </div>
             </div>
             <div style={{flex:1,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:'8px'}}>
               {chatMsgs.length === 0 && (
                 <div style={{textAlign:'center',color:'#aaa',fontSize:'13px',marginTop:'40px'}}>
                   <p style={{fontSize:'32px',marginBottom:'8px'}}>🌸</p>
-                  <p>No messages yet. Send us a message!</p>
+                  <p>Hi! How can we help you today?</p>
+                  <p style={{fontSize:'12px'}}>Send us a message and we will reply shortly.</p>
                 </div>
               )}
               {chatMsgs.map(msg => (
-                <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-start' : 'flex-end',background:msg.is_admin ? '#f3f4f6' : 'linear-gradient(135deg,#e91e8c,#f06292)',color:msg.is_admin ? '#222' : 'white',padding:'10px 14px',borderRadius:msg.is_admin ? '4px 12px 12px 12px' : '12px 4px 12px 12px',maxWidth:'75%',fontSize:'14px',wordBreak:'break-word'}}>
+                <div key={msg.id} style={{alignSelf:msg.is_admin ? 'flex-start' : 'flex-end',background:msg.is_admin ? '#fce4ec' : 'linear-gradient(135deg,#e91e8c,#f06292)',color:msg.is_admin ? '#333' : 'white',padding:'10px 14px',borderRadius:msg.is_admin ? '4px 12px 12px 12px' : '12px 4px 12px 12px',maxWidth:'75%',fontSize:'14px',wordBreak:'break-word'}}>
                   {msg.is_admin && <p style={{margin:'0 0 2px',fontSize:'11px',fontWeight:'700',color:'#e91e8c'}}>Mae Little Loops</p>}
                   <p style={{margin:0}}>{msg.message}</p>
-                  <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.6}}>{new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
+                  <p style={{margin:'4px 0 0',fontSize:'11px',opacity:0.65}}>{new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
                 </div>
               ))}
               <div ref={msgBottomRef} />
