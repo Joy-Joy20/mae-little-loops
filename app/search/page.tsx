@@ -65,7 +65,7 @@ function SearchResults() {
           <a href="/bouquets">Products</a>
           <a href="/about_us">About Us</a>
           <a href="/contact_us">Contact Us</a>
-          {userEmail ? <a href="/dashboard">Dashboard</a> : <a href="/login">Sign In</a>}
+          {userEmail ? <a href="/dashboard">Profile</a> : <a href="/login">Sign In</a>}
         </nav>
         <div className="nav-right">
           <input
